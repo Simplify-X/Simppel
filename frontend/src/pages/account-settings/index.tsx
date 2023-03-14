@@ -23,6 +23,9 @@ import TabSecurity from 'src/views/account-settings/TabSecurity'
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
 
+// ** Auth Wrapper import
+import authRoute from 'src/@core/utils/auth-route'
+
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     minWidth: 100
@@ -100,4 +103,4 @@ const AccountSettings = () => {
   )
 }
 
-export default AccountSettings
+export default authRoute(AccountSettings)
