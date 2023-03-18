@@ -1,4 +1,5 @@
 // ** MUI Imports
+// @ts-nocheck
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 

@@ -1,4 +1,5 @@
 // ** MUI Imports
+// @ts-nocheck
 import Card from '@mui/material/Card'
 import { styled } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'

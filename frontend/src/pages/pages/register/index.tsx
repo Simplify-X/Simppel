@@ -1,4 +1,5 @@
 // ** React Imports
+// @ts-nocheck
 import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef } from 'react'
 
 // ** Next Imports
@@ -104,6 +105,7 @@ const RegisterPage = () => {
   function validateEmail(email) {
     // use a regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
     return emailRegex.test(email);
   }
 

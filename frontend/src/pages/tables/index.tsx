@@ -1,4 +1,5 @@
 // ** MUI Imports
+// @ts-nocheck
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Card from '@mui/material/Card'

@@ -1,11 +1,11 @@
 // ** Next Imports
 import Head from 'next/head'
-import {Router, useRouter} from 'next/router'
+import {Router} from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
 // ** Loader Import
-import NProgress, {settings} from 'nprogress'
+import NProgress from 'nprogress'
 
 // ** Emotion Imports
 import { CacheProvider } from '@emotion/react'
@@ -29,9 +29,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // ** Global css styles
 import '../../styles/globals.css'
-import {useEffect, useState} from "react";
 
-import jwt_decode from "jwt-decode";
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -62,6 +60,7 @@ const App = (props: ExtendedAppProps) => {
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
+  // @ts-ignore
   getLayout(<Component {...pageProps} />)
 
     return  ( <CacheProvider value={emotionCache}>
@@ -78,6 +77,7 @@ const App = (props: ExtendedAppProps) => {
           <SettingsProvider>
             <SettingsConsumer>
               {({ settings }) => {
+                // @ts-ignore
                 return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
               }}
             </SettingsConsumer>

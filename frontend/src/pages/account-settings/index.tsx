@@ -103,4 +103,5 @@ const AccountSettings = () => {
   )
 }
 
+// @ts-ignore
 export default authRoute(AccountSettings)

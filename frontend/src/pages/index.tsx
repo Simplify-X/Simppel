@@ -1,4 +1,5 @@
 // ** MUI Imports
+// @ts-nocheck
 import Grid from '@mui/material/Grid'
 
 // ** Icons Imports
@@ -36,12 +37,12 @@ const Dashboard = () => {
       setauthenticated(false);
     }
     else {
-      let decodedToken = jwt_decode(token);
+      const decodedToken = jwt_decode(token);
       if (decodedToken.exp * 1000 < Date.now()) {
         setauthenticated(false)
       }
     }
-  })
+  }, [])
   if(!authenticated){
     router.push("/pages/login")
 

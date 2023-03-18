@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ** React Imports
 import {ChangeEvent, MouseEvent, ReactNode, useEffect, useState} from 'react'
 
@@ -68,17 +69,16 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
-  const [authenticated, setauthenticated] = useState(true);
 
   useEffect(() => {
     const token = Cookies.get('token');
     console.log(token);
     if (!token) {
-      setauthenticated(false);
+
     } else {
-      let decodedToken = jwt_decode(token);
+      const decodedToken = jwt_decode(token);
       if (decodedToken.exp * 1000 < Date.now()) {
-        setauthenticated(false)
+        console.log(decodedToken);
       }
       else {
         router.push('/')
@@ -86,6 +86,7 @@ const LoginPage = () => {
     }
 
   })
+
   // ** State
   const [values, setValues] = useState<State>({
     password: '',

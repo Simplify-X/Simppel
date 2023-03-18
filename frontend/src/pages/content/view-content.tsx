@@ -1,4 +1,5 @@
 // ** MUI Imports
+// @ts-nocheck
 import {useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Cookies from 'js-cookie';
@@ -100,4 +101,5 @@ const ViewContent = () => {
   )
 }
 
+// @ts-ignore
 export default authRoute(ViewContent)

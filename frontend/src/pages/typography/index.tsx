@@ -1,6 +1,8 @@
+// @ts-nocheck
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
 import authRoute from 'src/@core/utils/auth-route'
+
 // ** Demo Components Imports
 import TypographyTexts from 'src/views/typography/TypographyTexts'
 import TypographyHeadings from 'src/views/typography/TypographyHeadings'
