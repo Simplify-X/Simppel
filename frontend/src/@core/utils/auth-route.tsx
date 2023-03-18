@@ -46,6 +46,7 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
     }
 
     if (authenticated) {
+      // @ts-ignore
       return <Component {...props} user={user} />;
     } else {
       return <CircularProgress />;
