@@ -1,47 +1,56 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from 'js-cookie';
 
-const authRoute = (Component: any) => {
-  return (props: any) => {
+const authRoute = (Component: JSX.IntrinsicAttributes) => {
+  return (props: JSX.IntrinsicAttributes) => {
     const router = useRouter();
     const [user, setUser] = useState({});
-    const [authenticated, setAuthenticated] = useState(false);    
-      
+    const [authenticated, setAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
       const checkToken = async () => {
-        const token = localStorage.getItem("token");
+        const token = Cookies.get('token');
         if (!token) {
           router.replace("/pages/login");
         } else {
           // check if user exists and token valid
-          const isValidToken = true
+          const isValidToken = true;
           if (!isValidToken) {
-            localStorage.removeItem("token");
+            Cookies.remove("token");
             router.replace("/pages/login");
           } else {
             // in case you need pass some user data
             // I suppose you'll receive some of it from validation request
             const userData = {
-              name: "test user"
+              name: "test user",
             };
-            if (userData.name === '') {
+            if (userData.name === "") {
               router.replace("/pages/login");
-              localStorage.removeItem('token');
+              Cookies.remove("token");
             } else {
               setUser(userData);
               setAuthenticated(true);
             }
           }
         }
-      }
+        setLoading(false);
+      };
       checkToken();
     }, []);
-  
+
+    if (loading) {
+      return <CircularProgress />;
+    }
+
     if (authenticated) {
       return <Component {...props} user={user} />;
     } else {
-      return null;
+      return <CircularProgress />;
     }
-  }
-};  
+  };
+};
+
 export default authRoute;

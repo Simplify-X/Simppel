@@ -1,6 +1,6 @@
 package com.X.X.token;
 
-import com.X.X.users.data.user;
+import com.X.X.domains.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.X.X.token.TokenBlacklist;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -20,7 +21,7 @@ public class TokenServices {
     private String jwtSecret;
 
 
-    public String generateTokenUser(user user,Boolean remember) {
+    public String generateTokenUser(User user, Boolean remember) {
         Date date = null;
         if(remember){
              date = Date.from(Instant.now().plus(3, ChronoUnit.DAYS));
@@ -35,6 +36,10 @@ public class TokenServices {
         return jws;
     }
     public boolean validateToken(String token) {
+        if (TokenBlacklist.isTokenBlacklisted(token)) {
+
+            return false;
+        }
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
@@ -51,6 +56,19 @@ public class TokenServices {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+
+    public String getAccountId(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("accountId", String.class);
+    }
+
+    public void blacklistToken(String token) {
+        TokenBlacklist.blacklistToken(token);
     }
 
 

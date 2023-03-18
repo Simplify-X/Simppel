@@ -5,6 +5,7 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import Grid, { GridProps } from '@mui/material/Grid'
+import authRoute from 'src/@core/utils/auth-route'
 
 const DemoGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
@@ -93,4 +94,4 @@ const TypographyTexts = () => {
   )
 }
 
-export default TypographyTexts
+export default authRoute(TypographyTexts)

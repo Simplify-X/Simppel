@@ -1,14 +1,17 @@
-package com.X.X.users.data.dto;
+package com.X.X.dto;
 
-import com.X.X.users.help.status;
+import com.X.X.help.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponse {
     private String token;
-    private com.X.X.users.help.status status;
+    private Status status;
+    private UUID accountId;
 }

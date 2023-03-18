@@ -31,6 +31,7 @@ import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import Cookies from 'js-cookie';
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -70,7 +71,8 @@ const LoginPage = () => {
   const [authenticated, setauthenticated] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    console.log(token);
     if (!token) {
       setauthenticated(false);
     } else {
@@ -117,7 +119,7 @@ const LoginPage = () => {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://localhost:8080/api/users/login',
+      url: 'http://localhost:8080/api/users/login/',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -125,9 +127,8 @@ const LoginPage = () => {
     };
     axios(config)
       .then(function (response) {
-        console.log(response.data)
         if (response.data.status === 'OK') {
-          localStorage.setItem('token', response.data.token);
+          Cookies.set('token', response.data.token);
           toast.success("Login successful", { autoClose: 3000});
           router.push("/")
         }

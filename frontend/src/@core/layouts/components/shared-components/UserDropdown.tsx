@@ -23,6 +23,8 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
+import axios from "axios";
+import Cookies from 'js-cookie';
 
 
 
@@ -60,10 +62,25 @@ const UserDropdown = () => {
   }
 
   const handleLogout = () => {
-    console.log('here');
-
-    // Redirect the user to the login page
-    history.push('/pages/login');
+    const token = Cookies.get('token');
+    fetch('http://localhost:8080/api/users/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        Cookies.remove('token');
+        console.log('success');
+        router.push("/pages/login");
+      } else {
+        console.log('error');
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
   };
 
   const styles = {

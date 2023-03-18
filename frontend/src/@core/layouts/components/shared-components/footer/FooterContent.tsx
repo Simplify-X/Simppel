@@ -17,30 +17,30 @@ const FooterContent = () => {
           ❤️
         </Box>
         {` by `}
-        <Link target='_blank' href='https://themeselection.com/'>
-          ThemeSelection
+        <Link target='_blank' href='#'>
+          Tamer Jar
         </Link>
       </Typography>
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
           <Link
             target='_blank'
-            href='https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free/blob/main/LICENSE'
+            href='#'
           >
             MIT License
           </Link>
-          <Link target='_blank' href='https://themeselection.com/'>
+          <Link target='_blank' href='#'>
             More Themes
           </Link>
           <Link
             target='_blank'
-            href='https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free/blob/main/README.md'
+            href='#'
           >
             Documentation
           </Link>
           <Link
             target='_blank'
-            href='https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free/issues'
+            href='#'
           >
             Support
           </Link>

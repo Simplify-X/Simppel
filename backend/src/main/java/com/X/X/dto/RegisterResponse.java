@@ -1,13 +1,13 @@
-package com.X.X.users.data.dto;
+package com.X.X.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.X.X.users.help.status;
+import com.X.X.help.Status;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class registerResponse {
-    private status status;
+public class RegisterResponse {
+    private Status status;
 }

@@ -74,7 +74,8 @@ const RegisterPage = () => {
     password: '',
     showPassword: false
   })
-
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -113,29 +114,37 @@ const RegisterPage = () => {
 
   function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const firstName = firstNameRef.current?.value;
+    const lastName = lastNameRef.current?.value;
     const username = usernameRef.current?.value;
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
+    const isCheck = agreeRef.current?.checked;
 
 
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regular expression for email validation
     if (!emailRegex.test(email!)) {
       setEmailError('Invalid email address');
+
       return;
     }
-    
+
     // Add form validation logic
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !firstName || !lastName) {
       toast.error("Please fill in all the fields", { autoClose: 3000 });
+
       return;
     }
     
     const data = JSON.stringify({
+      "firstName": firstName,
+      "lastName": lastName,
       "username": username,
       "email": email,
       "password": password
     });
-    
+
+  
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -145,18 +154,17 @@ const RegisterPage = () => {
       },
       data: data
     };
+
     
-    if(event.target[7].checked) {
+    if(isCheck) {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
-          console.log(response.data.status);
           if(response.data.status === "FAILED"){
             toast.error("Username or Password Already Exists", { autoClose: 3000});
-            usernameRef?.current?.value = '';
-            emailRef?.current?.value = '';
-            passwordRef?.current?.value = '';
-            agreeRef?.current?.checked = false;
+            usernameRef.current?.value = '';
+            emailRef.current?.value = '';
+            passwordRef.current?.value = '';
+            agreeRef.current?.checked = false;
           }
           else{
             toast.success("Registration successful", { autoClose: 2000});
@@ -256,6 +264,8 @@ const RegisterPage = () => {
           </Box>
           <form noValidate autoComplete='off' onSubmit={submitForm}>
           <ToastContainer position={'top-center'} draggable={false}/>
+          <TextField autoFocus fullWidth id='firstName' label='First Name' sx={{ marginBottom: 4 }}  inputRef={firstNameRef} required/>
+          <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}  inputRef={lastNameRef} required/>
             <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}  inputRef={usernameRef} required/>
             <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} inputRef={emailRef} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
             <FormControl fullWidth>
