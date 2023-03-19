@@ -25,13 +25,14 @@ import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import jwt_decode from "jwt-decode";
+import Cookies from 'js-cookie';
 
 const Dashboard = () => {
   const [authenticated, setauthenticated] = useState(true);
 
   const router = useRouter()
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     if(!token)
     {
       setauthenticated(false);
@@ -46,7 +47,7 @@ const Dashboard = () => {
   if(!authenticated){
     router.push("/pages/login")
 
-return null;
+    return null;
   }
   else {
   return (

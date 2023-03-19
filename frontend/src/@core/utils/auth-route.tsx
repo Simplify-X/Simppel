@@ -15,26 +15,9 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
         const token = Cookies.get('token');
         if (!token) {
           router.replace("/pages/login");
-        } else {
-          // check if user exists and token valid
-          const isValidToken = true;
-          if (!isValidToken) {
-            Cookies.remove("token");
-            router.replace("/pages/login");
-          } else {
-            // in case you need pass some user data
-            // I suppose you'll receive some of it from validation request
-            const userData = {
-              name: "test user",
-            };
-            if (userData.name === "") {
-              router.replace("/pages/login");
-              Cookies.remove("token");
-            } else {
-              setUser(userData);
-              setAuthenticated(true);
-            }
-          }
+        } 
+        else{
+          setAuthenticated(true);
         }
         setLoading(false);
       };

@@ -44,7 +44,7 @@ const Content = () => {
           throw new Error('Invalid token');
         }
       })
-      .then((data) => {
+      .then((data) => { 
         setAccountId(data);
       })
       .catch((error) => {

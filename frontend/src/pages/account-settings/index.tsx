@@ -1,4 +1,5 @@
 // ** React Imports
+// @ts-nocheck
 import { SyntheticEvent, useState } from 'react'
 
 // ** MUI Imports
