@@ -4,36 +4,68 @@ import {useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
+import { useRouter } from 'next/router';
 
-const ViewContent = () => {
-  const [content, setContent] = useState([]);
+const Users = () => {
+  const [role, setRole] = useState([]);
+  const router = useRouter()
+
+
+  const handleClick = (rowData) => {
+    fetch(`http://localhost:8080/api/users/getSingleUser/${rowData}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+        router.push(`/users/view-user?id=${data.accountId}`);
+      }
+      )
+      .catch((error) => {
+        console.error('Error:', error);
+      }
+      );
+  };
 
   const columns = [
     {
-     name: "id",
-     label: "Id",
+      name: "accountId",
+      label: "Id",
+      options: {
+       filter: true,
+       sort: true,
+      }
+     },
+    {
+     name: "firstName",
+     label: "First Name",
      options: {
       filter: true,
       sort: true,
      }
     },
     {
-     name: "name",
-     label: "Name",
+     name: "lastName",
+     label: "Last Name",
      options: {
       filter: true,
       sort: true,
      }
     },
     {
-     name: "description",
-     label: "Description",
+     name: "username",
+     label: "User name",
      options: {
       filter: true,
       sort: false,
      }
     },
-    
+    {
+     name: "role",
+     label: "Role",
+     options: {
+      filter: true,
+      sort: false,
+     }
+    },
    ];
 
   const options = {
@@ -44,28 +76,6 @@ const ViewContent = () => {
     },
   };
 
-
-
-
-  const handleClick = (rowData) => {
-
-    fetch(`http://localhost:8080/api/advertisements/single/${rowData}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Success:', data);
-      }
-      )
-      .catch((error) => {
-        console.error('Error:', error);
-      }
-      );
-  };
-
-
   useEffect(() => {
     const token = Cookies.get('token');
     if (!token) {
@@ -75,11 +85,7 @@ const ViewContent = () => {
       return;
     }
 
-    fetch('http://localhost:8080/api/users/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    fetch('http://localhost:8080/api/users/getAllUsers')
       .then((response) => {
         if (response.ok) {
           // Get account ID from response body
@@ -89,12 +95,9 @@ const ViewContent = () => {
           throw new Error('Invalid token');
         }
       })
-      .then((data) => {
-        fetch(`http://localhost:8080/api/advertisements/${data}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setContent(data);
-          });
+      .then((data) => { 
+        console.log(data)
+        setRole(data);
       })
       .catch((error) => {
         console.error(error);
@@ -102,10 +105,13 @@ const ViewContent = () => {
       });
   }, []);
 
+
+
+
   return (
-    <MUIDataTable 
-    title={"Content List"}
-    data={content}
+  <MUIDataTable 
+    title={"Users List"}
+    data={role}
     columns={columns}
     options={options}
   />
@@ -113,4 +119,4 @@ const ViewContent = () => {
 }
 
 // @ts-ignore
-export default authRoute(ViewContent)
+export default authRoute(Users)

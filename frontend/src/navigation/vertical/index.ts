@@ -1,4 +1,5 @@
 // ** Icon imports
+// @ts-nocheck// @ts-nocheck
 import Login from 'mdi-material-ui/Login'
 import Table from 'mdi-material-ui/Table'
 import CubeOutline from 'mdi-material-ui/CubeOutline'
@@ -10,11 +11,58 @@ import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import AddIcon from '@mui/icons-material/Add';
+import Cookies from 'js-cookie';
+import { useEffect, useState } from "react";
+import PeopleIcon from '@mui/icons-material/People';
 
 // ** Type import
-import { VerticalNavItemsType } from 'src/@core/layouts/types'
+import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
+
+
 
 const navigation = (): VerticalNavItemsType => {
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [role, setRole] = useState("User");
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      // Token not found, redirect to login page
+      window.location.replace('/pages/login');
+
+      return;
+    }
+
+    fetch('http://localhost:8080/api/users/role', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Get account ID from response body
+          return response.json();
+        } else {
+          // Token not valid, redirect to login page
+          throw new Error('Invalid token');
+        }
+      })
+      .then((data) => { 
+        console.log(data)
+        setRole(data.role);
+      })
+      .catch((error) => {
+        console.error(error);
+        window.location.replace('/pages/login');
+      });
+  }, []);
+
+  console.log(role);
+  console.log(34534)
+
+
   return [
     {
       title: 'Dashboard',
@@ -39,6 +87,17 @@ const navigation = (): VerticalNavItemsType => {
       icon: AddIcon,
       path: '/content/view-content',
     },
+
+    role === 'Admin' && {
+      sectionTitle: 'Users'
+    },
+
+    role === 'Admin' && {
+      title: 'View Users',
+      icon: PeopleIcon,
+      path: '/users',
+    },
+
     // {
     //   sectionTitle: 'Pages'
     // },
@@ -88,7 +147,7 @@ const navigation = (): VerticalNavItemsType => {
     //   title: 'Form Layouts',
     //   path: '/form-layouts'
     // }
-  ]
+  ].filter(Boolean) as Array<NavLink | NavSectionTitle>;
 }
 
 export default navigation
