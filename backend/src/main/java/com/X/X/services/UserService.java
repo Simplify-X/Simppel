@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.X.X.repositories.UserRepository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -68,6 +69,26 @@ public record UserService(UserRepository userRepo,
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid user");
         }
         return user.getAccountId();
+    }
+
+    public User getUserRole(String token) {
+        if (!tokenServices.validateToken(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired authorization token");
+        }
+        String email = tokenServices.getMail(token);
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid user");
+        }
+        return user;
+    }
+
+    public List<User> getAllUser() {
+        return userRepo.findAll();
+    }
+
+    public User getSingleUser(UUID accountId) {
+        return userRepo.findByAccountId(accountId);
     }
 
     public void blacklistToken(String token) {

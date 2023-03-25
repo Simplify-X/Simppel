@@ -17,6 +17,7 @@ import com.X.X.services.UserService;
 import org.springframework.web.server.ResponseStatusException;
 import com.X.X.token.TokenServices;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -74,6 +75,30 @@ public class UserController {
         String token = authToken.substring(7); // Remove "Bearer " prefix
         userService.blacklistToken(token);
         return ResponseEntity.ok().build();
+    }
+
+    @CrossOrigin
+    @GetMapping("/role")
+    public User getUserRole(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization");
+        if (authToken == null || !authToken.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or missing authorization token");
+        }
+        String token = authToken.substring(7); // Remove "Bearer " prefix
+        return userService.getUserRole(token);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUser();
+        return ResponseEntity.ok(users);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getSingleUser/{accountId}")
+    public  User getAllUsers(@PathVariable UUID accountId) {
+        return userService.getSingleUser(accountId);
     }
 
 
