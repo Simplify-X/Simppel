@@ -14,16 +14,26 @@ import AddIcon from '@mui/icons-material/Add';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from "react";
 import PeopleIcon from '@mui/icons-material/People';
+import * as Sentry from "@sentry/nextjs";
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
+
+
+interface UserData {
+  role?: string;
+  advertisementEnabled?: boolean;
+}
 
 
 
 const navigation = (): VerticalNavItemsType => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [role, setRole] = useState("User");
+  const [userData, setUserData] = useState<UserData>({
+    role: '',
+    advertisementEnabled: false,
+  });
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -50,17 +60,13 @@ const navigation = (): VerticalNavItemsType => {
         }
       })
       .then((data) => { 
-        console.log(data)
-        setRole(data.role);
+        setUserData(data);
       })
       .catch((error) => {
-        console.error(error);
+        Sentry.captureException(error);
         window.location.replace('/pages/login');
       });
   }, []);
-
-  console.log(role);
-  console.log(34534)
 
 
   return [
@@ -74,25 +80,25 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountCogOutline,
       path: '/account-settings'
     },
-    {
+    userData.advertisementEnabled && {
       sectionTitle: 'Content'
     },
-    {
+    userData.advertisementEnabled && {
       title: 'Add Content',
       icon: AddIcon,
       path: '/content',
     },
-    {
+    userData.advertisementEnabled && {
       title: 'View Content',
       icon: AddIcon,
       path: '/content/view-content',
     },
 
-    role === 'Admin' && {
+    userData.role && {
       sectionTitle: 'Users'
     },
 
-    role === 'Admin' && {
+    userData.role && {
       title: 'View Users',
       icon: PeopleIcon,
       path: '/users',

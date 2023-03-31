@@ -1,6 +1,7 @@
 package com.X.X.domains;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,14 @@ public class Advertisement {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String description;
+
+    @NotNull
+    private String targetAudience;
 
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -35,6 +41,20 @@ public class Advertisement {
     @Type(type = "uuid-char")
     @JsonIgnore
     private UUID accountId;
+
+    private String advertisementLocation;
+
+    private String advertisementType;
+
+    private String advertisementMood;
+
+    private String productType;
+
+    private String advertisementLength;
+
+    private String languageText;
+
+
 
 
 }

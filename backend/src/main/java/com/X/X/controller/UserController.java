@@ -1,6 +1,7 @@
 package com.X.X.controller;
 
 import antlr.Token;
+import com.X.X.config.ResourceNotFoundException;
 import com.X.X.domains.User;
 import com.X.X.dto.LoginDTO;
 import com.X.X.dto.LoginResponse;
@@ -94,6 +95,15 @@ public class UserController {
         List<User> users = userService.getAllUser();
         return ResponseEntity.ok(users);
     }
+
+    @CrossOrigin
+    @PutMapping("/users/{accountId}")
+    public ResponseEntity<User> updateUser(@PathVariable UUID accountId, @RequestBody User userDetails) {
+        User updatedUser = userService.updateUser(accountId, userDetails);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
 
     @CrossOrigin
     @GetMapping("/getSingleUser/{accountId}")

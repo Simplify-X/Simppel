@@ -32,6 +32,7 @@ import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import * as Sentry from "@sentry/nextjs"
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -175,7 +176,7 @@ const RegisterPage = () => {
         })
         .catch(function (error) {
           toast.error("An error occurred. Please try again later", { autoClose: 3000});
-          console.log(error);
+          Sentry.captureException(error);
         });
     }
   }

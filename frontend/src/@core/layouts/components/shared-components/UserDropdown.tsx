@@ -25,6 +25,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import axios from "axios";
 import Cookies from 'js-cookie';
+import * as Sentry from "@sentry/nextjs";
 
 
 
@@ -72,14 +73,12 @@ const UserDropdown = () => {
     .then(response => {
       if (response.ok) {
         Cookies.remove('token');
-        console.log('success');
         router.push("/pages/login");
       } else {
-        console.log('error');
       }
     })
     .catch(error => {
-      console.log(error);
+      Sentry.captureException(error);
     });
   };
 

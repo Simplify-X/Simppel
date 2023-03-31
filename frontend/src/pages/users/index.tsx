@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
 import { useRouter } from 'next/router';
+import * as Sentry from "@sentry/nextjs"
 
 const Users = () => {
   const [role, setRole] = useState([]);
@@ -15,12 +16,11 @@ const Users = () => {
     fetch(`http://localhost:8080/api/users/getSingleUser/${rowData}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success:', data);
         router.push(`/users/view-user?id=${data.accountId}`);
       }
       )
       .catch((error) => {
-        console.error('Error:', error);
+        Sentry.captureException(error);
       }
       );
   };
@@ -70,8 +70,7 @@ const Users = () => {
 
   const options = {
     filterType: 'checkbox',
-    onRowClick: (rowData, rowState) => {
-      console.log(rowData, rowState);
+    onRowClick: (rowData) => {
       handleClick(rowData[0]);
     },
   };
@@ -96,11 +95,10 @@ const Users = () => {
         }
       })
       .then((data) => { 
-        console.log(data)
         setRole(data);
       })
       .catch((error) => {
-        console.error(error);
+        Sentry.captureException(error);
         window.location.replace('/pages/login');
       });
   }, []);
