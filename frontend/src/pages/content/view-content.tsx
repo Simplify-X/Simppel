@@ -4,9 +4,15 @@ import {useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
+import { useRouter } from 'next/router';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import Box from '@mui/material/Box'
+import * as Sentry from "@sentry/nextjs"
 
 const ViewContent = () => {
   const [content, setContent] = useState([]);
+  const router = useRouter()
 
   const columns = [
     {
@@ -19,7 +25,7 @@ const ViewContent = () => {
     },
     {
      name: "name",
-     label: "Name",
+     label: "Product Name",
      options: {
       filter: true,
       sort: true,
@@ -27,19 +33,27 @@ const ViewContent = () => {
     },
     {
      name: "description",
-     label: "Description",
+     label: "Product Description",
      options: {
       filter: true,
       sort: false,
      }
     },
+
+    {
+      name: "targetAudience",
+      label: "Target Audience",
+      options: {
+       filter: true,
+       sort: false,
+      }
+     },
     
    ];
 
   const options = {
     filterType: 'checkbox',
-    onRowClick: (rowData, rowState) => {
-      console.log(rowData, rowState);
+    onRowClick: (rowData) => {
       handleClick(rowData[0]);
     },
   };
@@ -56,11 +70,11 @@ const ViewContent = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success:', data);
+        router.push(`/content/content?id=${data.id}`);
       }
       )
       .catch((error) => {
-        console.error('Error:', error);
+        Sentry.captureException(error);
       }
       );
   };
@@ -97,18 +111,26 @@ const ViewContent = () => {
           });
       })
       .catch((error) => {
-        console.error(error);
+        Sentry.captureException(error);
         window.location.replace('/pages/login');
       });
   }, []);
 
   return (
+    <Box sx={{ width: '100%' }}>
     <MUIDataTable 
     title={"Content List"}
     data={content}
     columns={columns}
     options={options}
   />
+
+<Fab color="primary" aria-label="add" style={{marginTop: "10px"}}>
+  <AddIcon />
+</Fab>
+
+  </Box>
+
   )
 }
 

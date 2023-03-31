@@ -1,6 +1,6 @@
 // ** React Imports
 // @ts-nocheck
-import { useState, ElementType, ChangeEvent, SyntheticEvent } from 'react'
+import { useState, ElementType, ChangeEvent, SyntheticEvent, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -17,7 +17,9 @@ import AlertTitle from '@mui/material/AlertTitle'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
-import Button, { ButtonProps } from '@mui/material/Button'
+import Button, { ButtonProps } from '@mui/material/Button';
+import Cookies from 'js-cookie';
+import * as Sentry from "@sentry/nextjs"
 
 // ** Icons Imports
 import Close from 'mdi-material-ui/Close'
@@ -46,10 +48,13 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
   }
 }))
 
+
 const TabAccount = () => {
   // ** State
   const [openAlert, setOpenAlert] = useState<boolean>(true)
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png');
+  const [userData, setUserData] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const onChange = (file: ChangeEvent) => {
     const reader = new FileReader()
@@ -61,9 +66,49 @@ const TabAccount = () => {
     }
   }
 
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      // Token not found, redirect to login page
+      window.location.replace('/pages/login');
+
+      return;
+    }
+
+    fetch('http://localhost:8080/api/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Get account ID from response body
+          return response.json();
+        } else {
+          Sentry.throwError('Invalid token');
+          throw new Error('Invalid token');
+        }
+      })
+      .then((data) => {
+        fetch(`http://localhost:8080/api/users/getSingleUser/${data}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUserData(data);
+            setLoading(true);
+          });
+      })
+      .catch((error) => {
+        Sentry.captureException(error);
+        window.location.replace('/pages/login');
+      });
+  }, []);
+
+
   return (
     <CardContent>
       <form>
+        {loading && (
         <Grid container spacing={7}>
           <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -90,10 +135,10 @@ const TabAccount = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' />
+            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue={userData.firstName} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Name' placeholder='John Doe' defaultValue='John Doe' />
+            <TextField fullWidth label='Name' placeholder='John Doe' defaultValue={userData.lastName} />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -101,18 +146,15 @@ const TabAccount = () => {
               type='email'
               label='Email'
               placeholder='johnDoe@example.com'
-              defaultValue='johnDoe@example.com'
+              defaultValue={userData.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
+          <FormControl fullWidth>
               <InputLabel>Role</InputLabel>
-              <Select label='Role' defaultValue='admin'>
-                <MenuItem value='admin'>Admin</MenuItem>
-                <MenuItem value='author'>Author</MenuItem>
-                <MenuItem value='editor'>Editor</MenuItem>
-                <MenuItem value='maintainer'>Maintainer</MenuItem>
-                <MenuItem value='subscriber'>Subscriber</MenuItem>
+              <Select label='Role' value={userData.role} disabled>
+                <MenuItem value='true'>Admin</MenuItem>
+                <MenuItem value='false'>User</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -158,6 +200,7 @@ const TabAccount = () => {
             </Button>
           </Grid>
         </Grid>
+  )}
       </form>
     </CardContent>
   )

@@ -1,0 +1,21 @@
+{
+  "additional_features" : "Additional Features",
+  "advanced_settings" : "Advanced Settings",
+  "advertisement_length" : "Advertisement Length",
+  "advertisement_location" : "Advertisement Location",
+  "advertisement_type" : "Advertisement Type",
+  "create_advertisement" : "Create Advertisement",
+  "create" : "Create",
+  "enter_product_name" : "Enter Product Name",
+  "hello": "Hello",
+  "images" : "Images",
+  "language_text" : "Language Text",
+  "languageName" : "English",
+  "product_description_helper_text" : "Enter a description of your product, including some of its features",
+  "product_description" : "Product Description",
+  "product_name" : "Product Name",
+  "product_type" : "Product Type",
+  "target_audience_helper_text" : "Enter a list of target audiences for your potential customers",
+  "target_audience" : "Target Audience"
+  }
+  

@@ -1,4 +1,5 @@
 package com.X.X.services;
+import com.X.X.config.ResourceNotFoundException;
 import com.X.X.token.TokenServices;
 import com.X.X.dto.LoginDTO;
 import com.X.X.dto.LoginResponse;
@@ -23,7 +24,7 @@ public record UserService(UserRepository userRepo,
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
-        if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword()) && user.isUserActive() != false) {
             String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
             UUID accountId = user.getAccountId();
             return new LoginResponse(token, Status.OK, accountId);
@@ -48,7 +49,7 @@ public record UserService(UserRepository userRepo,
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .firstName(registerDTO.getFirstName())
                 .lastName(registerDTO.getLastName())
-                .role(registerDTO.getRole())
+                .role(registerDTO.isRole()  )
                 .build();
         try {
             userRepo.save(newUser);
@@ -86,6 +87,26 @@ public record UserService(UserRepository userRepo,
     public List<User> getAllUser() {
         return userRepo.findAll();
     }
+
+    public User updateUser(UUID accountId, User userDetails) {
+        User user = userRepo.findByAccountId(accountId);
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with accountId: " + accountId);
+        }
+        user.setUsername(userDetails.getUsername());
+        user.setEmail(userDetails.getEmail());
+        user.setPassword(userDetails.getPassword());
+        user.setFirstName(userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName());
+        user.setRole(userDetails.isRole());
+        user.setUserActive(userDetails.isUserActive());
+        user.setAdvertisementEnabled(userDetails.isAdvertisementEnabled());
+        user.setImageUploadFeatureEnabled(userDetails.isImageUploadFeatureEnabled());
+
+        return userRepo.save(user);
+    }
+
+
 
     public User getSingleUser(UUID accountId) {
         return userRepo.findByAccountId(accountId);

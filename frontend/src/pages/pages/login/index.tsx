@@ -33,6 +33,7 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import Cookies from 'js-cookie'
+import * as Sentry from "@sentry/nextjs";
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -44,6 +45,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
+
 
 interface State {
   password: string
@@ -128,12 +130,12 @@ const LoginPage = () => {
           Cookies.set('token', response.data.token)
           toast.success('Login successful', { autoClose: 3000 })
           router.push('/')
-        } else {
+        } else {  
           toast.error('Email or password is incorrect', { autoClose: 3000 })
         }
       })
       .catch(function (error) {
-        console.log(error)
+        Sentry.captureException(error);
       })
   }
 
