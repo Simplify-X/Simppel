@@ -1,10 +1,14 @@
 {
+  "account_settings": "Настройки на профила",
+  "add_advertisement": "Добави реклама",
   "additional_features": "Допълнителни функции",
   "advanced_settings": "Разширени настройки",
   "advertisement_length": "Дължина на рекламата",
   "advertisement_location": "Местоположение на рекламата",
   "advertisement_type": "Тип на рекламата",
   "create_advertisement": "Създай реклама",
+  "create_advertisement": "Създай реклама",
+  "create_copy": "Създай копие",
   "create": "Създай",
   "enter_product_name": "Въведете името на продукта",
   "hello": "Здравей",
@@ -16,5 +20,8 @@
   "product_name": "Име на продукта",
   "product_type": "Тип на продукта",
   "target_audience_helper_text": "Въведете списък с целевите аудитории за потенциалните си клиенти",
-  "target_audience": "Целева аудитория"
+  "target_audience": "Целева аудитория",
+  "view_advertisement": "Преглед на рекламата",
+  "view_copy": "Преглед на копието",
+  "web_scraper_alert": "Използването на тази функция за извличане на данни може да е непоследователно, моля уверете се, че данните са коректни след качване, преди да генерирате отговор."
 }

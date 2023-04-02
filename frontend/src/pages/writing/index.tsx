@@ -34,11 +34,9 @@ import Chip from '@mui/material/Chip'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { Theme, useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
-import LanguageSelector from './LanguageSelector'
+import LanguageSelector from '../content/LanguageSelector'
 import * as Sentry from '@sentry/nextjs'
-import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
-import WebScraper from './WebScraper'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -83,7 +81,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
   }
 }))
 
-const Content = () => {
+const Writing = () => {
   // ** States
   const [accountId, setAccountId] = useState(null)
   const router = useRouter()
@@ -245,7 +243,8 @@ const Content = () => {
         toast.error('An error occurred. Please try again later', { autoClose: 3000 })
       })
   }
-  
+  console.log('sc', scrapedData)
+
   return (
     <form onSubmit={submitForm}>
       <Card>
@@ -253,11 +252,10 @@ const Content = () => {
         <CardContent>
           <ToastContainer position={'top-center'} draggable={false} />
           <Grid container spacing={5}>
-            {data.advertisementImportEnabled && <WebScraper onScrapedData={handleScrapedData} />}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={scrapedData.title ? '' : t('product_name')}
+                label={scrapedData.title ? '' : t('name_of_copy')}
                 inputRef={nameRef}
                 required
                 helperText={t('enter_product_name')}
@@ -273,10 +271,8 @@ const Content = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                multiline
-                rows={4}
                 type='text'
-                label={scrapedData.description ? '' : t('product_description')}
+                label={scrapedData.description ? '' : t('purpose')}
                 placeholder='A flying bottle'
                 helperText={t('product_description_helper_text')}
                 inputRef={descriptionRef}
@@ -302,15 +298,59 @@ const Content = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Box
-                sx={{
-                  gap: 5,
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              ></Box>
+              <FormControl>
+                <FormLabel id='demo-row-radio-buttons-group-label'>{t('tone')}</FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby='demo-row-radio-buttons-group-label'
+                  name='row-radio-buttons-group'
+                  value={selectedLocation}
+                  onChange={handleLocationChange}
+                >
+                  <FormControlLabel value='formal' control={<Radio />} label='Formal' />
+                  <FormControlLabel value='informal' control={<Radio />} label='Informal' />
+                  <FormControlLabel value='humorous' control={<Radio />} label='Humorous' />
+                  <FormControlLabel value='serious' control={<Radio />} label='Serious' />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+                  <Typography>{t('branding')}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label={t('branding_information')}
+                    inputRef={nameRef}
+                    required
+                    helperText={t('enter_product_name')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label={t('brand_description')}
+                    inputRef={nameRef}
+                    required
+                    helperText={t('enter_product_name')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label={t('keywords')}
+                    inputRef={nameRef}
+                    required
+                    helperText={t('enter_product_name')}
+                    />
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
             </Grid>
           </Grid>
         </CardContent>
@@ -337,7 +377,6 @@ const Content = () => {
               </FormControl>
             </Grid>
 
-            <AdvertisementCategorySelector selectedTypeAd={selectedTypeAd} handleTypeAd={handleTypeAd} />
 
             <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
 
@@ -459,4 +498,4 @@ const Content = () => {
   )
 }
 
-export default authRoute(Content)
+export default authRoute(Writing)

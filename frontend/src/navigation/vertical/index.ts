@@ -11,10 +11,13 @@ import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import AddIcon from '@mui/icons-material/Add';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from "react";
 import PeopleIcon from '@mui/icons-material/People';
 import * as Sentry from "@sentry/nextjs";
+import NotesIcon from '@mui/icons-material/Notes';
+import {useTranslation} from 'react-i18next';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -28,6 +31,7 @@ interface UserData {
 
 
 const navigation = (): VerticalNavItemsType => {
+  const {t} = useTranslation();
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [userData, setUserData] = useState<UserData>({
@@ -71,12 +75,12 @@ const navigation = (): VerticalNavItemsType => {
 
   return [
     {
-      title: 'Dashboard',
+      title: t('dashboard'),
       icon: HomeOutline,
       path: '/'
     },
     {
-      title: 'Account Settings',
+      title: t('account_settings'),
       icon: AccountCogOutline,
       path: '/account-settings'
     },
@@ -84,14 +88,29 @@ const navigation = (): VerticalNavItemsType => {
       sectionTitle: 'Content'
     },
     userData.advertisementEnabled && {
-      title: 'Add Content',
+      title: t('add_advertisement'),
       icon: AddIcon,
       path: '/content',
     },
     userData.advertisementEnabled && {
-      title: 'View Content',
-      icon: AddIcon,
+      title: t('view_advertisement'),
+      icon: VisibilityIcon,
       path: '/content/view-content',
+    },
+
+    {
+      sectionTitle: 'Copy Writing'
+    },
+    {
+      title: t('create_copy'),
+      icon: NotesIcon,
+      path: '/writing',
+    },
+    {
+      title: t('view_copy'),
+      icon: VisibilityIcon,
+      path: '/view-writing',
+      openInNewTab: true
     },
 
     userData.role && {
