@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-    @RequestMapping("/advertisements")
+@RequestMapping("/advertisements")
 public class AdvertisementController {
     @Autowired
     private AdvertisementService advertisementService;

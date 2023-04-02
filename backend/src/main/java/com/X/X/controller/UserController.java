@@ -52,7 +52,7 @@ public class UserController {
            return userService.login(loginDTO);
        }
        catch (Exception e){
-           return new LoginResponse("", Status.FAILED, null);
+           return new LoginResponse("", Status.FAILED, null, "Error Trying to Log in");
        }
     }
     @CrossOrigin

@@ -14,4 +14,5 @@ public class LoginResponse {
     private String token;
     private Status status;
     private UUID accountId;
+    private String message;
 }

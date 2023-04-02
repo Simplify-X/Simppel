@@ -1,10 +1,14 @@
 {
+  "account_settings": "Kontoeinstellungen",
+  "add_advertisement": "Anzeige hinzufügen",
   "additional_features": "Zusätzliche Funktionen",
   "advanced_settings": "Erweiterte Einstellungen",
   "advertisement_length": "Länge der Werbung",
   "advertisement_location": "Werbeplatzierung",
   "advertisement_type": "Anzeigentyp",
+  "create_advertisement": "Anzeige erstellen",
   "create_advertisement": "Werbung erstellen",
+  "create_copy": "Kopie erstellen",
   "create": "Erstellen",
   "enter_product_name": "Produktname eingeben",
   "hello": "Hallo",
@@ -16,5 +20,8 @@
   "product_name": "Produktname",
   "product_type": "Produkttyp",
   "target_audience_helper_text": "Geben Sie eine Liste der Zielgruppen für Ihre potenziellen Kunden ein",
-  "target_audience": "Zielgruppe"
+  "target_audience": "Zielgruppe",
+  "view_advertisement": "Anzeige anzeigen",
+  "view_copy": "Kopie anzeigen",
+  "web_scraper_alert": "Die Verwendung dieser Funktion zum Abrufen von Daten kann inkonsistent sein. Stellen Sie bitte sicher, dass die Daten nach dem Hochladen korrekt sind, bevor eine Antwort generiert wird."
 }

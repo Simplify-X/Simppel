@@ -24,12 +24,16 @@ public record UserService(UserRepository userRepo,
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
-        if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword()) && user.isUserActive() != false) {
-            String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
-            UUID accountId = user.getAccountId();
-            return new LoginResponse(token, Status.OK, accountId);
+        if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            if(user.isUserActive() != false){
+                String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
+                UUID accountId = user.getAccountId();
+                return new LoginResponse(token, Status.OK, accountId, "Success");
+            }
+            else{
+                return new LoginResponse("", Status.FAILED, null, "User is not active");            }
         } else {
-            return new LoginResponse("", Status.FAILED, null);
+            return new LoginResponse("", Status.FAILED, null, "Error, please try again");
         }
 
     }
@@ -95,13 +99,13 @@ public record UserService(UserRepository userRepo,
         }
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setRole(userDetails.isRole());
         user.setUserActive(userDetails.isUserActive());
         user.setAdvertisementEnabled(userDetails.isAdvertisementEnabled());
         user.setImageUploadFeatureEnabled(userDetails.isImageUploadFeatureEnabled());
+        user.setAdvertisementImportEnabled(userDetails.isAdvertisementImportEnabled());
 
         return userRepo.save(user);
     }

@@ -1,5 +1,7 @@
 package com.X.X.domains;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,16 +36,20 @@ public class User {
     @Type(type = "uuid-char")
     private UUID accountId;
 
+    @NotNull
     private String username;
 
+    @NotNull
     private String firstName;
 
+    @NotNull
     private String lastName;
 
     private boolean role;
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private boolean userActive;
@@ -51,6 +57,8 @@ public class User {
     private boolean advertisementEnabled;
 
     private boolean isImageUploadFeatureEnabled;
+
+    private boolean isAdvertisementImportEnabled;
 
 
 }

@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
     "baseUrl": ".",
     "rootDir": "src",
     "target": "es6",
+    "sourceRoot": "/",
     "lib": [
       "dom",
       "dom.iterable",
