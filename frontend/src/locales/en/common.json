@@ -1,4 +1,10 @@
 {
+  "create_automation" : "Create Automation",
+  "automation_name" : "Automation Name",
+  "automation_description" : "Automation Description",
+  "post_location" : "Post Location",
+  "automation_date" : "Automation Date",
+  "automation_time" : "Automaton Time",
   "account_settings": "Account Settings",
   "add_advertisement": "Add Advertisement",
   "additional_features": "Additional Features",
