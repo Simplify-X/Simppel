@@ -18,6 +18,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import * as Sentry from "@sentry/nextjs";
 import NotesIcon from '@mui/icons-material/Notes';
 import {useTranslation} from 'react-i18next';
+import AlarmAddIcon from '@mui/icons-material/AlarmAdd';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -110,7 +111,24 @@ const navigation = (): VerticalNavItemsType => {
       title: t('view_copy'),
       icon: VisibilityIcon,
       path: '/view-writing',
-      openInNewTab: true
+    },
+
+    userData.role && {
+      sectionTitle: 'Users'
+    },
+
+    {
+      sectionTitle: 'Automation'
+    },
+    {
+      title: "Create Post Automation",
+      icon: AlarmAddIcon,
+      path: '/automation',
+    },
+    {
+      title: "View Automation",
+      icon: VisibilityIcon,
+      path: '/view-automation',
     },
 
     userData.role && {
