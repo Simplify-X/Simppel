@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box'
 import * as Sentry from "@sentry/nextjs"
 
-const ViewContent = () => {
+const ViewAutomation = () => {
   const [content, setContent] = useState([]);
   const router = useRouter()
 
@@ -24,7 +24,7 @@ const ViewContent = () => {
      }
     },
     {
-     name: "name",
+     name: "automationName",
      label: "Product Name",
      options: {
       filter: true,
@@ -32,7 +32,7 @@ const ViewContent = () => {
      }
     },
     {
-     name: "description",
+     name: "automationDescription",
      label: "Product Description",
      options: {
       filter: true,
@@ -41,13 +41,22 @@ const ViewContent = () => {
     },
 
     {
-      name: "targetAudience",
-      label: "Target Audience",
+      name: "automationDate",
+      label: "Automation Date",
       options: {
        filter: true,
        sort: false,
       }
      },
+
+     {
+        name: "automationTime",
+        label: "Automation Time",
+        options: {
+         filter: true,
+         sort: false,
+        }
+       },
     
    ];
 
@@ -104,7 +113,7 @@ const ViewContent = () => {
         }
       })
       .then((data) => {
-        fetch(`http://localhost:8080/api/advertisements/${data}`)
+        fetch(`http://localhost:8080/api/posts/${data}`)
           .then((response) => response.json())
           .then((data) => {
             setContent(data);
@@ -116,23 +125,27 @@ const ViewContent = () => {
       });
   }, []);
 
+  const addAutomation = () => {
+    router.push('/automation');
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
-    <MUIDataTable 
-    title={"Content List"}
-    data={content}
-    columns={columns}
-    options={options}
-  />
+        <MUIDataTable 
+            title={"Content List"}
+            data={content}
+            columns={columns}
+            options={options}
+        />
 
-<Fab color="primary" aria-label="add" style={{marginTop: "10px"}}>
-  <AddIcon />
-</Fab>
+        <Fab color="primary" aria-label="add" onClick={addAutomation} style={{marginTop: "10px"}}>
+            <AddIcon />
+        </Fab>
 
-  </Box>
+     </Box>
 
   )
 }
 
 // @ts-ignore
-export default authRoute(ViewContent)
+export default authRoute(ViewAutomation)

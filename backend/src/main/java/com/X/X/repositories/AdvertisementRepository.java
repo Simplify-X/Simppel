@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface AdvertisementRepository extends CrudRepository<Advertisement,UUID> {
-    Advertisement findById(long id);
+    Advertisement findByid(UUID id);
     Advertisement findByName(String name);
     List<Advertisement> findByAccountId(UUID accountId);
 

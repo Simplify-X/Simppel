@@ -1,5 +1,7 @@
 {
   "create_automation" : "Create Automation",
+  "advertisement_name" : "Advertisement Name",
+  "advertisement_description" : "Advertisement Description",
   "automation_name" : "Automation Name",
   "automation_description" : "Automation Description",
   "post_location" : "Post Location",

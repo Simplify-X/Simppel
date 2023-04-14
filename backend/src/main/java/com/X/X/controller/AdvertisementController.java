@@ -1,13 +1,10 @@
 package com.X.X.controller;
 
 import com.X.X.domains.Advertisement;
-import com.X.X.domains.User;
 import com.X.X.repositories.UserRepository;
 import com.X.X.services.AdvertisementService;
-import com.X.X.services.UserService;
-import com.X.X.token.ValidTokenRequired;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,20 +20,23 @@ public class AdvertisementController {
 
     @CrossOrigin
     @PostMapping("/{id}")
+    @Operation(summary = "Create advertisement", description = "Create an advertisement for the specified user account.")
     public Advertisement createAdvertisement(@PathVariable UUID id, @RequestBody Advertisement advertisement) {
         advertisement.setAccountId(id);
         return advertisementService.saveAdvertisement(advertisement);
     }
 
     @CrossOrigin
+    @Operation(summary = "Get advertisements", description = "Get all advertisements for the specified user account.")
     @GetMapping("/{accountId}")
     public List<Advertisement> getAdvertisement(@PathVariable UUID accountId) {
         return advertisementService.getAdvertisements(accountId);
     }
 
     @CrossOrigin
+    @Operation(summary = "Get single advertisement", description = "Get the details of a single advertisement by ID.")
     @GetMapping("single/{id}")
-    public Advertisement getSingleAdvertisement(@PathVariable long id) {
+    public Advertisement getSingleAdvertisement(@PathVariable UUID id) {
         return advertisementService.getSingleAdvertisement(id);
     }
 }

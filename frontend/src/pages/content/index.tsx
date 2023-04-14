@@ -39,6 +39,7 @@ import * as Sentry from '@sentry/nextjs'
 import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
 import WebScraper from './WebScraper'
+import Tooltip from '@mui/material/Tooltip';
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -92,6 +93,9 @@ const Content = () => {
   const [selectedMood, setSelectedMood] = useState('')
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
+  const [adCount, setAdCount] = useState(0)
+  const [limit, setLimit] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const { t } = useTranslation()
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
@@ -188,6 +192,7 @@ const Content = () => {
         .then(response => response.json())
         .then(data => {
           setData(data)
+          setLimit(data.advertisementLimit)
         })
         .catch(error => {
           Sentry.captureException(error)
@@ -195,12 +200,36 @@ const Content = () => {
     }
   }, [accountId])
 
+  useEffect(() => {
+    if (accountId) {
+      fetch(`http://localhost:8080/api/advertisements/${accountId}`)
+        .then(response => response.json())
+        .then(advertisements => {
+          setAdCount(advertisements.length);
+        })
+        .catch(error => {
+          Sentry.captureException(error)
+        })
+    }
+  }, [accountId])
+
+  console.log(adCount);
+
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
 
+
   function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (adCount >= limit) {
+      toast.error('You have reached your limit of advertisements', { autoClose: 3000 })
+      setIsButtonDisabled(true);
+      
+      return;
+    }
+
     const name = nameRef.current?.value
     const description = descriptionRef.current?.value
     const targetAudience = targetAudienceRef.current?.value
@@ -452,9 +481,19 @@ const Content = () => {
         </Card>
       )}
 
-      <Button type='submit' variant='contained' size='large' style={{ marginTop: '20px' }}>
-        {t('create')}
-      </Button>
+  <Tooltip title={isButtonDisabled ? "You have reached your limit of advertisements" : ""} arrow>
+        <span>
+          <Button 
+            type='submit' 
+            variant='contained' 
+            size='large' 
+            style={{ marginTop: '20px' }}
+            disabled={isButtonDisabled}
+          >
+            {t('create')}
+          </Button>
+        </span>
+      </Tooltip>
     </form>
   )
 }

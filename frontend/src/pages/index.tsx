@@ -26,6 +26,7 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import jwt_decode from "jwt-decode";
 import Cookies from 'js-cookie';
+import authRoute from 'src/@core/utils/auth-route'
 
 const Dashboard = () => {
   const [authenticated, setauthenticated] = useState(true);
@@ -125,4 +126,4 @@ const Dashboard = () => {
   )
 }}
 
-export default Dashboard
+export default authRoute(Dashboard);

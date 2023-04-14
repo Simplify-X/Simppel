@@ -22,7 +22,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name="users",uniqueConstraints = { @UniqueConstraint(columnNames = { "email"})})
-public class User {
+public class User extends Auditable {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -59,6 +59,10 @@ public class User {
     private boolean isImageUploadFeatureEnabled;
 
     private boolean isAdvertisementImportEnabled;
+
+    private Integer advertisementLimit;
+
+    private String themeMode;
 
 
 }

@@ -1,9 +1,15 @@
+// @ts-nocheck
+import { useState, useEffect } from 'react'
+
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
+import * as Sentry from "@sentry/nextjs"
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 // Styled component for the triangle shaped background image
 const TriangleImg = styled('img')({
@@ -24,21 +30,90 @@ const TrophyImg = styled('img')({
 const Trophy = () => {
   // ** Hook
   const theme = useTheme()
+  const [userData, setUserData] = useState([])
+  const [content, setContent] = useState([])
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      // Token not found, redirect to login page
+      window.location.replace('/pages/login');
+
+      return;
+    }
+  
+    fetch('http://localhost:8080/api/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Get account ID from response body
+          return response.json();
+        } else {
+          Sentry.throwError('Invalid token');
+          throw new Error('Invalid token');
+        }
+      })
+      .then((data) => {
+        // Fetch user data
+        return fetch(`http://localhost:8080/api/users/getSingleUser/${data}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Error fetching user data');
+            }
+          });
+      })
+      .then((userData) => {
+        // Set user data in state
+        setUserData(userData);
+  
+        // Fetch advertisements for user
+        return fetch(`http://localhost:8080/api/advertisements/${userData.accountId}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Error fetching advertisements');
+            }
+          });
+      })
+      .then((advertisements) => {
+        // Set advertisements in state
+        setContent(advertisements);
+  
+      })
+      .catch((error) => {
+        Sentry.captureException(error);
+        console.error(error);
+      });
+  }, []);
+
+  const goToAdverts = () => {
+
+    router.push('/content/view-content');
+
+  }
+  
 
   const imageSrc = theme.palette.mode === 'light' ? 'triangle-light.png' : 'triangle-dark.png'
 
   return (
     <Card sx={{ position: 'relative' }}>
       <CardContent>
-        <Typography variant='h6'>Congratulations John! 🥳</Typography>
+        <Typography variant='h6'>Welcome {userData?.firstName} ! 🥳</Typography>
         <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
-          Best seller of the month
+          All created Advertisements
         </Typography>
         <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
-          $42.8k
+          {content.length}
         </Typography>
-        <Button size='small' variant='contained'>
-          View Sales
+        <Button size='small' variant='contained' onClick={goToAdverts}>
+          View Adverts
         </Button>
         <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
         <TrophyImg alt='trophy' src='/images/misc/trophy.png' />

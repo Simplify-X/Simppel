@@ -86,7 +86,7 @@ const Writing = () => {
   const [accountId, setAccountId] = useState(null)
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
-  const [selectedTypeAd, setSelectedTypeAd] = useState('')
+  const selectedTypeAd = '';
   const [selectedMood, setSelectedMood] = useState('')
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
@@ -97,9 +97,6 @@ const Writing = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
 
-  const handleScrapedData = data => {
-    setScrapedData(data)
-  }
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -129,9 +126,6 @@ const Writing = () => {
     setSelectedLocation(event.target.value)
   }
 
-  const handleTypeAd = event => {
-    setSelectedTypeAd(event.target.value)
-  }
 
   const handleMood = event => {
     setSelectedMood(event.target.value)

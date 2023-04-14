@@ -113,10 +113,6 @@ const navigation = (): VerticalNavItemsType => {
       path: '/view-writing',
     },
 
-    userData.role && {
-      sectionTitle: 'Users'
-    },
-
     {
       sectionTitle: 'Automation'
     },
@@ -128,7 +124,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: "View Automation",
       icon: VisibilityIcon,
-      path: '/view-automation',
+      path: '/automation/view-automation',
     },
 
     userData.role && {

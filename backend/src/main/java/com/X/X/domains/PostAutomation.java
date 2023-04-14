@@ -13,6 +13,8 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
+import java.sql.Time;
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -20,23 +22,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="advertisement")
-public class Advertisement extends Auditable  {
+@Table(name="post_automation")
+public class PostAutomation extends Auditable  {
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     @Type(type = "uuid-char")
     private UUID id;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String description;
-
-    @NotNull
-    private String targetAudience;
 
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -45,19 +39,18 @@ public class Advertisement extends Auditable  {
     @JsonIgnore
     private UUID accountId;
 
-    private String advertisementLocation;
+    @NotNull
+    private String automationName;
 
-    private String advertisementType;
+    @NotNull
+    private String automationDescription;
 
-    private String advertisementMood;
+    @NotNull
+    private String postLocation;
 
-    private String productType;
+    private Date automationDate;
 
-    private String advertisementLength;
-
-    private String languageText;
-
-
+    private Time automationTime;
 
 
 }

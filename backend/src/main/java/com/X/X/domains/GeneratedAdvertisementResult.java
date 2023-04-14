@@ -12,7 +12,6 @@ import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-
 import java.util.UUID;
 
 @Data
@@ -20,23 +19,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="advertisement")
-public class Advertisement extends Auditable  {
+@Table(name="advertisement_result")
+public class GeneratedAdvertisementResult extends Auditable {
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     @Type(type = "uuid-char")
     private UUID id;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String description;
-
-    @NotNull
-    private String targetAudience;
 
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -45,19 +36,17 @@ public class Advertisement extends Auditable  {
     @JsonIgnore
     private UUID accountId;
 
-    private String advertisementLocation;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "advertisement_id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    @Type(type = "uuid-char")
+    private UUID advertisementId;
 
-    private String advertisementType;
+    @NotNull
+    private String title;
 
-    private String advertisementMood;
-
-    private String productType;
-
-    private String advertisementLength;
-
-    private String languageText;
-
-
+    @NotNull
+    private String description;
 
 
 }

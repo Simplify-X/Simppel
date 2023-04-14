@@ -21,8 +21,8 @@ public class AdvertisementService {
         return advertisementRepository.findByAccountId(accountId);
     }
 
-    public Advertisement getSingleAdvertisement(long id){
-        return advertisementRepository.findById(id);
+    public Advertisement getSingleAdvertisement(UUID id){
+        return advertisementRepository.findByid(id);
     }
 
 }

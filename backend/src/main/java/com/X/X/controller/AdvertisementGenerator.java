@@ -1,13 +1,13 @@
 package com.X.X.controller;
 
+import com.X.X.domains.GenerateDescription;
+import com.X.X.domains.GenerateTitle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -19,35 +19,29 @@ public class AdvertisementGenerator {
     private final float TEMPERATURE = 0.7f;
     private final int MAX_TOKENS = 300;
 
+    @CrossOrigin
     @PostMapping("/generate-title")
     public ResponseEntity<String> generateTitle(
-            @RequestParam("productName") String productName,
-            @RequestParam("language") String language
+            @RequestBody GenerateTitle request
     ) {
 
-        String prompt = "Create a title for" + productName + "in" + language;
+        String prompt = "Create a title for" + request.getProductName() + "in" + request.getLanguage();
         String requestBody = "{ \"prompt\": \"" + prompt + "\", \"temperature\": " + TEMPERATURE + ", \"max_tokens\": " + MAX_TOKENS + " }";
         String title = generateText(requestBody, "text-davinci-002");
 
         return ResponseEntity.ok(title);
     }
 
+    @CrossOrigin
     @PostMapping("/generate-description")
     public ResponseEntity<String> generateDescription(
-            @RequestParam("productName") String productName,
-            @RequestParam("productDescription") String productDescription,
-            @RequestParam("targetAudience") String targetAudience,
-            @RequestParam("advertisementLocation") String advertisementLocation,
-            @RequestParam("language") String language,
-            @RequestParam("length") String length,
-            @RequestParam("mood") String mood,
-            @RequestParam("productType") String productType
+            @RequestBody GenerateDescription generateDescription
     ) {
 
 
-        String prompt = "Create a advertisement description for a product called " + productName + "in" + language
-                + " language for " + advertisementLocation + "." + "This is a brief description of the product : " + productDescription + "." +
-                "The product type is a " + productType + "And my target audience is" + targetAudience + "." + " The tone of the writing should be " + mood + "and please make the text " + length + "in length";
+        String prompt = "Create a advertisement description for a product called " + generateDescription.getProductName() + " in" + generateDescription.getLanguage()
+                + " language for " + generateDescription.getAdvertisementLocation() + "." + "This is a brief description of the product : " + generateDescription.getProductDescription() + "." +
+                "The product type is a " + generateDescription.getProductType() + " And my target audience is " + generateDescription.getTargetAudience() + "." + " The tone of the writing should be " + generateDescription.getMood() + " and please make the text " + generateDescription.getLength() + " in length";
 
         String requestBody = "{ \"prompt\": \"" + prompt + "\", \"temperature\": " + TEMPERATURE + ", \"max_tokens\": " + MAX_TOKENS + " }";
         String description = generateText(requestBody, "text-davinci-003");

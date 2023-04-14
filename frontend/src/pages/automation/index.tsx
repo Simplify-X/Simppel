@@ -28,6 +28,7 @@ import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
 import DatePickerField from './DatePicker'
 import TimePickerField from './TimePicker'
+import dayjs from 'dayjs'
 
 
 
@@ -67,8 +68,7 @@ const Automation = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
 
-  console.log(selectedDate)
-  console.log(selectedTime)
+  console.log(selectedLocation)
 
 
 
@@ -152,20 +152,22 @@ const Automation = () => {
     const description = descriptionRef.current?.value
     const targetAudience = targetAudienceRef.current?.value
 
+    const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
+    const formattedTime = dayjs(selectedTime).format('HH:mm:ss');
+
     const data = {
-      name,
-      description,
+      automationName: name,
+      automationDescription: description,
       targetAudience: targetAudience,
-      advertisementLocation: selectedLocation,
-      advertisementType: selectedTypeAd,
-      advertisementMood: selectedMood,
-      advertisementLength: selectedTextLength,
-      languageText: selectedLanguage
+      postLocation: selectedLocation,
+      automationDate: formattedDate,
+      automationTime: formattedTime,
+
     }
 
     const config = {
       method: 'post',
-      url: `http://localhost:8080/api/advertisements/${accountId}`,
+      url: `http://localhost:8080/api/posts/${accountId}`,
       headers: {
         'Content-Type': 'application/json'
       },

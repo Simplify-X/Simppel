@@ -106,6 +106,7 @@ public record UserService(UserRepository userRepo,
         user.setAdvertisementEnabled(userDetails.isAdvertisementEnabled());
         user.setImageUploadFeatureEnabled(userDetails.isImageUploadFeatureEnabled());
         user.setAdvertisementImportEnabled(userDetails.isAdvertisementImportEnabled());
+        user.setAdvertisementLimit(userDetails.getAdvertisementLimit());
 
         return userRepo.save(user);
     }

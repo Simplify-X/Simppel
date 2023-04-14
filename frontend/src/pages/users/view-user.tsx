@@ -60,6 +60,8 @@ const ViewUsers = () => {
       })
   }
 
+  console.log(data);
+
   return (
     <Card>
       <CardContent>
@@ -122,6 +124,16 @@ const ViewUsers = () => {
                     <MenuItem value='false'>User</MenuItem>
                   </Select>
                 </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type='email'
+                  label='Advertisement Limit'
+                  defaultValue={data.advertisementLimit}
+                  onChange={event => setData({ ...data, advertisementLimit: event.target.value })}
+                />
               </Grid>
 
               <Grid item xs={12} sm={6}>
