@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next'
 import DatePickerField from './DatePicker'
 import TimePickerField from './TimePicker'
 import dayjs from 'dayjs'
+import { API_BASE_URL } from 'src/config'
 
 
 
@@ -106,7 +107,7 @@ const Automation = () => {
       return
     }
 
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -131,7 +132,7 @@ const Automation = () => {
 
   useEffect(() => {
     if (accountId) {
-      fetch(`http://localhost:8080/api/users/getSingleUser/${accountId}`)
+      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -167,7 +168,7 @@ const Automation = () => {
 
     const config = {
       method: 'post',
-      url: `http://localhost:8080/api/posts/${accountId}`,
+      url: `${API_BASE_URL}/posts/${accountId}`,
       headers: {
         'Content-Type': 'application/json'
       },

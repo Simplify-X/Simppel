@@ -12,6 +12,8 @@ import CardHeader from '@mui/material/CardHeader'
 import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
 import Button from '@mui/material/Button'
+import { API_BASE_URL } from 'src/config'
+
 
 
 const SingleContent = () => {
@@ -27,7 +29,7 @@ const SingleContent = () => {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:8080/api/advertisements/single/${id}`)
+      fetch(`${API_BASE_URL}/advertisements/single/${id}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -42,7 +44,7 @@ const SingleContent = () => {
   useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/advertisement/result/${id}`)
+        const response = await fetch(`${API_BASE_URL}/advertisement/result/${id}`)
         const fetchedData = await response.json()
         setNewData(fetchedData)
         setAd(true)
@@ -75,7 +77,7 @@ const SingleContent = () => {
     }
 
     try {
-      const titleResponse = await fetch('http://localhost:8080/api/gpt3/generate-title', {
+      const titleResponse = await fetch(`${API_BASE_URL}/gpt3/generate-title`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -85,7 +87,7 @@ const SingleContent = () => {
 
       const generatedTitle = await titleResponse.json()
 
-      const descriptionResponse = await fetch('http://localhost:8080/api/gpt3/generate-description', {
+      const descriptionResponse = await fetch(`${API_BASE_URL}/gpt3/generate-description`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -100,7 +102,7 @@ const SingleContent = () => {
         description: generatedDescription?.choices?.[0]?.text ?? null
       }
 
-      const resultResponse = await fetch(`http://localhost:8080/api/advertisement/result/${id}/${data.id}`, {
+      const resultResponse = await fetch(`${API_BASE_URL}/advertisement/result/${id}/${data.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

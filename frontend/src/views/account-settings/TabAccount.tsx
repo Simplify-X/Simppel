@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button';
 import Cookies from 'js-cookie';
 import * as Sentry from "@sentry/nextjs"
+import { API_BASE_URL } from 'src/config'
 
 // ** Icons Imports
 import Close from 'mdi-material-ui/Close'
@@ -76,7 +77,7 @@ const TabAccount = () => {
       return;
     }
 
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -91,7 +92,7 @@ const TabAccount = () => {
         }
       })
       .then((data) => {
-        fetch(`http://localhost:8080/api/users/getSingleUser/${data}`)
+        fetch(`${API_BASE_URL}/users/getSingleUser/${data}`)
           .then((response) => response.json())
           .then((data) => {
             setUserData(data);

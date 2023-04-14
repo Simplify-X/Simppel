@@ -26,6 +26,7 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import axios from "axios";
 import Cookies from 'js-cookie';
 import * as Sentry from "@sentry/nextjs";
+import { API_BASE_URL } from '../../../../config'
 
 
 
@@ -64,7 +65,7 @@ const UserDropdown = () => {
 
   const handleLogout = () => {
     const token = Cookies.get('token');
-    fetch('http://localhost:8080/api/users/logout', {
+    fetch(`${API_BASE_URL}/users/logout`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -10,6 +10,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import * as Sentry from "@sentry/nextjs"
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import { API_BASE_URL } from 'src/config'
 
 // Styled component for the triangle shaped background image
 const TriangleImg = styled('img')({
@@ -43,7 +44,7 @@ const Trophy = () => {
       return;
     }
   
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -59,7 +60,7 @@ const Trophy = () => {
       })
       .then((data) => {
         // Fetch user data
-        return fetch(`http://localhost:8080/api/users/getSingleUser/${data}`)
+        return fetch(`${API_BASE_URL}/users/getSingleUser/${data}`)
           .then((response) => {
             if (response.ok) {
               return response.json();
@@ -73,7 +74,7 @@ const Trophy = () => {
         setUserData(userData);
   
         // Fetch advertisements for user
-        return fetch(`http://localhost:8080/api/advertisements/${userData.accountId}`)
+        return fetch(`${API_BASE_URL}/advertisements/${userData.accountId}`)
           .then((response) => {
             if (response.ok) {
               return response.json();

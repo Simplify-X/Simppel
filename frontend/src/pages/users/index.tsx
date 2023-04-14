@@ -6,6 +6,8 @@ import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
 import { useRouter } from 'next/router';
 import * as Sentry from "@sentry/nextjs"
+import { API_BASE_URL } from 'src/config'
+
 
 const Users = () => {
   const [role, setRole] = useState([]);
@@ -13,7 +15,7 @@ const Users = () => {
 
 
   const handleClick = (rowData) => {
-    fetch(`http://localhost:8080/api/users/getSingleUser/${rowData}`)
+    fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)
       .then((response) => response.json())
       .then((data) => {
         router.push(`/users/view-user?id=${data.accountId}`);
@@ -84,7 +86,7 @@ const Users = () => {
       return;
     }
 
-    fetch('http://localhost:8080/api/users/getAllUsers')
+    fetch(`${API_BASE_URL}/users/getAllUsers`)
       .then((response) => {
         if (response.ok) {
           // Get account ID from response body

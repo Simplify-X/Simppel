@@ -45,6 +45,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
+import { API_BASE_URL } from 'src/config'
 
 
 interface State {
@@ -118,7 +119,7 @@ const LoginPage = () => {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://localhost:8080/api/users/login/',
+      url: `${API_BASE_URL}/users/login/`,
       headers: {
         'Content-Type': 'application/json'
       },

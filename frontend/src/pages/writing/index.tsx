@@ -37,6 +37,7 @@ import { styled } from '@mui/material/styles'
 import LanguageSelector from '../content/LanguageSelector'
 import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
+import { API_BASE_URL } from 'src/config'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -151,7 +152,7 @@ const Writing = () => {
       return
     }
 
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -176,7 +177,7 @@ const Writing = () => {
 
   useEffect(() => {
     if (accountId) {
-      fetch(`http://localhost:8080/api/users/getSingleUser/${accountId}`)
+      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -210,7 +211,7 @@ const Writing = () => {
 
     const config = {
       method: 'post',
-      url: `http://localhost:8080/api/advertisements/${accountId}`,
+      url: `${API_BASE_URL}/advertisements/${accountId}`,
       headers: {
         'Content-Type': 'application/json'
       },

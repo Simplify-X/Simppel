@@ -40,6 +40,8 @@ import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
 import WebScraper from './WebScraper'
 import Tooltip from '@mui/material/Tooltip';
+import { API_BASE_URL } from 'src/config'
+
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -163,7 +165,7 @@ const Content = () => {
       return
     }
 
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -188,7 +190,7 @@ const Content = () => {
 
   useEffect(() => {
     if (accountId) {
-      fetch(`http://localhost:8080/api/users/getSingleUser/${accountId}`)
+      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -202,7 +204,7 @@ const Content = () => {
 
   useEffect(() => {
     if (accountId) {
-      fetch(`http://localhost:8080/api/advertisements/${accountId}`)
+      fetch(`${API_BASE_URL}/advertisements/${accountId}`)
         .then(response => response.json())
         .then(advertisements => {
           setAdCount(advertisements.length);
@@ -247,7 +249,7 @@ const Content = () => {
 
     const config = {
       method: 'post',
-      url: `http://localhost:8080/api/advertisements/${accountId}`,
+      url: `${API_BASE_URL}/advertisements/${accountId}`,
       headers: {
         'Content-Type': 'application/json'
       },

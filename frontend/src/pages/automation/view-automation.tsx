@@ -9,6 +9,7 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box'
 import * as Sentry from "@sentry/nextjs"
+import { API_BASE_URL } from 'src/config'
 
 const ViewAutomation = () => {
   const [content, setContent] = useState([]);
@@ -72,7 +73,7 @@ const ViewAutomation = () => {
 
   const handleClick = (rowData) => {
 
-    fetch(`http://localhost:8080/api/advertisements/single/${rowData}`, {
+    fetch(`${API_BASE_URL}/advertisements/single/${rowData}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -98,7 +99,7 @@ const ViewAutomation = () => {
       return;
     }
 
-    fetch('http://localhost:8080/api/users/me', {
+    fetch(`${API_BASE_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -113,7 +114,7 @@ const ViewAutomation = () => {
         }
       })
       .then((data) => {
-        fetch(`http://localhost:8080/api/posts/${data}`)
+        fetch(`${API_BASE_URL}/posts/${data}`)
           .then((response) => response.json())
           .then((data) => {
             setContent(data);

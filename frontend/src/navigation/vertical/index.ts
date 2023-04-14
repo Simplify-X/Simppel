@@ -22,6 +22,7 @@ import AlarmAddIcon from '@mui/icons-material/AlarmAdd';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
+import { API_BASE_URL } from 'src/config'
 
 
 interface UserData {
@@ -50,7 +51,7 @@ const navigation = (): VerticalNavItemsType => {
       return;
     }
 
-    fetch('http://localhost:8080/api/users/role', {
+    fetch(`${API_BASE_URL}/users/role`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

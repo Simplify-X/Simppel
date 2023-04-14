@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Card from '@mui/material/Card'
 import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
+import { API_BASE_URL } from 'src/config'
 
 const ViewUsers = () => {
   const [data, setData] = useState([])
@@ -30,7 +31,7 @@ const ViewUsers = () => {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:8080/api/users/getSingleUser/${id}`)
+      fetch(`${API_BASE_URL}/users/getSingleUser/${id}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -43,7 +44,7 @@ const ViewUsers = () => {
   }, [id])
 
   const handleSave = () => {
-    fetch(`http://localhost:8080/api/users/users/${id}`, {
+    fetch(`${API_BASE_URL}/users/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

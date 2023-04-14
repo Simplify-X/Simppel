@@ -43,6 +43,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from "axios";
+import { API_BASE_URL } from 'src/config'
+
 
 interface State {
   password: string
@@ -151,7 +153,7 @@ const RegisterPage = () => {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://localhost:8080/api/users/register',
+      url: `${API_BASE_URL}/users/register`,
       headers: {
         'Content-Type': 'application/json',
       },
