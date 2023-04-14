@@ -14,7 +14,7 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
       const checkToken = async () => {
         const token = Cookies.get('token');
         if (!token) {
-          router.replace("/pages/login");
+          router.replace("login");
         } 
         else{
           setAuthenticated(true);

@@ -46,7 +46,7 @@ const Dashboard = () => {
     }
   }, [])
   if(!authenticated){
-    router.push("/pages/login")
+    router.push("login")
 
     return null;
   }

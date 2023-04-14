@@ -171,7 +171,7 @@ const RegisterPage = () => {
           }
           else{
             toast.success("Registration successful", { autoClose: 2000});
-            router.push("/pages/login");
+            router.push("/login");
           }
         })
         .catch(function (error) {
@@ -318,7 +318,7 @@ const RegisterPage = () => {
                 Already have an account?
               </Typography>
               <Typography variant='body2'>
-                <Link passHref href='/pages/login'>
+                <Link passHref href='/login'>
                   <LinkStyled>Sign in instead</LinkStyled>
                 </Link>
               </Typography>

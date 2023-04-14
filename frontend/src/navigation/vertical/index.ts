@@ -45,7 +45,7 @@ const navigation = (): VerticalNavItemsType => {
     const token = Cookies.get('token');
     if (!token) {
       // Token not found, redirect to login page
-      window.location.replace('/pages/login');
+      window.location.replace('login');
 
       return;
     }
@@ -69,7 +69,7 @@ const navigation = (): VerticalNavItemsType => {
       })
       .catch((error) => {
         Sentry.captureException(error);
-        window.location.replace('/pages/login');
+        window.location.replace('login');
       });
   }, []);
 
@@ -143,13 +143,13 @@ const navigation = (): VerticalNavItemsType => {
     // {
     //   title: 'Login',
     //   icon: Login,
-    //   path: '/pages/login',
+    //   path: '/login',
     //   openInNewTab: true
     // },
     // {
     //   title: 'Register',
     //   icon: AccountPlusOutline,
-    //   path: '/pages/register',
+    //   path: '/register',
     //   openInNewTab: true
     // },
     // {

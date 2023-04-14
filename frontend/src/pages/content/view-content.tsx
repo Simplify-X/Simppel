@@ -84,7 +84,7 @@ const ViewContent = () => {
     const token = Cookies.get('token');
     if (!token) {
       // Token not found, redirect to login page
-      window.location.replace('/pages/login');
+      window.location.replace('/login');
 
       return;
     }
@@ -112,7 +112,7 @@ const ViewContent = () => {
       })
       .catch((error) => {
         Sentry.captureException(error);
-        window.location.replace('/pages/login');
+        window.location.replace('/login');
       });
   }, []);
 

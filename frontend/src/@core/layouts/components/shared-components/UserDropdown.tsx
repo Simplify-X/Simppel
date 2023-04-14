@@ -73,7 +73,7 @@ const UserDropdown = () => {
     .then(response => {
       if (response.ok) {
         Cookies.remove('token');
-        router.push("/pages/login");
+        router.push("login");
       } else {
       }
     })
