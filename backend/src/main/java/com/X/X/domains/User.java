@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity

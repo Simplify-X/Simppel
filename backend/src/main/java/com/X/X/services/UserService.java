@@ -1,5 +1,7 @@
 package com.X.X.services;
 import com.X.X.config.ResourceNotFoundException;
+import com.X.X.domains.PasswordReset;
+import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.token.TokenServices;
 import com.X.X.dto.LoginDTO;
 import com.X.X.dto.LoginResponse;
@@ -8,11 +10,16 @@ import com.X.X.dto.RegisterResponse;
 import com.X.X.domains.User;
 import com.X.X.help.Status;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.X.X.repositories.UserRepository;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +27,7 @@ import java.util.UUID;
 @Service
 public record UserService(UserRepository userRepo,
                           PasswordEncoder passwordEncoder,
-                          TokenServices tokenServices) {
+                          TokenServices tokenServices, EmailService emailService, PasswordResetRepository passwordResetRepository) {
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
@@ -117,8 +124,23 @@ public record UserService(UserRepository userRepo,
         return userRepo.findByAccountId(accountId);
     }
 
+    public User getUserByUserId(UUID userId) {
+        return userRepo.findByUserId(userId);
+    }
+
     public void blacklistToken(String token) {
         tokenServices.blacklistToken(token);
     }
+
+    public User getUserByEmail(String email){
+        return userRepo.findByEmail(email);
+    }
+
+    public User saveUser(User user){
+        return userRepo.save(user);
+    }
+
+
+
 
 }
