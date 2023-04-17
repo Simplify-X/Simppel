@@ -44,6 +44,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from "axios";
 import { API_BASE_URL } from 'src/config'
+import { Step, StepLabel, Stepper } from '@mui/material';
 
 
 interface State {
@@ -73,6 +74,19 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const RegisterPage = () => {
+
+  const steps = ['step 1' , 'step 2'];
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleNext = () => {
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   // ** States
   const [values, setValues] = useState<State>({
     password: '',
@@ -108,7 +122,7 @@ const RegisterPage = () => {
   function validateEmail(email) {
     // use a regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     return emailRegex.test(email);
   }
 
@@ -140,7 +154,7 @@ const RegisterPage = () => {
 
       return;
     }
-    
+
     const data = JSON.stringify({
       "firstName": firstName,
       "lastName": lastName,
@@ -149,7 +163,7 @@ const RegisterPage = () => {
       "password": password
     });
 
-  
+
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -160,7 +174,7 @@ const RegisterPage = () => {
       data: data
     };
 
-    
+
     if(isCheck) {
       axios(config)
         .then(function (response) {
@@ -188,6 +202,23 @@ const RegisterPage = () => {
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+        <Stepper activeStep={activeStep}>
+        {steps.map((label, index) => {
+          const stepProps: { completed?: boolean } = {};
+          const labelProps: {
+            optional?: React.ReactNode;
+          } = {};
+
+
+          return (
+            <Step key={label} {...stepProps}>
+              <StepLabel {...labelProps}>{label}</StepLabel>
+            </Step>
+          );
+        })}
+      </Stepper>
+      <br />
+
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg
               width={35}
@@ -267,90 +298,120 @@ const RegisterPage = () => {
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={submitForm}>
-          <ToastContainer position={'top-center'} draggable={false}/>
-          <TextField autoFocus fullWidth id='firstName' label='First Name' sx={{ marginBottom: 4 }}  inputRef={firstNameRef} required/>
-          <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}  inputRef={lastNameRef} required/>
-            <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}  inputRef={usernameRef} required/>
-            <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} inputRef={emailRef} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
-            <FormControl fullWidth>
-              <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
-              <OutlinedInput
-                label='Password'
-                value={values.password}
-                id='auth-register-password'
-                onChange={handleChange('password')}
-                type={values.showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position='end'>
-                    <IconButton
-                      edge='end'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
-                    >
-                      {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                inputRef={passwordRef}
-                required
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox />}
-              label={
-                <Fragment>
-                  <span>I agree to </span>
-                  <Link href='/' passHref>
-                    <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                      privacy policy & terms
-                    </LinkStyled>
-                  </Link>
-                </Fragment>
-              }
-              inputRef={agreeRef}
-              required
-            />
-            <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
-              Sign up
+          {
+            activeStep === 0
+            ?
+            <form noValidate autoComplete='off' onSubmit={submitForm}>
+            <ToastContainer position={'top-center'} draggable={false}/>
+            <TextField autoFocus fullWidth id='firstName' label='First Name' sx={{ marginBottom: 4 }}  inputRef={firstNameRef} required/>
+            <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}  inputRef={lastNameRef} required/>
+              <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}  inputRef={usernameRef} required/>
+              <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} inputRef={emailRef} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
+              <FormControl fullWidth>
+                <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
+                <OutlinedInput
+                  label='Password'
+                  value={values.password}
+                  id='auth-register-password'
+                  onChange={handleChange('password')}
+                  type={values.showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        edge='end'
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        aria-label='toggle password visibility'
+                      >
+                        {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  inputRef={passwordRef}
+                  required
+                />
+              </FormControl>
+
+            </form>:
+             <form noValidate autoComplete='off' onSubmit={submitForm}>
+             <ToastContainer position={'top-center'} draggable={false}/>
+             <TextField InputLabelProps={{ shrink: true }} fullWidth id="outlined-basic - date" label="Birth date" defaultValue={new Date()} variant="outlined" type='date' sx={{ marginBottom: 4 }} />
+
+             <TextField  fullWidth id="outlined-basic -1" label="Address" variant="outlined" sx={{ marginBottom: 4 }} />
+             <TextField  fullWidth id="outlined-basic -2" label="Country" variant="outlined" sx={{ marginBottom: 4 }} />
+               <FormControl fullWidth>
+                 <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
+                 <OutlinedInput
+                   label='Password'
+                   value={values.password}
+                   id='auth-register-password'
+                   onChange={handleChange('password')}
+                   type={values.showPassword ? 'text' : 'password'}
+                   endAdornment={
+                     <InputAdornment position='end'>
+                       <IconButton
+                         edge='end'
+                         onClick={handleClickShowPassword}
+                         onMouseDown={handleMouseDownPassword}
+                         aria-label='toggle password visibility'
+                       >
+                         {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
+                       </IconButton>
+                     </InputAdornment>
+                   }
+                   inputRef={passwordRef}
+                   required
+                 />
+               </FormControl>
+               <FormControlLabel
+                 control={<Checkbox />}
+                 label={
+                   <Fragment>
+                     <span>I agree to </span>
+                     <Link href='/' passHref>
+                       <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
+                         privacy policy & terms
+                       </LinkStyled>
+                     </Link>
+                   </Fragment>
+                 }
+                 inputRef={agreeRef}
+                 required
+               />
+               <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
+                 Sign up
+               </Button>
+               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                 <Typography variant='body2' sx={{ marginRight: 2 }}>
+                   Already have an account?
+                 </Typography>
+                 <Typography variant='body2'>
+                   <Link passHref href='/login'>
+                     <LinkStyled>Sign in instead</LinkStyled>
+                   </Link>
+                 </Typography>
+               </Box>
+               <Divider sx={{ my: 5 }}>or</Divider>
+
+             </form>
+          }
+
+<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
+          <Button
+              color="inherit"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              sx={{ mr: 1 }}
+            >
+              Back
             </Button>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
-                Already have an account?
-              </Typography>
-              <Typography variant='body2'>
-                <Link passHref href='/login'>
-                  <LinkStyled>Sign in instead</LinkStyled>
-                </Link>
-              </Typography>
-            </Box>
-            <Divider sx={{ my: 5 }}>or</Divider>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Link href='/' passHref>
-                <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                  <Facebook sx={{ color: '#497ce2' }} />
-                </IconButton>
-              </Link>
-              <Link href='/' passHref>
-                <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                  <Twitter sx={{ color: '#1da1f2' }} />
-                </IconButton>
-              </Link>
-              <Link href='/' passHref>
-                <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                  <Github
-                    sx={{ color: theme => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
-                  />
-                </IconButton>
-              </Link>
-              <Link href='/' passHref>
-                <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                  <Google sx={{ color: '#db4437' }} />
-                </IconButton>
-              </Link>
-            </Box>
-          </form>
+            <Box sx={{ flex: '1 1 auto' }} />
+
+            <Button onClick={handleNext}>
+              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            </Button>
+              </Box>
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />
