@@ -199,7 +199,7 @@ const RegisterPage = () => {
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
         <Stepper activeStep={activeStep}>
-        {steps.map((label, index) => {
+        {steps.map((label) => {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {
             optional?: React.ReactNode;
