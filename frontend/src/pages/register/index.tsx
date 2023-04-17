@@ -88,10 +88,15 @@ const RegisterPage = () => {
     password: '',
     showPassword: false
   })
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
+  const [formInfo, setformInfo] = useState({
+    firstName:"",
+    lastName:"",
+    username:"",
+    email:"",
+    address:"",
+    dob:"",
+    country:""
+  })
   const passwordRef = useRef<HTMLInputElement>(null);
   const agreeRef = useRef<HTMLInputElement>(false);
 
@@ -122,17 +127,13 @@ const RegisterPage = () => {
     return emailRegex.test(email);
   }
 
-  function handleEmailChange() {
-    const email = emailRef.current.value;
-    setEmailError(!validateEmail(email));
+  function handleEmailChange(e) {
+   setformInfo({...formInfo,email:e.target.value})
+    setEmailError(!validateEmail(e.target.value));
   }
 
   function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const firstName = firstNameRef.current?.value;
-    const lastName = lastNameRef.current?.value;
-    const username = usernameRef.current?.value;
-    const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
     const isCheck = agreeRef.current?.checked;
 
@@ -145,18 +146,18 @@ const RegisterPage = () => {
     }
 
     // Add form validation logic
-    if (!username || !email || !password || !firstName || !lastName) {
+    if (!formInfo.username || !formInfo.email || !password || !formInfo.firstName || !formInfo.lastName) {
       toast.error("Please fill in all the fields", { autoClose: 3000 });
 
       return;
     }
 
     const data = JSON.stringify({
-      "firstName": firstName,
-      "lastName": lastName,
-      "username": username,
-      "email": email,
-      "password": password
+      "firstName": formInfo.firstName,
+      "lastName": formInfo.lastName,
+      "username": formInfo.username,
+      "email": formInfo.email,
+      "password": formInfo.password
     });
 
 
@@ -175,11 +176,15 @@ const RegisterPage = () => {
       axios(config)
         .then(function (response) {
           if(response.data.status === "FAILED"){
-            toast.error("Username or Password Already Exists", { autoClose: 3000});
-            usernameRef.current?.value = '';
-            emailRef.current?.value = '';
-            passwordRef.current?.value = '';
-            agreeRef.current?.checked = false;
+            setformInfo({
+              firstName:"",
+              lastName:"",
+              username:"",
+              email:"",
+              address:"",
+              dob:"",
+              country:""
+            })
           }
           else{
             toast.success("Registration successful", { autoClose: 2000});
@@ -294,18 +299,42 @@ const RegisterPage = () => {
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
+          <form noValidate autoComplete='off' onSubmit={submitForm}>
           {
             activeStep === 0
             ?
-            <form noValidate autoComplete='off' onSubmit={submitForm}>
+            <>
+
             <ToastContainer position={'top-center'} draggable={false}/>
-            <TextField autoFocus fullWidth id='firstName' label='First Name' sx={{ marginBottom: 4 }}  inputRef={firstNameRef} required/>
-            <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}  inputRef={lastNameRef} required/>
-              <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}  inputRef={usernameRef} required/>
-              <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} inputRef={emailRef} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
+            <TextField
+              autoFocus
+              fullWidth
+              id='firstName'
+              label='First Name'
+              sx={{ marginBottom: 4 }}
+              value={formInfo.firstName}
+              onChange={(e)=>setformInfo({...formInfo,firstName:e.target.value})}
+              required
+            />
+
+            <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}
+              value={formInfo.lastName}
+              onChange={(e)=>setformInfo({...formInfo,lastName:e.target.value})}
+
+            required/>
+              <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}
+              value={formInfo.username}
+              onChange={(e)=>setformInfo({...formInfo,username:e.target.value})}
+
+              required/>
+              <TextField
+              value={formInfo.email}
+
+              fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
               <FormControl fullWidth>
                 <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
                 <OutlinedInput
+
                   label='Password'
                   value={values.password}
                   id='auth-register-password'
@@ -327,53 +356,28 @@ const RegisterPage = () => {
                   required
                 />
               </FormControl>
+            </>
 
-            </form>:
-             <form noValidate autoComplete='off' onSubmit={submitForm}>
+           :
+           <>
              <ToastContainer position={'top-center'} draggable={false}/>
-             <TextField InputLabelProps={{ shrink: true }} fullWidth id="outlined-basic - date" label="Birth date" defaultValue={new Date()} variant="outlined" type='date' sx={{ marginBottom: 4 }} />
+             <TextField
 
-             <TextField  fullWidth id="outlined-basic -1" label="Address" variant="outlined" sx={{ marginBottom: 4 }} />
-             <TextField  fullWidth id="outlined-basic -2" label="Country" variant="outlined" sx={{ marginBottom: 4 }} />
-               <FormControl fullWidth>
-                 <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
-                 <OutlinedInput
-                   label='Password'
-                   value={values.password}
-                   id='auth-register-password'
-                   onChange={handleChange('password')}
-                   type={values.showPassword ? 'text' : 'password'}
-                   endAdornment={
-                     <InputAdornment position='end'>
-                       <IconButton
-                         edge='end'
-                         onClick={handleClickShowPassword}
-                         onMouseDown={handleMouseDownPassword}
-                         aria-label='toggle password visibility'
-                       >
-                         {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
-                       </IconButton>
-                     </InputAdornment>
-                   }
-                   inputRef={passwordRef}
-                   required
-                 />
-               </FormControl>
-               <FormControlLabel
-                 control={<Checkbox />}
-                 label={
-                   <Fragment>
-                     <span>I agree to </span>
-                     <Link href='/' passHref>
-                       <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                         privacy policy & terms
-                       </LinkStyled>
-                     </Link>
-                   </Fragment>
-                 }
-                 inputRef={agreeRef}
-                 required
-               />
+             value={formInfo.dob}
+             onChange={(e)=>setformInfo({...formInfo,dob:e.target.value})}
+             InputLabelProps={{ shrink: true }} fullWidth id="outlined-basic - date" label="Birth date" defaultValue={new Date()} variant="outlined" type='date' sx={{ marginBottom: 4 }} />
+
+             <TextField
+
+             value={formInfo.address}
+             onChange={(e)=>setformInfo({...formInfo,address:e.target.value})}
+             fullWidth id="outlined-basic -1" label="Address" variant="outlined" sx={{ marginBottom: 4 }} />
+             <TextField
+
+             value={formInfo.country}
+             onChange={(e)=>setformInfo({...formInfo,country:e.target.value})}
+             fullWidth id="outlined-basic -2" label="Country" variant="outlined" sx={{ marginBottom: 4 }} />
+
                <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
                  Sign up
                </Button>
@@ -388,9 +392,9 @@ const RegisterPage = () => {
                  </Typography>
                </Box>
                <Divider sx={{ my: 5 }}>or</Divider>
-
-             </form>
-          }
+               </>
+              }
+              </form>
 
 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
 
