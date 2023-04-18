@@ -64,5 +64,15 @@ public class User extends Auditable {
 
     private String themeMode;
 
+    private String address;
+
+    private String postalCode;
+
+    private String city;
+
+    private String phoneNumber;
+
+    private String country;
+
 
 }

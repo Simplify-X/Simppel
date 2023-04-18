@@ -61,6 +61,11 @@ public record UserService(UserRepository userRepo,
                 .firstName(registerDTO.getFirstName())
                 .lastName(registerDTO.getLastName())
                 .role(registerDTO.isRole()  )
+                .address(registerDTO.getAddress())
+                .country(registerDTO.getCountry())
+                .postalCode(registerDTO.getPostalCode())
+                .city(registerDTO.getCity())
+                .phoneNumber(registerDTO.getPhoneNumber())
                 .build();
         try {
             userRepo.save(newUser);

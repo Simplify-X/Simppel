@@ -4,9 +4,9 @@ import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef } from '
 
 // ** Next Imports
 import Link from 'next/link'
-import {useRouter} from "next/router";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/router'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 // ** MUI Components
 import Box from '@mui/material/Box'
@@ -24,11 +24,13 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import { Snackbar } from '@mui/material'
+import { Alert } from '@mui/material'
 
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-import * as Sentry from "@sentry/nextjs"
+import * as Sentry from '@sentry/nextjs'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -38,20 +40,18 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import axios from "axios";
+import axios from 'axios'
 import { API_BASE_URL } from 'src/config'
-import { Step, StepLabel, Stepper } from '@mui/material';
-
+import { Step, StepLabel, Stepper } from '@mui/material'
 
 interface State {
   password: string
   showPassword: boolean
 }
 
-
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
-  [theme.breakpoints.up('sm')]: { width: '28rem' }
+  [theme.breakpoints.up('sm')]: { width: '35rem' }
 }))
 
 const LinkStyled = styled('a')(({ theme }) => ({
@@ -70,18 +70,31 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const RegisterPage = () => {
+  const steps = ['Account Data', 'Personal Data']
+  const [activeStep, setActiveStep] = useState(0)
 
-  const steps = ['step 1' , 'step 2'];
-  const [activeStep, setActiveStep] = useState(0);
+  const [open, setOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
 
-  const handleNext = () => {
+  const handleClose = () => {
+    setOpen(false)
+  }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+  const handleCloseError = () => {
+    setErrorOpen(false)
+  }
+
+  const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
+    if (activeStep === steps.length - 1) {
+      submitForm(event)
+    } else {
+      setActiveStep(prevActiveStep => prevActiveStep + 1)
+    }
+  }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+    setActiveStep(prevActiveStep => prevActiveStep - 1)
+  }
 
   // ** States
   const [values, setValues] = useState<State>({
@@ -89,19 +102,22 @@ const RegisterPage = () => {
     showPassword: false
   })
   const [formInfo, setformInfo] = useState({
-    firstName:"",
-    lastName:"",
-    username:"",
-    email:"",
-    address:"",
-    dob:"",
-    country:""
+    firstName: '',
+    lastName: '',
+    password: '',
+    username: '',
+    email: '',
+    address: '',
+    dob: '',
+    country: '',
+    postalCode: '',
+    city: '',
+    phoneNumber: ''
   })
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const agreeRef = useRef<HTMLInputElement>(false);
+  const passwordRef = useRef<HTMLInputElement>(null)
+  const agreeRef = useRef<HTMLInputElement>(false)
 
-  const [emailError, setEmailError] = useState('');
-
+  const [emailError, setEmailError] = useState('')
 
   // ** Hook
   const theme = useTheme()
@@ -117,108 +133,115 @@ const RegisterPage = () => {
     event.preventDefault()
   }
 
-
   // const [emailError, setEmailError] = useState(false);
 
   function validateEmail(email) {
     // use a regular expression to validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-    return emailRegex.test(email);
+    return emailRegex.test(email)
   }
 
   function handleEmailChange(e) {
-   setformInfo({...formInfo,email:e.target.value})
-    setEmailError(!validateEmail(e.target.value));
+    setformInfo({ ...formInfo, email: e.target.value })
+    setEmailError(!validateEmail(e.target.value))
   }
 
   function submitForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const password = passwordRef.current?.value;
-    const isCheck = agreeRef.current?.checked;
+    event.preventDefault()
+    const isCheck = agreeRef.current?.checked
 
 
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regular expression for email validation
-    if (!emailRegex.test(email!)) {
-      setEmailError('Invalid email address');
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/ // regular expression for email validation
+    if (!emailRegex.test(formInfo.email!)) {
+      setEmailError('Invalid email address')
 
-      return;
+      return
+    }
+
+    if (!isCheck) {
+      toast.error('Please agree with the terms', { autoClose: 3000 })
+
+      return
     }
 
     // Add form validation logic
-    if (!formInfo.username || !formInfo.email || !password || !formInfo.firstName || !formInfo.lastName) {
-      toast.error("Please fill in all the fields", { autoClose: 3000 });
+    if (!formInfo.username || !formInfo.email || !formInfo.password || !formInfo.firstName || !formInfo.lastName) {
+      toast.error('Please fill in all the fields', { autoClose: 3000 })
 
-      return;
+      return
     }
 
     const data = JSON.stringify({
-      "firstName": formInfo.firstName,
-      "lastName": formInfo.lastName,
-      "username": formInfo.username,
-      "email": formInfo.email,
-      "password": formInfo.password
-    });
-
+      firstName: formInfo.firstName,
+      lastName: formInfo.lastName,
+      username: formInfo.username,
+      email: formInfo.email,
+      password: formInfo.password,
+      address: formInfo.address,
+      postalCode: formInfo.postalCode,
+      city: formInfo.city,
+      phoneNumber: formInfo.phoneNumber,
+      country: formInfo.country
+    })
 
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: `${API_BASE_URL}/users/register`,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       data: data
-    };
+    }
 
-
-    if(isCheck) {
+    if (isCheck) {
       axios(config)
         .then(function (response) {
-          if(response.data.status === "FAILED"){
+          if (response.data.status === 'FAILED') {
             setformInfo({
-              firstName:"",
-              lastName:"",
-              username:"",
-              email:"",
-              address:"",
-              dob:"",
-              country:""
+              firstName: '',
+              lastName: '',
+              username: '',
+              email: '',
+              address: '',
+              dob: '',
+              country: '',
+              postalCode: '',
+              city: '',
+              phoneNumber: ''
             })
-          }
-          else{
-            toast.success("Registration successful", { autoClose: 2000});
-            router.push("/login");
+          } else {
+            setOpen(true)
+            router.push('/')
           }
         })
         .catch(function (error) {
-          toast.error("An error occurred. Please try again later", { autoClose: 3000});
-          Sentry.captureException(error);
-        });
+          setErrorOpen(true)
+          Sentry.captureException(error)
+        })
     }
   }
-
 
   return (
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
-        <Stepper activeStep={activeStep}>
-        {steps.map((label) => {
-          const stepProps: { completed?: boolean } = {};
-          const labelProps: {
-            optional?: React.ReactNode;
-          } = {};
+          <Stepper activeStep={activeStep}>
+            {steps.map(label => {
+              const stepProps: { completed?: boolean } = {}
+              const labelProps: {
+                optional?: React.ReactNode
+              } = {}
 
-
-          return (
-            <Step key={label} {...stepProps}>
-              <StepLabel {...labelProps}>{label}</StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      <br />
+              return (
+                <Step key={label} {...stepProps}>
+                  <StepLabel {...labelProps}>{label}</StepLabel>
+                </Step>
+              )
+            })}
+          </Stepper>
+          <br />
 
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg
@@ -299,119 +322,233 @@ const RegisterPage = () => {
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={submitForm}>
-          {
-            activeStep === 0
-            ?
-            <>
+          <form autoComplete='off' onSubmit={submitForm}>
+            {activeStep === 0 ? (
+              <>
+                <ToastContainer position={'top-center'} draggable={false} />
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <TextField
+                      autoFocus
+                      fullWidth
+                      id='firstName'
+                      label='First Name'
+                      sx={{ marginBottom: 4 }}
+                      value={formInfo.firstName}
+                      onChange={e => setformInfo({ ...formInfo, firstName: e.target.value })}
+                      required
+                    />
+                  </Box>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <TextField
+                      autoFocus
+                      fullWidth
+                      id='lastName'
+                      label='Last Name'
+                      sx={{ marginBottom: 4 }}
+                      value={formInfo.lastName}
+                      onChange={e => setformInfo({ ...formInfo, lastName: e.target.value })}
+                      required
+                    />
+                  </Box>
+                </Box>
 
-            <ToastContainer position={'top-center'} draggable={false}/>
-            <TextField
-              autoFocus
-              fullWidth
-              id='firstName'
-              label='First Name'
-              sx={{ marginBottom: 4 }}
-              value={formInfo.firstName}
-              onChange={(e)=>setformInfo({...formInfo,firstName:e.target.value})}
-              required
-            />
-
-            <TextField autoFocus fullWidth id='lastName' label='Last Name' sx={{ marginBottom: 4 }}
-              value={formInfo.lastName}
-              onChange={(e)=>setformInfo({...formInfo,lastName:e.target.value})}
-
-            required/>
-              <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }}
-              value={formInfo.username}
-              onChange={(e)=>setformInfo({...formInfo,username:e.target.value})}
-
-              required/>
-              <TextField
-              value={formInfo.email}
-
-              fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleEmailChange} error={emailError} helperText={emailError ? 'Invalid email' : ''} required/>
-              <FormControl fullWidth>
-                <InputLabel required htmlFor='auth-register-password'>Password</InputLabel>
-                <OutlinedInput
-
-                  label='Password'
-                  value={values.password}
-                  id='auth-register-password'
-                  onChange={handleChange('password')}
-                  type={values.showPassword ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position='end'>
-                      <IconButton
-                        edge='end'
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        aria-label='toggle password visibility'
-                      >
-                        {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  inputRef={passwordRef}
+                <TextField
+                  autoFocus
+                  fullWidth
+                  id='username'
+                  label='Username'
+                  sx={{ marginBottom: 4 }}
+                  value={formInfo.username}
+                  onChange={e => setformInfo({ ...formInfo, username: e.target.value })}
                   required
                 />
-              </FormControl>
-            </>
+                <TextField
+                  value={formInfo.email}
+                  fullWidth
+                  type='email'
+                  label='Email'
+                  sx={{ marginBottom: 4 }}
+                  onChange={handleEmailChange}
+                  error={emailError}
+                  helperText={emailError ? 'Invalid email' : ''}
+                  required
+                />
+                <FormControl fullWidth>
+                  <InputLabel required htmlFor='auth-register-password'>
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    label='Password'
+                    value={values.password}
+                    id='auth-register-password'
+                    type={values.showPassword ? 'text' : 'password'}
+                    controlledValue={formInfo.password}
+                    onChange={e => {
+                      handleChange('password')(e) // Call the handleChange function for the controlled component
+                      setformInfo({ ...formInfo, password: e.target.value }) // Update the state value
+                    }}
+                    endAdornment={
+                      <InputAdornment position='end'>
+                        <IconButton
+                          edge='end'
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          aria-label='toggle password visibility'
+                        >
+                          {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    inputRef={passwordRef}
+                    required
+                  />
+                </FormControl>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    marginTop: '30px'
+                  }}
+                >
+                  <Typography variant='body2' sx={{ marginRight: 2 }}>
+                    Already have an account?
+                  </Typography>
+                  <Typography variant='body2'>
+                    <Link passHref href='/login'>
+                      <LinkStyled>Sign in instead</LinkStyled>
+                    </Link>
+                  </Typography>
+                </Box>
+                <Divider sx={{ my: 5 }}></Divider>
+              </>
+            ) : (
+              <>
+                <ToastContainer position={'top-center'} draggable={false} />
+                <TextField
+                  value={formInfo.dob}
+                  onChange={e => setformInfo({ ...formInfo, dob: e.target.value })}
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  id='outlined-basic - date'
+                  label='Birth date'
+                  defaultValue={new Date()}
+                  variant='outlined'
+                  type='date'
+                  sx={{ marginBottom: 4 }}
+                />
 
-           :
-           <>
-             <ToastContainer position={'top-center'} draggable={false}/>
-             <TextField
+                <TextField
+                  value={formInfo.address}
+                  onChange={e => setformInfo({ ...formInfo, address: e.target.value })}
+                  fullWidth
+                  id='outlined-basic -1'
+                  label='Address Line'
+                  variant='outlined'
+                  sx={{ marginBottom: 4 }}
+                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <TextField
+                    value={formInfo.postalCode}
+                    onChange={e => setformInfo({ ...formInfo, postalCode: e.target.value })}
+                    fullWidth
+                    id='outlined-basic -1'
+                    label='Postal code'
+                    variant='outlined'
+                    sx={{ marginBottom: 4 }}
+                  />
+                  <TextField
+                    value={formInfo.city}
+                    onChange={e => setformInfo({ ...formInfo, city: e.target.value })}
+                    fullWidth
+                    id='outlined-basic -1'
+                    label='City/Place'
+                    variant='outlined'
+                    sx={{ marginBottom: 4 }}
+                  />
+                </Box>
+                <TextField
+                  value={formInfo.phoneNumber}
+                  onChange={e => setformInfo({ ...formInfo, phoneNumber: e.target.value })}
+                  fullWidth
+                  id='outlined-basic -1'
+                  label='Phone Number'
+                  variant='outlined'
+                  sx={{ marginBottom: 4 }}
+                />
 
-             value={formInfo.dob}
-             onChange={(e)=>setformInfo({...formInfo,dob:e.target.value})}
-             InputLabelProps={{ shrink: true }} fullWidth id="outlined-basic - date" label="Birth date" defaultValue={new Date()} variant="outlined" type='date' sx={{ marginBottom: 4 }} />
+                <TextField
+                  value={formInfo.country}
+                  onChange={e => setformInfo({ ...formInfo, country: e.target.value })}
+                  fullWidth
+                  id='outlined-basic -2'
+                  label='Country'
+                  variant='outlined'
+                  sx={{ marginBottom: 4 }}
+                />
 
-             <TextField
+                <FormControlLabel
+                  control={<Checkbox />}
+                  label={
+                    <Fragment>
+                      <span>I agree to </span>
+                      <Link href='/' passHref>
+                        <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
+                          privacy policy & terms
+                        </LinkStyled>
+                      </Link>
+                    </Fragment>
+                  }
+                  inputRef={agreeRef}
+                  required
+                />
 
-             value={formInfo.address}
-             onChange={(e)=>setformInfo({...formInfo,address:e.target.value})}
-             fullWidth id="outlined-basic -1" label="Address" variant="outlined" sx={{ marginBottom: 4 }} />
-             <TextField
+                {/* <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
+                  Sign up
+                </Button> */}
+                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <Typography variant='body2' sx={{ marginRight: 2 }}>
+                    Already have an account?
+                  </Typography>
+                  <Typography variant='body2'>
+                    <Link passHref href='/login'>
+                      <LinkStyled>Sign in instead</LinkStyled>
+                    </Link>
+                  </Typography>
+                </Box>
+                <Divider sx={{ my: 5 }}></Divider>
+                <Snackbar
+                  open={open}
+                  autoHideDuration={3000}
+                  onClose={handleClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                  <Alert severity='success'>Registration successful</Alert>
+                </Snackbar>
+                <Snackbar
+                  open={errorOpen}
+                  autoHideDuration={3000}
+                  onClose={handleCloseError}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                  <Alert severity='error'>Registration Failed</Alert>
+                </Snackbar>
+              </>
+            )}
+          </form>
 
-             value={formInfo.country}
-             onChange={(e)=>setformInfo({...formInfo,country:e.target.value})}
-             fullWidth id="outlined-basic -2" label="Country" variant="outlined" sx={{ marginBottom: 4 }} />
-
-               <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
-                 Sign up
-               </Button>
-               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                 <Typography variant='body2' sx={{ marginRight: 2 }}>
-                   Already have an account?
-                 </Typography>
-                 <Typography variant='body2'>
-                   <Link passHref href='/login'>
-                     <LinkStyled>Sign in instead</LinkStyled>
-                   </Link>
-                 </Typography>
-               </Box>
-               <Divider sx={{ my: 5 }}>or</Divider>
-               </>
-              }
-              </form>
-
-<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-
-          <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Button variant='contained' color='inherit' disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
+              Previous Step
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />
 
-            <Button onClick={handleNext}>
-              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            <Button variant='contained' onClick={handleNext}>
+              {activeStep === steps.length - 1 ? 'Sign Up' : 'Next Step'}
             </Button>
-              </Box>
+          </Box>
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />

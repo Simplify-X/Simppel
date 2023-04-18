@@ -27,9 +27,48 @@ import {useEffect, useState} from "react";
 import jwt_decode from "jwt-decode";
 import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route'
+import { API_BASE_URL } from 'src/config'
 
 const Dashboard = () => {
   const [authenticated, setauthenticated] = useState(true);
+
+  const [userData, setUserData] = useState<UserData>({
+    role: '',
+    advertisementEnabled: false
+  })
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const token = Cookies.get('token')
+    if (!token) {
+      // Token not found, redirect to login page
+      window.location.replace('login')
+
+      return
+    }
+
+    fetch(`${API_BASE_URL}/users/role`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          // Get account ID from response body
+          return response.json()
+        } else {
+          // Token not valid, redirect to login page
+          throw new Error('Invalid token')
+        }
+      })
+      .then(data => {
+        setUserData(data)
+      })
+      .catch(error => {
+        Sentry.captureException(error)
+        window.location.replace('login')
+      })
+  }, [])
 
   const router = useRouter()
   useEffect(() => {
@@ -49,6 +88,11 @@ const Dashboard = () => {
     router.push("login")
 
     return null;
+  }
+  if(userData.role){
+    router.push("/users")
+
+    return null
   }
   else {
   return (

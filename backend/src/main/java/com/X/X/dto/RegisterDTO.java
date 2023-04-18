@@ -16,4 +16,9 @@ public class RegisterDTO {
     private boolean role;
     private String firstName;
     private String lastName;
+    private String address;
+    private String postalCode;
+    private String city;
+    private String phoneNumber;
+    private String country;
 }
