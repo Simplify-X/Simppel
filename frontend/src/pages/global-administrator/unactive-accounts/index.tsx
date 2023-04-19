@@ -17,7 +17,7 @@ const UnactiveAccounts = () => {
     fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)
       .then((response) => response.json())
       .then((data) => {
-        router.push(`/users/view-user?id=${data.accountId}`);
+        router.push(`/global-administrator/users/view-user?id=${data.accountId}`);
       }
       )
       .catch((error) => {
