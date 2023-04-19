@@ -90,7 +90,7 @@ const Dashboard = () => {
     return null;
   }
   if(userData.role){
-    router.push("/users")
+    router.push("/global-administrator/users")
 
     return null
   }

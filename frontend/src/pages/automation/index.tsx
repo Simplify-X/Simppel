@@ -60,6 +60,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 const Automation = () => {
   // ** States
   const [accountId, setAccountId] = useState(null)
+  const [userId, setUserId] = useState(null)
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
   const [data, setData] = useState([])
@@ -131,8 +132,42 @@ const Automation = () => {
   }, [])
 
   useEffect(() => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
+    const token = Cookies.get('token')
+    if (!token) {
+      // Token not found, redirect to login page
+      window.location.replace('/login')
+
+      return
+    }
+
+    fetch(`${API_BASE_URL}/users/my`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          // Get account ID from response body
+          return response.json()
+        } else {
+          // Token not valid, redirect to login page
+          throw new Error('Invalid token')
+        }
+      })
+      .then(data => {
+        setUserId(data)
+      })
+      .catch(error => {
+        Sentry.captureException(error)
+        window.location.replace('/login')
+      })
+  }, [])
+
+  console.log(userId)
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`${API_BASE_URL}/users/getSingleUser/${userId}`)
         .then(response => response.json())
         .then(data => {
           setData(data)
@@ -141,7 +176,7 @@ const Automation = () => {
           Sentry.captureException(error)
         })
     }
-  }, [accountId])
+  }, [userId])
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -168,7 +203,7 @@ const Automation = () => {
 
     const config = {
       method: 'post',
-      url: `${API_BASE_URL}/posts/${accountId}`,
+      url: `${API_BASE_URL}/posts/${userId}/${accountId}`,
       headers: {
         'Content-Type': 'application/json'
       },

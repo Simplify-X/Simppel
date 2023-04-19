@@ -1,15 +1,7 @@
 // ** Icon imports
 // @ts-nocheck// @ts-nocheck
-import Login from 'mdi-material-ui/Login'
-import Table from 'mdi-material-ui/Table'
-import CubeOutline from 'mdi-material-ui/CubeOutline'
 import HomeOutline from 'mdi-material-ui/HomeOutline'
-import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
-import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
-import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
-import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
-import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import AddIcon from '@mui/icons-material/Add'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Cookies from 'js-cookie'
@@ -24,6 +16,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import ShareIcon from '@mui/icons-material/Share';
 import ArticleIcon from '@mui/icons-material/Article';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import GroupsIcon from '@mui/icons-material/Groups';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -83,11 +77,6 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/'
     },
-    !userData.role && {
-      title: t('account_settings'),
-      icon: AccountCogOutline,
-      path: '/account-settings'
-    },
     userData.advertisementEnabled &&
       !userData.role && {
         sectionTitle: 'Content'
@@ -134,6 +123,28 @@ const navigation = (): VerticalNavItemsType => {
       path: '/automation/view-automation'
     },
 
+    !userData.role && {
+      sectionTitle: 'Management'
+    },
+
+    !userData.role && {
+      title: 'User Management',
+      icon: PersonAddAltIcon,
+      path: '/user-management'
+    },
+
+    !userData.role && {
+      title: 'Invite Team Members',
+      icon: GroupsIcon,
+      path: '/invite-team'
+    },
+
+    !userData.role && {
+      title: t('account_settings'),
+      icon: AccountCogOutline,
+      path: '/account-settings'
+    },
+
     userData.role && {
       sectionTitle: ' Management',
     },
@@ -164,7 +175,7 @@ const navigation = (): VerticalNavItemsType => {
     userData.role && {
       title: 'View Users',
       icon: PeopleIcon,
-      path: '/users'
+      path: '/global-administrator/users'
     },
 
     userData.role && {
@@ -176,7 +187,7 @@ const navigation = (): VerticalNavItemsType => {
     userData.role && {
       title: 'Unactive Accounts',
       icon: NoAccountsIcon,
-      path: '/notifications'
+      path: '/global-administrator/unactive-accounts'
     },
 
 

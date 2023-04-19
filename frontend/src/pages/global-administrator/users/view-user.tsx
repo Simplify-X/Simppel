@@ -44,7 +44,7 @@ const ViewUsers = () => {
   }, [id])
 
   const handleSave = () => {
-    fetch(`${API_BASE_URL}/users/users/${id}`, {
+    fetch(`${API_BASE_URL}/users/users/management/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ const ViewUsers = () => {
       })
   }
 
-  console.log(data);
+  console.log(data)
 
   return (
     <Card>
@@ -89,9 +89,6 @@ const ViewUsers = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth label='Password' disabled />
-              </Grid>
-              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label='Name'
@@ -117,11 +114,48 @@ const ViewUsers = () => {
                   onChange={event => setData({ ...data, email: event.target.value })}
                 />
               </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='Address Line'
+                  defaultValue={data.address}
+                  onChange={event => setData({ ...data, address: event.target.value })}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='Postal code'
+                  defaultValue={data.postalCode}
+                  onChange={event => setData({ ...data, postalCode: event.target.value })}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='City'
+                  defaultValue={data.city}
+                  onChange={event => setData({ ...data, city: event.target.value })}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='Country'
+                  defaultValue={data.city}
+                  onChange={event => setData({ ...data, country: event.target.value })}
+                />
+              </Grid>
+
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Role</InputLabel>
-                  <Select label='Role' value={data.role}>
-                    <MenuItem value='true'>Admin</MenuItem>
+                  <Select label='Role' value={data.accountRole}>
+                    <MenuItem value='true'>Account Admin</MenuItem>
                     <MenuItem value='false'>User</MenuItem>
                   </Select>
                 </FormControl>
@@ -130,14 +164,14 @@ const ViewUsers = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  type='email'
                   label='Advertisement Limit'
                   defaultValue={data.advertisementLimit}
                   onChange={event => setData({ ...data, advertisementLimit: event.target.value })}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
+                <Typography variant='subtitle1'>User Status:</Typography>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -159,6 +193,7 @@ const ViewUsers = () => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle1'>Account Features:</Typography>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -177,9 +212,6 @@ const ViewUsers = () => {
                   }
                   label='Image Upload Active'
                 />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
                 <FormControlLabel
                   control={
                     <Checkbox

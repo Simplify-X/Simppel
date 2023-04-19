@@ -63,6 +63,17 @@ public class UserController {
         return userService.getLoggedInUserAccountId(token);
     }
 
+    @CrossOrigin
+    @GetMapping("/my")
+    public UUID getCurrentUserId(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization");
+        if (authToken == null || !authToken.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or missing authorization token");
+        }
+        String token = authToken.substring(7); // Remove "Bearer " prefix
+        return userService.getLoggedInUserId(token);
+    }
+
 
     @CrossOrigin
     @PostMapping("/login")
@@ -79,6 +90,17 @@ public class UserController {
     public RegisterResponse register(@RequestBody RegisterDTO registerDTO) {
         try {
             return userService.register(registerDTO);
+        }
+        catch (Exception e){
+            return new RegisterResponse(Status.FAILED);
+        }
+    }
+
+    @CrossOrigin
+    @PostMapping("/register/account/{accountId}")
+    public RegisterResponse registerOrganisationUser(@RequestBody RegisterDTO registerDTO, @PathVariable UUID accountId ) {
+        try {
+            return userService.registerOrganisationUser(registerDTO, accountId);
         }
         catch (Exception e){
             return new RegisterResponse(Status.FAILED);
@@ -116,6 +138,13 @@ public class UserController {
     }
 
     @CrossOrigin
+    @GetMapping("/getInactiveUsers")
+    public ResponseEntity<List<User>> getUnactiveUsers() {
+        List<User> users = userService.getInactiveUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @CrossOrigin
     @PutMapping("/users/{accountId}")
     public ResponseEntity<User> updateUser(@PathVariable UUID accountId, @RequestBody User userDetails) {
         User updatedUser = userService.updateUser(accountId, userDetails);
@@ -123,11 +152,31 @@ public class UserController {
     }
 
 
+    @CrossOrigin
+    @PutMapping("/users/management/{id}")
+    public ResponseEntity<User> updateUserManagement(@PathVariable UUID id, @RequestBody User userDetails) {
+        User updatedUser = userService.updateUserManagement(id, userDetails);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
 
     @CrossOrigin
-    @GetMapping("/getSingleUser/{accountId}")
-    public  User getAllUsers(@PathVariable UUID accountId) {
-        return userService.getSingleUser(accountId);
+    @GetMapping("/getSingleUser/{id}")
+    public  User getAllUsers(@PathVariable UUID id) {
+        return userService.getSingleUser(id);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getAccountUser/{id}")
+    public  User getSingleUserForAccount(@PathVariable UUID id) {
+        return userService.getSingleAccountUser(id);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getUserForAccount/{accountId}")
+    public List <User> getUsersForAccount(@PathVariable UUID accountId) {
+        return userService.getAllUserForAccount(accountId);
     }
 
 
@@ -210,6 +259,17 @@ public class UserController {
 
     }
 
+
+    @CrossOrigin
+    @PostMapping("/updateLanguagePreference")
+    public ResponseEntity<String> updateLanguagePreference(@RequestParam("locale") String locale, @RequestParam("accountId") UUID accountId) {
+
+        val user = userService.getSingleUser(accountId);
+        user.setDefaultLanguage(locale);
+        userService.saveDefaultLanguage(user);
+        return ResponseEntity.ok("Language Updated");
+
+    }
 
 
 }

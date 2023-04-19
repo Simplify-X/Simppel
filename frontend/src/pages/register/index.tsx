@@ -108,7 +108,6 @@ const RegisterPage = () => {
     username: '',
     email: '',
     address: '',
-    dob: '',
     country: '',
     postalCode: '',
     city: '',
@@ -205,7 +204,6 @@ const RegisterPage = () => {
               username: '',
               email: '',
               address: '',
-              dob: '',
               country: '',
               postalCode: '',
               city: '',
@@ -426,20 +424,6 @@ const RegisterPage = () => {
               </>
             ) : (
               <>
-                <ToastContainer position={'top-center'} draggable={false} />
-                <TextField
-                  value={formInfo.dob}
-                  onChange={e => setformInfo({ ...formInfo, dob: e.target.value })}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  id='outlined-basic - date'
-                  label='Birth date'
-                  defaultValue={new Date()}
-                  variant='outlined'
-                  type='date'
-                  sx={{ marginBottom: 4 }}
-                />
-
                 <TextField
                   value={formInfo.address}
                   onChange={e => setformInfo({ ...formInfo, address: e.target.value })}

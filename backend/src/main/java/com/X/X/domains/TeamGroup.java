@@ -12,9 +12,6 @@ import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-
-import java.sql.Time;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -22,8 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="post_automation")
-public class PostAutomation extends Auditable  {
+@Table(name="team_group")
+public class TeamGroup extends Auditable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -39,25 +36,16 @@ public class PostAutomation extends Auditable  {
     @JsonIgnore
     private UUID accountId;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "user_id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
-    @Type(type = "uuid-char")
-    @JsonIgnore
-    private UUID userId;
 
     @NotNull
-    private String automationName;
+    private String groupName;
 
     @NotNull
-    private String automationDescription;
+    private String description;
 
-    @NotNull
-    private String postLocation;
+    private AdvertisementAccess advertisementAccess;
 
-    private Date automationDate;
-
-    private Time automationTime;
+    private CopyWritingAccess copyWritingAccess;
 
 
 }

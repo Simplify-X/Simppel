@@ -99,7 +99,7 @@ const ViewAutomation = () => {
       return;
     }
 
-    fetch(`${API_BASE_URL}/users/me`, {
+    fetch(`${API_BASE_URL}/users/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -18,8 +18,8 @@ public class PostAutomationService {
         return postAutomationRepository.save(postAutomation);
     }
 
-    public List<PostAutomation> getAutomation(UUID accountId) {
-        return postAutomationRepository.findByAccountId(accountId);
+    public List<PostAutomation> getAutomation(UUID id) {
+        return postAutomationRepository.findByUserId(id);
     }
 
 }

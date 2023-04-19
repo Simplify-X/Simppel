@@ -18,7 +18,7 @@ const Users = () => {
     fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)
       .then((response) => response.json())
       .then((data) => {
-        router.push(`/users/view-user?id=${data.accountId}`);
+        router.push(`/users/view-user?id=${data.userId}`);
       }
       )
       .catch((error) => {
@@ -29,7 +29,7 @@ const Users = () => {
 
   const columns = [
     {
-      name: "accountId",
+      name: "userId",
       label: "Id",
       options: {
        filter: true,

@@ -19,18 +19,19 @@ public class PostAutomationController {
     private PostAutomationService postAutomationService;
 
     @CrossOrigin
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/{accountId}")
     @Operation(summary = "Create advertisement", description = "Create an advertisement for the specified user account.")
-    public PostAutomation createPostAutomation(@PathVariable UUID id, @RequestBody PostAutomation postAutomation) {
-        postAutomation.setAccountId(id);
+    public PostAutomation createPostAutomation(@PathVariable UUID id, @PathVariable UUID accountId, @RequestBody PostAutomation postAutomation) {
+        postAutomation.setAccountId(accountId);
+        postAutomation.setUserId(id);
         return postAutomationService.saveAdvertisement(postAutomation);
     }
 
     @CrossOrigin
     @Operation(summary = "Get advertisements", description = "Get all advertisements for the specified user account.")
-    @GetMapping("/{accountId}")
-    public List<PostAutomation> getAutomation(@PathVariable UUID accountId) {
-        return postAutomationService.getAutomation(accountId);
+    @GetMapping("/{id}")
+    public List<PostAutomation> getAutomation(@PathVariable UUID id) {
+        return postAutomationService.getAutomation(id);
     }
 
 }

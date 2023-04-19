@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PostAutomationRepository extends CrudRepository<PostAutomation, UUID> {
 
-    PostAutomation findByid(UUID id);
+    List<PostAutomation> findByUserId(UUID id);
     List<PostAutomation> findByAccountId(UUID accountId);
 
 }

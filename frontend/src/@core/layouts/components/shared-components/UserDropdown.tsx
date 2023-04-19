@@ -1,5 +1,4 @@
 // ** React Imports
-import { useHistory } from 'react-router-dom';
 import { useState, SyntheticEvent, Fragment } from 'react'
 
 // ** Next Import
@@ -23,7 +22,6 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import axios from "axios";
 import Cookies from 'js-cookie';
 import * as Sentry from "@sentry/nextjs";
 import { API_BASE_URL } from '../../../../config'
@@ -50,7 +48,6 @@ const UserDropdown = () => {
   // ** Hooks
   const router = useRouter()
 
-  const history = useHistory();
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -74,7 +71,7 @@ const UserDropdown = () => {
     .then(response => {
       if (response.ok) {
         Cookies.remove('token');
-        router.push("login");
+        router.push("/login");
       } else {
       }
     })

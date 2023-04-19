@@ -66,6 +66,7 @@ public record UserService(UserRepository userRepo,
                 .postalCode(registerDTO.getPostalCode())
                 .city(registerDTO.getCity())
                 .phoneNumber(registerDTO.getPhoneNumber())
+                .accountRole(true)
                 .build();
         try {
             userRepo.save(newUser);
@@ -88,6 +89,18 @@ public record UserService(UserRepository userRepo,
         return user.getAccountId();
     }
 
+    public UUID getLoggedInUserId(String token) {
+        if (!tokenServices.validateToken(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired authorization token");
+        }
+        String email = tokenServices.getMail(token);
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid user");
+        }
+        return user.getUserId();
+    }
+
     public User getUserRole(String token) {
         if (!tokenServices.validateToken(token)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired authorization token");
@@ -102,6 +115,14 @@ public record UserService(UserRepository userRepo,
 
     public List<User> getAllUser() {
         return userRepo.findAll();
+    }
+
+    public List<User> getInactiveUsers() {
+        return userRepo.findInactiveUser();
+    }
+
+    public User saveDefaultLanguage(User user){
+        return userRepo.save(user);
     }
 
     public User updateUser(UUID accountId, User userDetails) {
@@ -119,14 +140,54 @@ public record UserService(UserRepository userRepo,
         user.setImageUploadFeatureEnabled(userDetails.isImageUploadFeatureEnabled());
         user.setAdvertisementImportEnabled(userDetails.isAdvertisementImportEnabled());
         user.setAdvertisementLimit(userDetails.getAdvertisementLimit());
+        user.setPostalCode(userDetails.getPostalCode());
+        user.setAddress(userDetails.getAddress());
+        user.setCity(userDetails.getCity());
+        user.setPhoneNumber(userDetails.getPhoneNumber());
+        user.setCountry(userDetails.getCountry());
+        user.setAccountRole(userDetails.getAccountRole());
+
+        return userRepo.save(user);
+    }
+
+
+    public User updateUserManagement(UUID id, User userDetails) {
+        User user = userRepo.findByUserId(id);
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with User id: " + id);
+        }
+        user.setUsername(userDetails.getUsername());
+        user.setEmail(userDetails.getEmail());
+        user.setFirstName(userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName());
+        user.setRole(userDetails.isRole());
+        user.setUserActive(userDetails.isUserActive());
+        user.setAdvertisementEnabled(userDetails.isAdvertisementEnabled());
+        user.setImageUploadFeatureEnabled(userDetails.isImageUploadFeatureEnabled());
+        user.setAdvertisementImportEnabled(userDetails.isAdvertisementImportEnabled());
+        user.setAdvertisementLimit(userDetails.getAdvertisementLimit());
+        user.setPostalCode(userDetails.getPostalCode());
+        user.setAddress(userDetails.getAddress());
+        user.setCity(userDetails.getCity());
+        user.setPhoneNumber(userDetails.getPhoneNumber());
+        user.setCountry(userDetails.getCountry());
+        user.setAccountRole(userDetails.getAccountRole());
 
         return userRepo.save(user);
     }
 
 
 
-    public User getSingleUser(UUID accountId) {
-        return userRepo.findByAccountId(accountId);
+    public User getSingleUser(UUID id) {
+        return userRepo.findByUserId(id);
+    }
+
+    public User getSingleAccountUser(UUID id) {
+        return userRepo.findByUserId(id);
+    }
+
+    public List<User> getAllUserForAccount(UUID accountId) {
+        return userRepo.findAllByAccountId(accountId);
     }
 
     public User getUserByUserId(UUID userId) {
@@ -143,6 +204,39 @@ public record UserService(UserRepository userRepo,
 
     public User saveUser(User user){
         return userRepo.save(user);
+    }
+
+
+    public RegisterResponse registerOrganisationUser(RegisterDTO registerDTO, UUID accountId) {
+        // Check if a user with the same username already exists
+        if (userRepo.findByUsername(registerDTO.getUsername()) != null || userRepo.findByEmail(registerDTO.getEmail()) != null) {
+            return new RegisterResponse(Status.FAILED);
+        }
+
+        // Register the new user
+        User newUser = User.builder()
+                .userId(UUID.randomUUID())
+                .accountId(accountId)
+                .username(registerDTO.getUsername())
+                .email(registerDTO.getEmail())
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .firstName(registerDTO.getFirstName())
+                .lastName(registerDTO.getLastName())
+                .role(registerDTO.isRole()  )
+                .address(registerDTO.getAddress())
+                .country(registerDTO.getCountry())
+                .postalCode(registerDTO.getPostalCode())
+                .city(registerDTO.getCity())
+                .phoneNumber(registerDTO.getPhoneNumber())
+                .accountRole(true)
+                .build();
+        try {
+            userRepo.save(newUser);
+            return new RegisterResponse(Status.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new RegisterResponse(Status.FAILED);
+        }
     }
 
 

@@ -21,4 +21,6 @@ public class RegisterDTO {
     private String city;
     private String phoneNumber;
     private String country;
+    private boolean accountRole;
+    private UUID accountId;
 }

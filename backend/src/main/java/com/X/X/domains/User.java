@@ -74,5 +74,9 @@ public class User extends Auditable {
 
     private String country;
 
+    private Boolean accountRole;
+
+    private String defaultLanguage;
+
 
 }

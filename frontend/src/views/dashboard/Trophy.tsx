@@ -44,7 +44,7 @@ const Trophy = () => {
       return;
     }
   
-    fetch(`${API_BASE_URL}/users/me`, {
+    fetch(`${API_BASE_URL}/users/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -74,7 +74,7 @@ const Trophy = () => {
         setUserData(userData);
   
         // Fetch advertisements for user
-        return fetch(`${API_BASE_URL}/advertisements/${userData.accountId}`)
+        return fetch(`${API_BASE_URL}/advertisements/${userData.userId}`)
           .then((response) => {
             if (response.ok) {
               return response.json();
