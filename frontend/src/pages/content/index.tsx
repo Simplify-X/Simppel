@@ -12,7 +12,6 @@ import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
-import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Cookies from 'js-cookie'
@@ -40,7 +39,8 @@ import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
 import WebScraper from './WebScraper'
 import Tooltip from '@mui/material/Tooltip';
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 
 const ITEM_HEIGHT = 48
@@ -88,7 +88,6 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const Content = () => {
   // ** States
-  const [accountId, setAccountId] = useState(null)
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedTypeAd, setSelectedTypeAd] = useState('')
@@ -96,7 +95,7 @@ const Content = () => {
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
   const [adCount, setAdCount] = useState(0)
-  const [limit, setLimit] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const { t } = useTranslation()
 
@@ -104,6 +103,9 @@ const Content = () => {
 
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
+  const {response, loading, error , get, post } = useCustomApiHook();
+  const [_, accountId] = useUserData();
+
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -156,73 +158,34 @@ const Content = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
 
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
-
-  useEffect(() => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
-        .then(response => response.json())
-        .then(data => {
-          setData(data)
-          setLimit(data.advertisementLimit)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
-    }
+  useEffect(() => { 
+     accountId && fetchSingleUser()
+     accountId && fetchAdvertisements()
   }, [accountId])
 
-  useEffect(() => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/advertisements/${accountId}`)
-        .then(response => response.json())
-        .then(advertisements => {
-          setAdCount(advertisements.length);
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
-    }
-  }, [accountId])
+  const fetchSingleUser=async()=>{
+   const response = await get(`/users/getSingleUser/${accountId}`)
+   if(response?.data){
+    setData(response.data)
+    const advertisementLimit = response.data?.advertisementLimit
+    advertisementLimit && setLimit(advertisementLimit)
+   }
+  }
 
-  console.log(adCount);
+  const fetchAdvertisements=async()=>{
+    const response = await get(`/advertisements/${accountId}`)
+    response?.advertisements && setAdCount(response.advertisements?.length);
+
+  }
+    
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
 
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (adCount >= limit) {
@@ -247,35 +210,35 @@ const Content = () => {
       languageText: selectedLanguage
     }
 
-    const config = {
-      method: 'post',
-      url: `${API_BASE_URL}/advertisements/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
+    await post(`/advertisements/${accountId}`, data)
+
+  }
+
+
+  useEffect(() => {
+    const status = response?.data.status
+    const data = response?.data
+
+    if (data) {
+      toast.success('Advertisement Added', { autoClose: 2000 })
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+      router.push('/content/view-content')
     }
 
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-          toast.error('Error', { autoClose: 3000 })
+    if (status === 'FAILED') {
+      toast.error('Error', { autoClose: 3000 })
 
-          // @ts-ignore
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-        } else {
-          toast.success('Advertisement Added', { autoClose: 2000 })
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-          router.push('/content/view-content')
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-        toast.error('An error occurred. Please try again later', { autoClose: 3000 })
-      })
-  }
+      // @ts-ignore
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+    }
+
+    if (error) {
+      Sentry.captureException(error)
+      toast.error('An error occurred. Please try again later', { autoClose: 3000 })
+    }
+  }, [response, error])
   
   return (
     <form onSubmit={submitForm}>

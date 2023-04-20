@@ -29,6 +29,7 @@ import DatePickerField from './DatePicker'
 import TimePickerField from './TimePicker'
 import dayjs from 'dayjs'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -56,8 +57,6 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const Automation = () => {
   // ** States
-  const [accountId, setAccountId] = useState(null)
-  const [userId, setUserId] = useState(null)
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
   const [data, setData] = useState([])
@@ -67,6 +66,7 @@ const Automation = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const { response, loading, error , get, post } = useCustomApiHook();
+  const [accountId, userId] = useUserData();
 
   console.log(selectedLocation)
 
@@ -87,48 +87,9 @@ const Automation = () => {
     }
   }
 
-
   const handleLocationChange = event => {
     setSelectedLocation(event.target.value)
   }
-
-
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
-      return
-    }
-    
-    token && fecthUserData("me", token)
-    token && fecthUserData("my", token)
-  }, [])
-
-  const fecthUserData = async(type, token)=>{
-    const response = await get(`/users/${type}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    if (response?.data) {
-      type === "me" && setAccountId(response?.data);
-      type === "my" && setUserId(response?.data)
-    }
-    else throw new Error("Invalid token");
-  }
-
-
-  // show error message 
-  useEffect(()=>{
-    if(error){
-      Sentry.captureException(error)
-      window.location.replace('/login')
-    }
-  },[error])
-
-
 
   useEffect(() => {
     if (userId) fetchSingleUser()
@@ -136,9 +97,8 @@ const Automation = () => {
 
   const fetchSingleUser=async()=>{
    const response = await get(`/users/getSingleUser/${userId}`)
-   response &&  setData(response.data)
+   response?.data &&  setData(response.data)
   }
-
 
 
   const nameRef = useRef<HTMLInputElement>(null)
@@ -167,10 +127,11 @@ const Automation = () => {
  
   }
 
+
   useEffect(() => {
     const status = response?.data.status
 
-    if (status === 'OK') {
+    if (response?.data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
       nameRef?.current?.value = ''
       descriptionRef?.current?.value = ''

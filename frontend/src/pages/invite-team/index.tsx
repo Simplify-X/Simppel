@@ -6,16 +6,17 @@ import MUIDataTable from 'mui-datatables'
 import authRoute from 'src/@core/utils/auth-route'
 import { useRouter } from 'next/router'
 import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Cookies from 'js-cookie'
-import axios from 'axios'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { toast } from 'react-toastify'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -31,10 +32,10 @@ const InviteTeam = () => {
   const [copyWriting, setCopyWriting] = useState('')
   const [role, setRole] = useState([])
   const router = useRouter()
-  const [accountId, setAccountId] = useState(null)
-  const [getToken, setToken] = useState(Cookies.get('token'))
   const [isCreating, setIsCreating] = useState(true)
   const [recordId, setRecordId] = useState('')
+  const {response, loading, error , del, get, post , put} = useCustomApiHook();
+  const [accountId, userId] = useUserData();
   
 
 
@@ -117,35 +118,29 @@ const InviteTeam = () => {
     }
   ]
 
-  function handleDelete(rowId) {
-    const config = {
-      method: 'delete',
-      url: `${API_BASE_URL}/groups/delete/${rowId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-          // handle the error case here
-        } else {
-          // remove the deleted record from the state
-          const updatedRole = role.filter(data => data.id !== rowId)
-          setRole(updatedRole)
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
+  async function handleDelete(rowId) {
+    await del(`/groups/delete/${rowId}`)
   }
+
+
+  useEffect(() => {
+    const status = response?.data.status
+
+    if (response?.data) {
+      const updatedRole = role.filter(data => data.id !== rowId)
+      setRole(updatedRole)
+    }
+    status === 'FAILED' && toast.error('Error', { autoClose: 3000 })
+    error && Sentry.captureException(error)
+
+  }, [error])
+
   
 
   const handleEdit = rowData => {
     const [selectedData] = role.filter(data => data.id === rowData[0])
 
-    console.log(data.id);
+    // console.log(data.id);
     console.log(rowData[0])
 
     setOpen(true)
@@ -164,49 +159,17 @@ const InviteTeam = () => {
     }
   }
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
+  useEffect(() => { 
+    accountId && fecthGroupData()
+  }, [accountId])
 
-      return
-    } else {
-      setToken(token)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${getToken}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-        fetch(`${API_BASE_URL}/groups/${data}`)
-          .then(response => response.json())
-          .then(data => {
-            setRole(data)
-          })
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [getToken])
+  const fecthGroupData = async () => {
+        const res = await get(`/groups/${accountId}`)
+        setRole(res?.data)
+  }
 
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
   
     const data = {
@@ -215,38 +178,29 @@ const InviteTeam = () => {
       advertisementAccess: advertisement,
       copyWritingAccess: copyWriting
     }
+
+    await post(`/groups/create/${accountId}`, data)
   
-    const config = {
-      method: 'post',
-      url: `${API_BASE_URL}/groups/create/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
-    }
-  
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-        } else {
-          // add the newly created record to the state
-          fetch(`${API_BASE_URL}/groups/${accountId}`)
-            .then(response => response.json())
-            .then(data => {
-              setRole(data)
-            })
-            .catch(error => {
-              Sentry.captureException(error)
-            })
-          handleClose()
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
   }
+
+  useEffect(() => {
+    const fetchGroupData = async ()=> {
+      const res = await get(`/groups/${accountId}`)
+        setRole(res?.data)
+    }
+
+    const status = response?.data.status
+    if (status !== 'FAILED') {
+      accountId && fetchGroupData()
+      handleClose()
+    }
+    
+  }, [response])
+
+
+
   
-  function handleEditForm(event: React.FormEvent<HTMLFormElement>) {
+  async function handleEditForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
   
     const data = {
@@ -255,44 +209,25 @@ const InviteTeam = () => {
       advertisementAccess: advertisement,
       copyWritingAccess: copyWriting
     }
-  
-    const config = {
-      method: 'put',
-      url: `${API_BASE_URL}/groups/update/${recordId}/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
-    }
-  
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
+
+    await put(`/groups/update/${recordId}/${accountId}`, data)
+
+  }
+
+
+  useEffect(()=>{
+    if (response?.data?.status !== 'FAILED') {
+      const updatedRole = role.map(data => {
+        if (data.id === recordId) {
+          return { ...data, groupName: title, description: description }
         } else {
-          // update the existing record in the state with the new data
-          const updatedRole = role.map(data => {
-            if (data.id === recordId) {
-              return { ...data, groupName: title, description: description }
-            } else {
-              return data
-            }
-          })
-          fetch(`${API_BASE_URL}/groups/${accountId}`)
-            .then(response => response.json())
-            .then(data => {
-              setRole(updatedRole)
-              console.log(data)
-            })
-            .catch(error => {
-              Sentry.captureException(error)
-            })
-          handleClose()
+          return data
         }
       })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
-  }
+
+      setRole(updatedRole)
+    }
+  },[response])
   
   
 
