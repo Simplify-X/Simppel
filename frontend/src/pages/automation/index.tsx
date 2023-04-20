@@ -66,7 +66,7 @@ const Automation = () => {
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const { response, loading, error , get, post } = useCustomApiHook();
+  const { response, error , get, post } = useCustomApiHook();
 
   console.log(selectedLocation)
 
@@ -98,6 +98,7 @@ const Automation = () => {
     if (!token) {
       // Token not found, redirect to login page
       window.location.replace('/login')
+
       return
     }
     
@@ -179,6 +180,7 @@ const Automation = () => {
 
     if (status === 'FAILED') {
       toast.error('Error', { autoClose: 3000 })
+      
       // @ts-ignore
       nameRef?.current?.value = ''
       descriptionRef?.current?.value = ''
