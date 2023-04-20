@@ -26,7 +26,7 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
     }, []);
 
     if (loading) {
-      return <CircularProgress />;
+      return null;
     }
 
 
