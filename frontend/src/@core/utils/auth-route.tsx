@@ -15,11 +15,12 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
         const token = Cookies.get('token');
         if (!token) {
           router.replace("login");
-        } 
+          setLoading(false);
+        }
         else{
+          setLoading(false);
           setAuthenticated(true);
         }
-        setLoading(false);
       };
       checkToken();
     }, []);
@@ -28,7 +29,7 @@ const authRoute = (Component: JSX.IntrinsicAttributes) => {
       return <CircularProgress />;
     }
 
-    if (authenticated) {
+    if (authenticated && !loading) {
       // @ts-ignore
       return <Component {...props} user={user} />;
     } else {
