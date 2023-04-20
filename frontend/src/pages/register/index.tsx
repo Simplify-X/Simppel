@@ -1,6 +1,6 @@
 // ** React Imports
 // @ts-nocheck
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef } from 'react'
+import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef, useEffect } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -40,9 +40,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import axios from 'axios'
-import { API_BASE_URL } from 'src/config'
 import { Step, StepLabel, Stepper } from '@mui/material'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 interface State {
   password: string
@@ -72,6 +71,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 const RegisterPage = () => {
   const steps = ['Account Data', 'Personal Data']
   const [activeStep, setActiveStep] = useState(0)
+  const { response, loading, error , post } = useCustomApiHook();
 
   const [open, setOpen] = useState(false)
   const [errorOpen, setErrorOpen] = useState(false)
@@ -146,7 +146,7 @@ const RegisterPage = () => {
     setEmailError(!validateEmail(e.target.value))
   }
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const isCheck = agreeRef.current?.checked
 
@@ -184,42 +184,37 @@ const RegisterPage = () => {
       country: formInfo.country
     })
 
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${API_BASE_URL}/users/register`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: data
+    if (isCheck) await post("/users/register", data)
+    
+  }
+
+  useEffect(()=>{
+    const status = response?.data.status
+    console.log(response);
+
+    if (status === 'OK') {
+      setOpen(true)
+      router.push('/')
     }
 
-    if (isCheck) {
-      axios(config)
-        .then(function (response) {
-          if (response.data.status === 'FAILED') {
-            setformInfo({
-              firstName: '',
-              lastName: '',
-              username: '',
-              email: '',
-              address: '',
-              country: '',
-              postalCode: '',
-              city: '',
-              phoneNumber: ''
-            })
-          } else {
-            setOpen(true)
-            router.push('/')
-          }
-        })
-        .catch(function (error) {
-          setErrorOpen(true)
-          Sentry.captureException(error)
-        })
+    status === 'FAILED' && setformInfo({
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      address: '',
+      country: '',
+      postalCode: '',
+      city: '',
+      phoneNumber: ''
+    })
+    
+    if(error){
+      setErrorOpen(true)
+      Sentry.captureException(error)
     }
-  }
+    
+  },[response, error])
 
   return (
     <Box className='content-center'>
@@ -529,8 +524,11 @@ const RegisterPage = () => {
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />
 
-            <Button variant='contained' onClick={handleNext}>
-              {activeStep === steps.length - 1 ? 'Sign Up' : 'Next Step'}
+            <Button disabled={loading} variant='contained' onClick={handleNext}>
+              {
+              activeStep === steps.length - 1 ?         
+              loading ? "Signing Up..." : "Sign Up" : 'Next Step'
+              }
             </Button>
           </Box>
         </CardContent>
