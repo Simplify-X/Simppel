@@ -12,7 +12,6 @@ import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
-import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Cookies from 'js-cookie'
@@ -29,9 +28,7 @@ import { useTranslation } from 'react-i18next'
 import DatePickerField from './DatePicker'
 import TimePickerField from './TimePicker'
 import dayjs from 'dayjs'
-import { API_BASE_URL } from 'src/config'
-
-
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -69,11 +66,9 @@ const Automation = () => {
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const { response, loading, error , get, post } = useCustomApiHook();
 
   console.log(selectedLocation)
-
-
-
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader()
@@ -98,91 +93,59 @@ const Automation = () => {
   }
 
 
-
   useEffect(() => {
     const token = Cookies.get('token')
     if (!token) {
       // Token not found, redirect to login page
       window.location.replace('/login')
-
       return
     }
+    
+    token && fecthUserData("me", token)
+    token && fecthUserData("my", token)
+  }, [])
 
-    fetch(`${API_BASE_URL}/users/me`, {
+  const fecthUserData = async(type, token)=>{
+    const response = await get(`/users/${type}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
+    if (response?.data) {
+      type === "me" && setAccountId(response?.data);
+      type === "my" && setUserId(response?.data)
+    }
+    else throw new Error("Invalid token");
+  }
+
+
+  // show error message 
+  useEffect(()=>{
+    if(error){
+      Sentry.captureException(error)
       window.location.replace('/login')
-
-      return
     }
+  },[error])
 
-    fetch(`${API_BASE_URL}/users/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setUserId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
 
-  console.log(userId)
 
   useEffect(() => {
-    if (userId) {
-      fetch(`${API_BASE_URL}/users/getSingleUser/${userId}`)
-        .then(response => response.json())
-        .then(data => {
-          setData(data)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
-    }
+    if (userId) fetchSingleUser()
   }, [userId])
+
+  const fetchSingleUser=async()=>{
+   const response = await get(`/users/getSingleUser/${userId}`)
+   response &&  setData(response.data)
+  }
+
+
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const name = nameRef.current?.value
     const description = descriptionRef.current?.value
@@ -199,37 +162,34 @@ const Automation = () => {
       automationDate: formattedDate,
       automationTime: formattedTime,
 
-    }
-
-    const config = {
-      method: 'post',
-      url: `${API_BASE_URL}/posts/${userId}/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
-    }
-
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-          toast.error('Error', { autoClose: 3000 })
-
-          // @ts-ignore
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-        } else {
-          toast.success('Advertisement Added', { autoClose: 2000 })
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-          router.push('/content/view-content')
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-        toast.error('An error occurred. Please try again later', { autoClose: 3000 })
-      })
+    } 
+    await post(`/posts/${userId}/${accountId}`, data)
+ 
   }
+
+  useEffect(() => {
+    const status = response?.data.status
+
+    if (status === 'OK') {
+      toast.success('Advertisement Added', { autoClose: 2000 })
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+      router.push('/content/view-content')
+    }
+
+    if (status === 'FAILED') {
+      toast.error('Error', { autoClose: 3000 })
+      // @ts-ignore
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+    }
+
+    if (error) {
+      Sentry.captureException(error)
+      toast.error('An error occurred. Please try again later', { autoClose: 3000 })
+    }
+  }, [response, error])
+
 
   return (
     <form onSubmit={submitForm}>

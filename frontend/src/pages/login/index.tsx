@@ -43,9 +43,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import axios from 'axios'
 import jwt_decode from 'jwt-decode'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 
 interface State {
@@ -72,6 +71,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
+  const { response, loading, error , post } = useCustomApiHook();
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -108,7 +108,7 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async(event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault()
     const data = JSON.stringify({
@@ -116,29 +116,23 @@ const LoginPage = () => {
       password: event.target[2].value,
       rememberMe: event.target[5].checked
     })
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${API_BASE_URL}/users/login/`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: data
-    }
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'OK') {
-          Cookies.set('token', response.data.token)
-          toast.success('Login successful', { autoClose: 3000 })
-          router.push('/')
-        } else {  
-          toast.error('Email or password is incorrect', { autoClose: 3000 })
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error);
-      })
+    await post("/users/login/", data);
+
   }
+
+  useEffect(()=>{
+    const status = response?.data.status
+
+    if (status === 'OK') {
+      Cookies.set('token', response.data.token)
+      toast.success('Login successful', { autoClose: 3000 })
+      router.push('/')
+    }
+
+    status === 'FAILED' && toast.error('Email or password is incorrect', { autoClose: 3000 })
+    error && Sentry.captureException(error)
+  },[response, error])
+
 
   return (
     <Box className='content-center'>
@@ -256,8 +250,8 @@ const LoginPage = () => {
                 <LinkStyled>Forgot Password?</LinkStyled>
               </Link>
             </Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
-              Login
+            <Button disabled={loading} fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
+              {loading ? "Loading..." : "Login"}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
