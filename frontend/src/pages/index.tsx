@@ -24,13 +24,11 @@ import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
-import jwt_decode from "jwt-decode";
 import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route'
 import { API_BASE_URL } from 'src/config'
 
 const Dashboard = () => {
-  const [authenticated, setauthenticated] = useState(true);
 
   const [userData, setUserData] = useState<UserData>({
     role: '',
@@ -71,24 +69,7 @@ const Dashboard = () => {
   }, [])
 
   const router = useRouter()
-  useEffect(() => {
-    const token = Cookies.get('token');
-    if(!token)
-    {
-      setauthenticated(false);
-    }
-    else {
-      const decodedToken = jwt_decode(token);
-      if (decodedToken.exp * 1000 < Date.now()) {
-        setauthenticated(false)
-      }
-    }
-  }, [])
-  if(!authenticated){
-    router.push("login")
 
-    return null;
-  }
   if(userData.role){
     router.push("/global-administrator/users")
 
