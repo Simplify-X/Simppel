@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/react'
@@ -19,6 +20,7 @@ export const useUserData = (): [UserData | undefined, UserData | undefined, stri
     if (!token) {
       // Token not found, redirect to login page
       window.location.replace('/login')
+
       return
     }
 

@@ -34,6 +34,8 @@ const ViewUserGroup = () => {
   const {response, loading, error , get, post } = useCustomApiHook();
   const [accountId, userId] = useUserData();
 
+  console,log(userId);
+
   const handleOpen = () => {
     setOpen(true)
   }
@@ -83,7 +85,7 @@ const ViewUserGroup = () => {
       name: 'actions',
       label: 'Actions',
       options: {
-        customBodyRender: ( tableMeta) => {
+        customBodyRender: ( value, tableMeta) => {
           const rowId = tableMeta.rowData[0]
 
           return (
