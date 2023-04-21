@@ -1,6 +1,6 @@
 // @ts-nocheck
 // ** React Imports
-import {  MouseEvent, ReactNode, useEffect, useRef } from 'react'
+import { MouseEvent, ReactNode, useEffect, useRef } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -19,14 +19,13 @@ import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 
-
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
 import Github from 'mdi-material-ui/Github'
 import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import Cookies from 'js-cookie'
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from '@sentry/nextjs'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -39,8 +38,6 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import jwt_decode from 'jwt-decode'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
-
-
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
@@ -52,10 +49,8 @@ const LinkStyled = styled('a')(({ theme }) => ({
   color: theme.palette.primary.main
 }))
 
-
-
 const PasswordResetPage = () => {
-  const {response, loading, error, post } = useCustomApiHook();
+  const { response, loading, error, post } = useCustomApiHook()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -63,7 +58,7 @@ const PasswordResetPage = () => {
     } else {
       const decodedToken = jwt_decode(token)
       if (decodedToken.exp * 1000 < Date.now()) {
-        Cookies.remove('token');
+        Cookies.remove('token')
       } else {
         router.push('/')
       }
@@ -74,33 +69,29 @@ const PasswordResetPage = () => {
   const router = useRouter()
   const emailRef = useRef<HTMLInputElement>(null)
 
-
   const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault()
     const email = emailRef.current?.value
 
-    if(email === ""){
+    if (email === '') {
       toast.error('Field cannot be empty', { autoClose: 2000 })
 
-      return;
-
+      return
     }
 
     await post(`/users/reset/password?email=${email}`)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     if (response?.status === 200) {
       toast.success(response.data, { autoClose: 3000 })
-    } else {  
+    } else {
       toast.error(response?.data, { autoClose: 3000 })
     }
 
-    error && Sentry.captureException(error);
-  },[response, error])
-
-
+    error && Sentry.captureException(error)
+  }, [response, error])
 
   return (
     <Box className='content-center'>
@@ -183,17 +174,33 @@ const PasswordResetPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Reset Password
             </Typography>
-            <Typography variant='body2'>Please enter your email used to register in order to receive a reset password link</Typography>
+            <Typography variant='body2'>
+              Please enter your email used to register in order to receive a reset password link
+            </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={submitForm}>
             <ToastContainer position={'top-center'} draggable={false} />
-            <TextField autoFocus fullWidth id='email' label='Email' inputRef={emailRef} sx={{ marginBottom: 4 }} required/>
+            <TextField
+              autoFocus
+              fullWidth
+              id='email'
+              label='Email'
+              inputRef={emailRef}
+              sx={{ marginBottom: 4 }}
+              required
+            />
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
+            ></Box>
+            <Button
+              disabled={loading}
+              fullWidth
+              size='large'
+              variant='contained'
+              sx={{ marginBottom: 7 }}
+              type={'submit'}
             >
-            </Box>
-            <Button disabled={loading} fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
-             {loading ? " Sending Link..." : " Send Reset Link"}
+              {loading ? ' Sending Link...' : ' Send Reset Link'}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>

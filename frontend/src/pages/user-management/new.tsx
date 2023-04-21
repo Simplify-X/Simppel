@@ -19,8 +19,8 @@ import Card from '@mui/material/Card'
 import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
 import { API_BASE_URL } from 'src/config'
-import Cookies from 'js-cookie';
-import FormHelperText from '@mui/material/FormHelperText';
+import Cookies from 'js-cookie'
+import FormHelperText from '@mui/material/FormHelperText'
 
 const NewUser = () => {
   const [data, setData] = useState([])
@@ -74,8 +74,7 @@ const NewUser = () => {
   }, [])
 
   const handleSave = () => {
-
-    if(accountId){
+    if (accountId) {
       fetch(`${API_BASE_URL}/users/register/account/${accountId}`, {
         method: 'POST',
         headers: {
@@ -92,8 +91,6 @@ const NewUser = () => {
           toast.error('Error updating user', { autoClose: 3000 })
         })
     }
-
-
   }
 
   console.log(data)
@@ -114,7 +111,9 @@ const NewUser = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography>User Details</Typography>
                 </Box>
-                <FormHelperText style={{marginTop : '20px'}}>Create a new User for your Account. All users can be managed from your account section</FormHelperText>
+                <FormHelperText style={{ marginTop: '20px' }}>
+                  Create a new User for your Account. All users can be managed from your account section
+                </FormHelperText>
               </Grid>
 
               <Grid item xs={12} sm={6}>

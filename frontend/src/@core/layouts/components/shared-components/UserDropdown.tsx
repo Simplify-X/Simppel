@@ -22,13 +22,9 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import Cookies from 'js-cookie';
-import * as Sentry from "@sentry/nextjs";
+import Cookies from 'js-cookie'
+import * as Sentry from '@sentry/nextjs'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-
-
-
-
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -40,15 +36,12 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 const UserDropdown = () => {
-
-
   // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
 
   // ** Hooks
   const router = useRouter()
-  const {response, error , post } = useCustomApiHook();
-
+  const { response, error, post } = useCustomApiHook()
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -62,24 +55,22 @@ const UserDropdown = () => {
   }
 
   const handleLogout = async () => {
-    const token = Cookies.get('token');
-    
-    await post("/users/logout", null, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const token = Cookies.get('token')
+
+    await post('/users/logout', null, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
-    
   }
 
-  useEffect(()=>{
-    if(response?.status === 200){
-      Cookies.remove('token');
-      router.push("/login");
+  useEffect(() => {
+    if (response?.status === 200) {
+      Cookies.remove('token')
+      router.push('/login')
     }
-    error &&  Sentry.captureException(error);
-    
-  },[response, error])
+    error && Sentry.captureException(error)
+  }, [response, error])
 
   const styles = {
     py: 2,

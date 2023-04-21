@@ -71,7 +71,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 const RegisterPage = () => {
   const steps = ['Account Data', 'Personal Data']
   const [activeStep, setActiveStep] = useState(0)
-  const { response, loading, error , post } = useCustomApiHook();
+  const { response, loading, error, post } = useCustomApiHook()
 
   const [open, setOpen] = useState(false)
   const [errorOpen, setErrorOpen] = useState(false)
@@ -150,7 +150,6 @@ const RegisterPage = () => {
     event.preventDefault()
     const isCheck = agreeRef.current?.checked
 
-
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/ // regular expression for email validation
     if (!emailRegex.test(formInfo.email!)) {
       setEmailError('Invalid email address')
@@ -184,37 +183,36 @@ const RegisterPage = () => {
       country: formInfo.country
     })
 
-    if (isCheck) await post("/users/register", data)
-    
+    if (isCheck) await post('/users/register', data)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const status = response?.data.status
-    console.log(response);
+    console.log(response)
 
     if (status === 'OK') {
       setOpen(true)
       router.push('/')
     }
 
-    status === 'FAILED' && setformInfo({
-      firstName: '',
-      lastName: '',
-      username: '',
-      email: '',
-      address: '',
-      country: '',
-      postalCode: '',
-      city: '',
-      phoneNumber: ''
-    })
-    
-    if(error){
+    status === 'FAILED' &&
+      setformInfo({
+        firstName: '',
+        lastName: '',
+        username: '',
+        email: '',
+        address: '',
+        country: '',
+        postalCode: '',
+        city: '',
+        phoneNumber: ''
+      })
+
+    if (error) {
       setErrorOpen(true)
       Sentry.captureException(error)
     }
-    
-  },[response, error])
+  }, [response, error])
 
   return (
     <Box className='content-center'>
@@ -525,10 +523,7 @@ const RegisterPage = () => {
             <Box sx={{ flex: '1 1 auto' }} />
 
             <Button disabled={loading} variant='contained' onClick={handleNext}>
-              {
-              activeStep === steps.length - 1 ?         
-              loading ? "Signing Up..." : "Sign Up" : 'Next Step'
-              }
+              {activeStep === steps.length - 1 ? (loading ? 'Signing Up...' : 'Sign Up') : 'Next Step'}
             </Button>
           </Box>
         </CardContent>

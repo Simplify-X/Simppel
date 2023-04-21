@@ -85,7 +85,7 @@ const Writing = () => {
   // ** States
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
-  const selectedTypeAd = '';
+  const selectedTypeAd = ''
   const [selectedMood, setSelectedMood] = useState('')
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
@@ -96,11 +96,10 @@ const Writing = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
 
-  const {response, error , get, post } = useCustomApiHook();
-  const [accountId, userId] = useUserData();
+  const { response, error, get, post } = useCustomApiHook()
+  const [accountId, userId] = useUserData()
 
-  console.log(userId);
-
+  console.log(userId)
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -130,7 +129,6 @@ const Writing = () => {
     setSelectedLocation(event.target.value)
   }
 
-
   const handleMood = event => {
     setSelectedMood(event.target.value)
   }
@@ -146,9 +144,8 @@ const Writing = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
-
   useEffect(() => {
-    const fetchSingleUser = async () =>{
+    const fetchSingleUser = async () => {
       const res = await get(`/users/getSingleUser/${accountId}`)
       res?.data && setData(res.data)
     }
@@ -156,9 +153,9 @@ const Writing = () => {
     accountId && fetchSingleUser()
   }, [accountId])
 
-  useEffect(()=>{
+  useEffect(() => {
     error && Sentry.captureException(error)
-  },[error])
+  }, [error])
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -182,7 +179,6 @@ const Writing = () => {
     }
 
     await post(`/advertisements/${accountId}`, data)
-
   }
 
   useEffect(() => {
@@ -208,7 +204,6 @@ const Writing = () => {
       toast.error('An error occurred. Please try again later', { autoClose: 3000 })
     }
   }, [response, error])
-
 
   return (
     <form onSubmit={submitForm}>
@@ -286,32 +281,32 @@ const Writing = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label={t('branding_information')}
-                    inputRef={nameRef}
-                    required
-                    helperText={t('enter_product_name')}
+                    <TextField
+                      fullWidth
+                      label={t('branding_information')}
+                      inputRef={nameRef}
+                      required
+                      helperText={t('enter_product_name')}
                     />
                   </Grid>
 
                   <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label={t('brand_description')}
-                    inputRef={nameRef}
-                    required
-                    helperText={t('enter_product_name')}
+                    <TextField
+                      fullWidth
+                      label={t('brand_description')}
+                      inputRef={nameRef}
+                      required
+                      helperText={t('enter_product_name')}
                     />
                   </Grid>
 
                   <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label={t('keywords')}
-                    inputRef={nameRef}
-                    required
-                    helperText={t('enter_product_name')}
+                    <TextField
+                      fullWidth
+                      label={t('keywords')}
+                      inputRef={nameRef}
+                      required
+                      helperText={t('enter_product_name')}
                     />
                   </Grid>
                 </AccordionDetails>
@@ -341,7 +336,6 @@ const Writing = () => {
                 </RadioGroup>
               </FormControl>
             </Grid>
-
 
             <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
 

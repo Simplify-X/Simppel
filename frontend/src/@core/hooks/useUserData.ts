@@ -4,15 +4,14 @@ import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/react'
 import useCustomApiHook from './useCustomApiHook'
 
-interface UserData {
-}
+interface UserData {}
 
 type UserType = 'me' | 'my'
 
 export const useUserData = (): [UserData | undefined, UserData | undefined, string] => {
   const [accountId, setAccountId] = useState<UserData | undefined>()
   const [userId, setUserId] = useState<UserData | undefined>()
-  const [token, setToken] = useState<string>("")
+  const [token, setToken] = useState<string>('')
   const { loading, error, get } = useCustomApiHook()
 
   useEffect(() => {
@@ -51,7 +50,6 @@ export const useUserData = (): [UserData | undefined, UserData | undefined, stri
       // window.location.replace('/login')
     }
   }, [error])
-
 
   return [accountId, userId, token]
 }

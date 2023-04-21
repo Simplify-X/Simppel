@@ -1,119 +1,107 @@
 // ** MUI Imports
 // @ts-nocheck
-import {useEffect, useState } from 'react'
-import authRoute from 'src/@core/utils/auth-route';
-import MUIDataTable from "mui-datatables";
-import { useRouter } from 'next/router';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
+import { useEffect, useState } from 'react'
+import authRoute from 'src/@core/utils/auth-route'
+import MUIDataTable from 'mui-datatables'
+import { useRouter } from 'next/router'
+import Fab from '@mui/material/Fab'
+import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
-import * as Sentry from "@sentry/nextjs"
-import useCustomApiHook from 'src/@core/hooks/useCustomApiHook';
-import { useUserData } from 'src/@core/hooks/useUserData';
+import * as Sentry from '@sentry/nextjs'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const ViewAutomation = () => {
-  const [content, setContent] = useState([]);
+  const [content, setContent] = useState([])
   const router = useRouter()
 
-  const {  error , get } = useCustomApiHook();
-  const [accountId, userId, token] = useUserData();
+  const { error, get } = useCustomApiHook()
+  const [accountId, userId, token] = useUserData()
 
-  console.log(accountId, token);
+  console.log(accountId, token)
 
   const columns = [
     {
-     name: "id",
-     label: "Id",
-     options: {
-      filter: true,
-      sort: true,
-     }
-    },
-    {
-     name: "automationName",
-     label: "Product Name",
-     options: {
-      filter: true,
-      sort: true,
-     }
-    },
-    {
-     name: "automationDescription",
-     label: "Product Description",
-     options: {
-      filter: true,
-      sort: false,
-     }
-    },
-
-    {
-      name: "automationDate",
-      label: "Automation Date",
+      name: 'id',
+      label: 'Id',
       options: {
-       filter: true,
-       sort: false,
+        filter: true,
+        sort: true
       }
-     },
+    },
+    {
+      name: 'automationName',
+      label: 'Product Name',
+      options: {
+        filter: true,
+        sort: true
+      }
+    },
+    {
+      name: 'automationDescription',
+      label: 'Product Description',
+      options: {
+        filter: true,
+        sort: false
+      }
+    },
 
-     {
-        name: "automationTime",
-        label: "Automation Time",
-        options: {
-         filter: true,
-         sort: false,
-        }
-       },
-    
-   ];
+    {
+      name: 'automationDate',
+      label: 'Automation Date',
+      options: {
+        filter: true,
+        sort: false
+      }
+    },
+
+    {
+      name: 'automationTime',
+      label: 'Automation Time',
+      options: {
+        filter: true,
+        sort: false
+      }
+    }
+  ]
 
   const options = {
     filterType: 'checkbox',
-    onRowClick: (rowData) => {
-      handleClick(rowData[0]);
-    },
-  };
+    onRowClick: rowData => {
+      handleClick(rowData[0])
+    }
+  }
 
-
-
-  const handleClick = async (rowData) => {
+  const handleClick = async rowData => {
     const res = await get(`/advertisements/single/${rowData}`)
-    res?.data && router.push(`/content/content?id=${res.data?.id}`);
-  };  
+    res?.data && router.push(`/content/content?id=${res.data?.id}`)
+  }
 
-
-  useEffect(()=>{
-   error && Sentry.captureException(error);
-  },[error])
-
+  useEffect(() => {
+    error && Sentry.captureException(error)
+  }, [error])
 
   useEffect(() => {
     userId && handlePostsData()
-  }, [userId]);
+  }, [userId])
 
-  const handlePostsData = async ()=>{
+  const handlePostsData = async () => {
     const res = await get(`/posts/${userId}`)
-    res?.data && setContent(res?.data);
+    res?.data && setContent(res?.data)
   }
 
   const addAutomation = () => {
-    router.push('/automation');
+    router.push('/automation')
   }
 
   return (
     <Box sx={{ width: '100%' }}>
-        <MUIDataTable 
-            title={"Content List"}
-            data={content}
-            columns={columns}
-            options={options}
-        />
+      <MUIDataTable title={'Content List'} data={content} columns={columns} options={options} />
 
-        <Fab color="primary" aria-label="add" onClick={addAutomation} style={{marginTop: "10px"}}>
-            <AddIcon />
-        </Fab>
-
-     </Box>
-
+      <Fab color='primary' aria-label='add' onClick={addAutomation} style={{ marginTop: '10px' }}>
+        <AddIcon />
+      </Fab>
+    </Box>
   )
 }
 

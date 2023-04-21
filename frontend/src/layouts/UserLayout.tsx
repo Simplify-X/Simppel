@@ -37,7 +37,6 @@ const UserLayout = ({ children }: Props) => {
    */
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
-
   return (
     <VerticalLayout
       hidden={hidden}

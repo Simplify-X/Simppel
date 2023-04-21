@@ -22,9 +22,9 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
-import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
-import Cookies from 'js-cookie';
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
 import authRoute from 'src/@core/utils/auth-route'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
@@ -41,7 +41,7 @@ const Dashboard = () => {
     if (!token) {
       window.location.replace('login')
 
-      return;
+      return
     }
 
     token && handleGetUser(token)
@@ -53,14 +53,14 @@ const Dashboard = () => {
         Authorization: `Bearer ${token}`
       }
     })
-    
+
     if (!userData?.data) throw new Error('Invalid token')
     userData?.data && setUserData(userData?.data as UserData)
   }
 
   useEffect(() => {
     if (error) {
-      Sentry.captureException(error)
+      // Sentry.captureException(error)
       window.location.replace('login')
     }
   }, [error])
@@ -72,79 +72,80 @@ const Dashboard = () => {
 
     return null
   } else {
-  return (
-    <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={4}>
-          <Trophy />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <StatisticsCard />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <WeeklyOverview />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <TotalEarning />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <Grid container spacing={6}>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$25.6k'
-                icon={<Poll />}
-                color='success'
-                trendNumber='+42%'
-                title='Total Profit'
-                subtitle='Weekly Profit'
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$78'
-                title='Refunds'
-                trend='negative'
-                color='secondary'
-                trendNumber='-15%'
-                subtitle='Past Month'
-                icon={<CurrencyUsd />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='862'
-                trend='negative'
-                trendNumber='-18%'
-                title='New Project'
-                subtitle='Yearly Project'
-                icon={<BriefcaseVariantOutline />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='15'
-                color='warning'
-                trend='negative'
-                trendNumber='-18%'
-                subtitle='Last Week'
-                title='Sales Queries'
-                icon={<HelpCircleOutline />}
-              />
+    return (
+      <ApexChartWrapper>
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={4}>
+            <Trophy />
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <StatisticsCard />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <WeeklyOverview />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <TotalEarning />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Grid container spacing={6}>
+              <Grid item xs={6}>
+                <CardStatisticsVerticalComponent
+                  stats='$25.6k'
+                  icon={<Poll />}
+                  color='success'
+                  trendNumber='+42%'
+                  title='Total Profit'
+                  subtitle='Weekly Profit'
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <CardStatisticsVerticalComponent
+                  stats='$78'
+                  title='Refunds'
+                  trend='negative'
+                  color='secondary'
+                  trendNumber='-15%'
+                  subtitle='Past Month'
+                  icon={<CurrencyUsd />}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <CardStatisticsVerticalComponent
+                  stats='862'
+                  trend='negative'
+                  trendNumber='-18%'
+                  title='New Project'
+                  subtitle='Yearly Project'
+                  icon={<BriefcaseVariantOutline />}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <CardStatisticsVerticalComponent
+                  stats='15'
+                  color='warning'
+                  trend='negative'
+                  trendNumber='-18%'
+                  subtitle='Last Week'
+                  title='Sales Queries'
+                  icon={<HelpCircleOutline />}
+                />
+              </Grid>
             </Grid>
           </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <SalesByCountries />
+          </Grid>
+          <Grid item xs={12} md={12} lg={8}>
+            <DepositWithdraw />
+          </Grid>
+          <Grid item xs={12}>
+            <Table />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <SalesByCountries />
-        </Grid>
-        <Grid item xs={12} md={12} lg={8}>
-          <DepositWithdraw />
-        </Grid>
-        <Grid item xs={12}>
-          <Table />
-        </Grid>
-      </Grid>
-    </ApexChartWrapper>
-  )
-}}
+      </ApexChartWrapper>
+    )
+  }
+}
 
-export default authRoute(Dashboard);
+export default authRoute(Dashboard)

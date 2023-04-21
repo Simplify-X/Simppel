@@ -1,6 +1,6 @@
 // ** Next Imports
 import Head from 'next/head'
-import {Router} from 'next/router'
+import { Router } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
@@ -30,7 +30,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '../../styles/globals.css'
 
-
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -56,36 +55,34 @@ if (themeConfig.routingLoader) {
 const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
-
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
   // @ts-ignore
   getLayout(<Component {...pageProps} />)
 
-    return  ( <CacheProvider value={emotionCache}>
-          <Head>
-            <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-            <meta
-              name='description'
-              content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-            />
-            <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
-            <meta name='viewport' content='initial-scale=1, width=device-width' />
-          </Head>
+  return (
+    <CacheProvider value={emotionCache}>
+      <Head>
+        <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
+        <meta
+          name='description'
+          content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+        />
+        <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+        <meta name='viewport' content='initial-scale=1, width=device-width' />
+      </Head>
 
-          <SettingsProvider>
-            <SettingsConsumer>
-              {({ settings }) => {
-                // @ts-ignore
-                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-              }}
-            </SettingsConsumer>
-          </SettingsProvider>
-        </CacheProvider>
-    )
-
-
+      <SettingsProvider>
+        <SettingsConsumer>
+          {({ settings }) => {
+            // @ts-ignore
+            return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+          }}
+        </SettingsConsumer>
+      </SettingsProvider>
+    </CacheProvider>
+  )
 }
 
 export default App

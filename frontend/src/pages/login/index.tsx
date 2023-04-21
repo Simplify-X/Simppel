@@ -33,7 +33,7 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import Cookies from 'js-cookie'
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from '@sentry/nextjs'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -45,7 +45,6 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import jwt_decode from 'jwt-decode'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-
 
 interface State {
   password: string
@@ -71,7 +70,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
-  const { response, loading, error , post } = useCustomApiHook();
+  const { response, loading, error, post } = useCustomApiHook()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -79,7 +78,7 @@ const LoginPage = () => {
     } else {
       const decodedToken = jwt_decode(token)
       if (decodedToken.exp * 1000 < Date.now()) {
-        Cookies.remove('token');
+        Cookies.remove('token')
       } else {
         router.push('/')
       }
@@ -108,7 +107,7 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const submitForm = async(event: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault()
     const data = JSON.stringify({
@@ -116,11 +115,10 @@ const LoginPage = () => {
       password: event.target[2].value,
       rememberMe: event.target[5].checked
     })
-    await post("/users/login/", data);
-
+    await post('/users/login/', data)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const status = response?.data.status
 
     if (status === 'OK') {
@@ -131,8 +129,7 @@ const LoginPage = () => {
 
     status === 'FAILED' && toast.error('Email or password is incorrect', { autoClose: 3000 })
     error && Sentry.captureException(error)
-  },[response, error])
-
+  }, [response, error])
 
   return (
     <Box className='content-center'>
@@ -250,8 +247,15 @@ const LoginPage = () => {
                 <LinkStyled>Forgot Password?</LinkStyled>
               </Link>
             </Box>
-            <Button disabled={loading} fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
-              {loading ? "Loading..." : "Login"}
+            <Button
+              disabled={loading}
+              fullWidth
+              size='large'
+              variant='contained'
+              sx={{ marginBottom: 7 }}
+              type={'submit'}
+            >
+              {loading ? 'Loading...' : 'Login'}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>

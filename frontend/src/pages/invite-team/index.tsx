@@ -35,10 +35,10 @@ const InviteTeam = () => {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(true)
   const [recordId, setRecordId] = useState('')
-  const {response, error , del, get, post , put} = useCustomApiHook();
-  const [accountId, userId] = useUserData();
-  
-  console.log(userId);
+  const { response, error, del, get, post, put } = useCustomApiHook()
+  const [accountId, userId] = useUserData()
+
+  console.log(userId)
 
   const handleOpen = () => {
     setOpen(true)
@@ -69,7 +69,7 @@ const InviteTeam = () => {
       options: {
         filter: true,
         sort: true,
-        display: 'none',
+        display: 'none'
       }
     },
     {
@@ -105,11 +105,12 @@ const InviteTeam = () => {
               >
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={(e) => {
-                    e.stopPropagation() 
-                    handleDelete(rowId)
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation()
+                  handleDelete(rowId)
                 }}
-                >
+              >
                 <DeleteIcon />
               </IconButton>
             </>
@@ -123,7 +124,6 @@ const InviteTeam = () => {
     await del(`/groups/delete/${rowId}`)
   }
 
-
   useEffect(() => {
     const status = response?.data.status
 
@@ -133,10 +133,7 @@ const InviteTeam = () => {
     }
     status === 'FAILED' && toast.error('Error', { autoClose: 3000 })
     error && Sentry.captureException(error)
-
   }, [error])
-
-  
 
   const handleEdit = rowData => {
     const [selectedData] = role.filter(data => data.id === rowData[0])
@@ -146,7 +143,7 @@ const InviteTeam = () => {
     setDescription(selectedData.description)
     setAdvertisement(selectedData.advertisementAccess)
     setCopyWriting(selectedData.copyWritingAccess)
-    setIsCreating(true) 
+    setIsCreating(true)
     setRecordId(rowData[0])
   }
 
@@ -157,19 +154,18 @@ const InviteTeam = () => {
     }
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     accountId && fecthGroupData()
   }, [accountId])
 
   const fecthGroupData = async () => {
-        const res = await get(`/groups/${accountId}`)
-        setRole(res?.data)
+    const res = await get(`/groups/${accountId}`)
+    setRole(res?.data)
   }
-
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-  
+
     const data = {
       groupName: title,
       description: description,
@@ -178,13 +174,12 @@ const InviteTeam = () => {
     }
 
     await post(`/groups/create/${accountId}`, data)
-  
   }
 
   useEffect(() => {
-    const fetchGroupData = async ()=> {
+    const fetchGroupData = async () => {
       const res = await get(`/groups/${accountId}`)
-        setRole(res?.data)
+      setRole(res?.data)
     }
 
     const status = response?.data.status
@@ -192,15 +187,11 @@ const InviteTeam = () => {
       accountId && fetchGroupData()
       handleClose()
     }
-    
   }, [response])
 
-
-
-  
   async function handleEditForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-  
+
     const data = {
       groupName: title,
       description: description,
@@ -209,11 +200,9 @@ const InviteTeam = () => {
     }
 
     await put(`/groups/update/${recordId}/${accountId}`, data)
-
   }
 
-
-  useEffect(()=>{
+  useEffect(() => {
     if (response?.data?.status !== 'FAILED') {
       const updatedRole = role.map(data => {
         if (data.id === recordId) {
@@ -225,9 +214,7 @@ const InviteTeam = () => {
 
       setRole(updatedRole)
     }
-  },[response])
-  
-  
+  }, [response])
 
   return (
     <>
@@ -291,8 +278,7 @@ const InviteTeam = () => {
             </Button>
             <Button variant='contained' onClick={isCreating ? handleEditForm : handleSubmit} sx={{ marginLeft: 1 }}>
               {isCreating ? 'Edit' : 'Save'}
-          </Button>
-
+            </Button>
           </Box>
         </DialogContent>
       </Dialog>

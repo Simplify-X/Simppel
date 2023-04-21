@@ -39,10 +39,9 @@ import * as Sentry from '@sentry/nextjs'
 import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
 import WebScraper from './WebScraper'
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from '@mui/material/Tooltip'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
-
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -96,19 +95,18 @@ const Content = () => {
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
   const [adCount, setAdCount] = useState(0)
-  const [limit, setLimit] = useState(10);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [limit, setLimit] = useState(10)
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const { t } = useTranslation()
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
-  const {response, error , get, post } = useCustomApiHook();
-  const [_, accountId] = useUserData();
+  const { response, error, get, post } = useCustomApiHook()
+  const [_, accountId] = useUserData()
 
-  console.log(_);
-
+  console.log(_)
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -161,41 +159,37 @@ const Content = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
-
-  useEffect(() => { 
-     accountId && fetchSingleUser()
-     accountId && fetchAdvertisements()
+  useEffect(() => {
+    accountId && fetchSingleUser()
+    accountId && fetchAdvertisements()
   }, [accountId])
 
-  const fetchSingleUser=async()=>{
-   const response = await get(`/users/getSingleUser/${accountId}`)
-   if(response?.data){
-    setData(response.data)
-    const advertisementLimit = response.data?.advertisementLimit
-    advertisementLimit && setLimit(advertisementLimit)
-   }
+  const fetchSingleUser = async () => {
+    const response = await get(`/users/getSingleUser/${accountId}`)
+    if (response?.data) {
+      setData(response.data)
+      const advertisementLimit = response.data?.advertisementLimit
+      advertisementLimit && setLimit(advertisementLimit)
+    }
   }
 
-  const fetchAdvertisements=async()=>{
+  const fetchAdvertisements = async () => {
     const response = await get(`/advertisements/${accountId}`)
-    response?.advertisements && setAdCount(response.advertisements?.length);
-
+    response?.advertisements && setAdCount(response.advertisements?.length)
   }
-    
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
-
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (adCount >= limit) {
       toast.error('You have reached your limit of advertisements', { autoClose: 3000 })
-      setIsButtonDisabled(true);
-      
-      return;
+      setIsButtonDisabled(true)
+
+      return
     }
 
     const name = nameRef.current?.value
@@ -214,9 +208,7 @@ const Content = () => {
     }
 
     await post(`/advertisements/${accountId}`, data)
-
   }
-
 
   useEffect(() => {
     const status = response?.data.status
@@ -242,7 +234,7 @@ const Content = () => {
       toast.error('An error occurred. Please try again later', { autoClose: 3000 })
     }
   }, [response, error])
-  
+
   return (
     <form onSubmit={submitForm}>
       <Card>
@@ -449,12 +441,12 @@ const Content = () => {
         </Card>
       )}
 
-  <Tooltip title={isButtonDisabled ? "You have reached your limit of advertisements" : ""} arrow>
+      <Tooltip title={isButtonDisabled ? 'You have reached your limit of advertisements' : ''} arrow>
         <span>
-          <Button 
-            type='submit' 
-            variant='contained' 
-            size='large' 
+          <Button
+            type='submit'
+            variant='contained'
+            size='large'
             style={{ marginTop: '20px' }}
             disabled={isButtonDisabled}
           >
