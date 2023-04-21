@@ -64,4 +64,8 @@ public class TeamGroupService {
         return teamGroupRepository.findAll();
     }
 
+    public TeamGroup getTeamList(UUID accountId) {
+        return teamGroupRepository.findByGroupId(accountId);
+    }
+
 }

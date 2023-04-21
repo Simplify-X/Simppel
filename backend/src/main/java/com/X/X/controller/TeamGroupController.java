@@ -52,5 +52,14 @@ public class TeamGroupController {
 
     }
 
+    @CrossOrigin
+    @GetMapping("/list/{accountId}")
+    @Operation(summary = "Get Team Groups", description = "Get all team groups for the specified user account.")
+    public TeamGroup getTeamGroupList(@PathVariable UUID accountId) {
+        return teamGroupService.getTeamList(accountId);
+    }
+
+
+
 
 }
