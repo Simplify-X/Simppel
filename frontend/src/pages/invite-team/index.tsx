@@ -10,7 +10,8 @@ import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import Cookies from 'js-cookie'
+
+// import Cookies from 'js-cookie'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -34,10 +35,10 @@ const InviteTeam = () => {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(true)
   const [recordId, setRecordId] = useState('')
-  const {response, loading, error , del, get, post , put} = useCustomApiHook();
+  const {response, error , del, get, post , put} = useCustomApiHook();
   const [accountId, userId] = useUserData();
   
-
+  console.log(userId);
 
   const handleOpen = () => {
     setOpen(true)

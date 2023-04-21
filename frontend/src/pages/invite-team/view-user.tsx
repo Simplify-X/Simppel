@@ -7,14 +7,16 @@ import AddIcon from '@mui/icons-material/Add'
 import MUIDataTable from 'mui-datatables'
 import authRoute from 'src/@core/utils/auth-route'
 import { useRouter } from 'next/router'
-import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
+
+// import * as Sentry from '@sentry/nextjs'
+// import { API_BASE_URL } from 'src/config'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import Cookies from 'js-cookie'
-import axios from 'axios'
+
+// import Cookies from 'js-cookie'
+// import axios from 'axios'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -35,8 +37,12 @@ const ViewUserGroup = () => {
   const { id } = router.query
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
-  const {response, loading, error , del, get, post , put} = useCustomApiHook();
+
+  // const {response, loading, error , del, get, post , put} = useCustomApiHook();
+  const {response, get, post} = useCustomApiHook();
   const [accountId, userId] = useUserData();
+
+  console,log(userId);
 
   const handleOpen = () => {
     setOpen(true)

@@ -14,7 +14,8 @@ import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Cookies from 'js-cookie'
+
+// import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -65,7 +66,7 @@ const Automation = () => {
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const { response, loading, error , get, post } = useCustomApiHook();
+  const { response, error , get, post } = useCustomApiHook();
   const [accountId, userId] = useUserData();
 
   console.log(selectedLocation)

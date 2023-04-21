@@ -14,7 +14,8 @@ import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Cookies from 'js-cookie'
+
+// import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -103,8 +104,10 @@ const Content = () => {
 
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response, error , get, post } = useCustomApiHook();
   const [_, accountId] = useUserData();
+
+  console.log(_);
 
 
   const handleScrapedData = data => {
