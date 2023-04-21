@@ -1,7 +1,6 @@
 // ** MUI Imports
 // @ts-nocheck
 import {useEffect, useState } from 'react'
-import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
 import { useRouter } from 'next/router';
@@ -9,7 +8,6 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box'
 import * as Sentry from "@sentry/nextjs"
-import { API_BASE_URL } from 'src/config'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook';
 import { useUserData } from 'src/@core/hooks/useUserData';
 
@@ -17,8 +15,10 @@ const ViewAutomation = () => {
   const [content, setContent] = useState([]);
   const router = useRouter()
 
-  const { response, loading, error , get, post } = useCustomApiHook();
+  const {  error , get } = useCustomApiHook();
   const [accountId, userId, token] = useUserData();
+
+  console.log(accountId, token);
 
   const columns = [
     {
@@ -87,11 +87,7 @@ const ViewAutomation = () => {
 
 
   useEffect(() => {
-    
     userId && handlePostsData()
-    // Sentry.captureException(error);
-    // window.location.replace('/login');
-
   }, [userId]);
 
   const handlePostsData = async ()=>{

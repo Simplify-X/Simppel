@@ -67,7 +67,7 @@ const Automation = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   
-  const { response, loading, error , get, post } = useCustomApiHook();
+  const { response, error , get, post } = useCustomApiHook();
   const [accountId, userId] = useUserData();
 
   console.log(selectedLocation)

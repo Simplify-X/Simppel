@@ -76,7 +76,7 @@ const ChangePassword = () => {
   const theme = useTheme()
   const router = useRouter()
   const [tokenValid, setTokenValid] = useState(true)
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response, error, post } = useCustomApiHook();
 
   const { token } = router.query
 

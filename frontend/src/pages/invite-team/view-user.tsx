@@ -31,7 +31,7 @@ const ViewUserGroup = () => {
   const { id } = router.query
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response , get, post } = useCustomApiHook();
   const [accountId, userId] = useUserData();
 
   console,log(userId);

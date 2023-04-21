@@ -21,7 +21,7 @@ function LanguageDropdown() {
   const { i18n } = useTranslation();
 
   const [_, accountId, token] = useUserData()
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response, error , get, post } = useCustomApiHook();
 
 
   useEffect(() => {

@@ -55,7 +55,7 @@ const LinkStyled = styled('a')(({ theme }) => ({
 
 
 const PasswordResetPage = () => {
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response, loading, error, post } = useCustomApiHook();
 
   useEffect(() => {
     const token = Cookies.get('token')

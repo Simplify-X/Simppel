@@ -33,14 +33,15 @@ const Dashboard = () => {
     role: '',
     advertisementEnabled: false
   })
-  const { loading, error, get } = useCustomApiHook()
+  const { error, get } = useCustomApiHook()
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const token = Cookies.get('token')
     if (!token) {
       window.location.replace('login')
-      return
+
+      return;
     }
 
     token && handleGetUser(token)
@@ -54,7 +55,7 @@ const Dashboard = () => {
     })
     
     if (!userData?.data) throw new Error('Invalid token')
-    else setUserData(userData.data)
+    userData?.data && setUserData(userData?.data as UserData)
   }
 
   useEffect(() => {

@@ -55,7 +55,9 @@ const navigation = (): VerticalNavItemsType => {
     })
     
     if (!userData?.data) throw new Error('Invalid token')
-    else setUserData(userData.data)
+
+    userData?.data && setUserData(userData?.data as UserData)
+
   }
 
   useEffect(() => {

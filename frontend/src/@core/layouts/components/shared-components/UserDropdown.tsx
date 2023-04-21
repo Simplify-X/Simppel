@@ -47,7 +47,7 @@ const UserDropdown = () => {
 
   // ** Hooks
   const router = useRouter()
-  const {response, loading, error , get, post } = useCustomApiHook();
+  const {response, error , post } = useCustomApiHook();
 
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
