@@ -145,9 +145,6 @@ const InviteTeam = () => {
   const handleEdit = rowData => {
     const [selectedData] = role.filter(data => data.id === rowData[0])
 
-    console.log(data.id);
-    console.log(rowData[0])
-
     setOpen(true)
     setTitle(selectedData.groupName)
     setDescription(selectedData.description)

@@ -85,7 +85,7 @@ const ViewUserGroup = () => {
       name: 'actions',
       label: 'Actions',
       options: {
-        customBodyRender: ( tableMeta) => {
+        customBodyRender: ( value, tableMeta) => {
           const rowId = tableMeta.rowData[0]
 
           return (
