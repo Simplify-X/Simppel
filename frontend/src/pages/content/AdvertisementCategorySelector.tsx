@@ -15,24 +15,24 @@ const typeOptions = [
   { value: 'homeAndGarden', label: 'Home and garden' },
   { value: 'retail', label: 'Retail' },
   { value: 'technology', label: 'Technology' },
-  { value: 'travel', label: 'Travel and hospitality' },
-];
+  { value: 'travel', label: 'Travel and hospitality' }
+]
 
 const AdvertisementCategorySelector = ({ selectedTypeAd, handleTypeAd }) => {
   return (
     <Grid item xs={12}>
-    <FormControl style={{ minWidth: 500 }}>
-      <InputLabel>Type of Advertisement</InputLabel>
-      <Select label="Type" value={selectedTypeAd} onChange={handleTypeAd}>
-        {typeOptions.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+      <FormControl style={{ minWidth: 500 }}>
+        <InputLabel>Type of Advertisement</InputLabel>
+        <Select label='Type' value={selectedTypeAd} onChange={handleTypeAd}>
+          {typeOptions.map(option => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </Grid>
-  );
-};
+  )
+}
 
-export default AdvertisementCategorySelector;
+export default AdvertisementCategorySelector

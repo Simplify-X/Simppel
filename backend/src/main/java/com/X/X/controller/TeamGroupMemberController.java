@@ -36,6 +36,13 @@ public class TeamGroupMemberController {
         return teamGroupMemberService.saveTeamMember(teamGroupMember);
     }
 
+    @CrossOrigin
+    @GetMapping("/getInvitedUsers")
+    @Operation(summary = "Create Team Groups", description = "Create a Team Group for the specified user account.")
+    public List <TeamGroupMember> getInvitedUsers() {
+        return teamGroupMemberService.getAllTeamMember();
+    }
+
 
 
 }

@@ -64,11 +64,11 @@ const Automation = () => {
   const { t } = useTranslation()
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-  
-  const { response, error , get, post } = useCustomApiHook();
-  const [accountId, userId] = useUserData();
+  const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedTime, setSelectedTime] = useState(null)
+
+  const { response, error, get, post } = useCustomApiHook()
+  const [accountId, userId] = useUserData()
 
   console.log(selectedLocation)
 
@@ -97,11 +97,10 @@ const Automation = () => {
     if (userId) fetchSingleUser()
   }, [userId])
 
-  const fetchSingleUser=async()=>{
-   const response = await get(`/users/getSingleUser/${userId}`)
-   response?.data &&  setData(response.data)
+  const fetchSingleUser = async () => {
+    const response = await get(`/users/getSingleUser/${userId}`)
+    response?.data && setData(response.data)
   }
-
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -113,8 +112,8 @@ const Automation = () => {
     const description = descriptionRef.current?.value
     const targetAudience = targetAudienceRef.current?.value
 
-    const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
-    const formattedTime = dayjs(selectedTime).format('HH:mm:ss');
+    const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD')
+    const formattedTime = dayjs(selectedTime).format('HH:mm:ss')
 
     const data = {
       automationName: name,
@@ -122,13 +121,10 @@ const Automation = () => {
       targetAudience: targetAudience,
       postLocation: selectedLocation,
       automationDate: formattedDate,
-      automationTime: formattedTime,
-
-    } 
+      automationTime: formattedTime
+    }
     await post(`/posts/${userId}/${accountId}`, data)
- 
   }
-
 
   useEffect(() => {
     const status = response?.data.status
@@ -142,7 +138,7 @@ const Automation = () => {
 
     if (status === 'FAILED') {
       toast.error('Error', { autoClose: 3000 })
-      
+
       // @ts-ignore
       nameRef.current.value = ''
       descriptionRef.current.value = ''
@@ -153,7 +149,6 @@ const Automation = () => {
       toast.error('An error occurred. Please try again later', { autoClose: 3000 })
     }
   }, [response, error])
-
 
   return (
     <form onSubmit={submitForm}>
@@ -200,7 +195,7 @@ const Automation = () => {
               </FormControl>
             </Grid>
             <Grid item xs={3}>
-                <DatePickerField onChange={setSelectedDate} />
+              <DatePickerField onChange={setSelectedDate} />
             </Grid>
             <Grid item xs={3}>
               <TimePickerField onChange={setSelectedTime} />

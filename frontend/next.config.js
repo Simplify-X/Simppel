@@ -2,9 +2,8 @@
 // with Sentry.
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require('@sentry/nextjs')
 const { i18n } = require('./next-i18next.config')
-
 
 const path = require('path')
 
@@ -26,8 +25,4 @@ module.exports = {
   }
 }
 
-module.exports = withSentryConfig(
-  module.exports,
-  { silent: true },
-  { hideSourcemaps: true },
-);
+module.exports = withSentryConfig(module.exports, { silent: true }, { hideSourcemaps: true })

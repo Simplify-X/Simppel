@@ -7,9 +7,9 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
-import * as Sentry from "@sentry/nextjs"
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import * as Sentry from '@sentry/nextjs'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 import { API_BASE_URL } from 'src/config'
 
 // Styled component for the triangle shaped background image
@@ -36,70 +36,64 @@ const Trophy = () => {
   const router = useRouter()
 
   useEffect(() => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('token')
     if (!token) {
       // Token not found, redirect to login page
-      window.location.replace('/login');
+      window.location.replace('/login')
 
-      return;
+      return
     }
-  
+
     fetch(`${API_BASE_URL}/users/my`, {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     })
-      .then((response) => {
+      .then(response => {
         if (response.ok) {
           // Get account ID from response body
-          return response.json();
+          return response.json()
         } else {
-          Sentry.throwError('Invalid token');
-          throw new Error('Invalid token');
+          Sentry.throwError('Invalid token')
+          throw new Error('Invalid token')
         }
       })
-      .then((data) => {
+      .then(data => {
         // Fetch user data
-        return fetch(`${API_BASE_URL}/users/getSingleUser/${data}`)
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error('Error fetching user data');
-            }
-          });
+        return fetch(`${API_BASE_URL}/users/getSingleUser/${data}`).then(response => {
+          if (response.ok) {
+            return response.json()
+          } else {
+            throw new Error('Error fetching user data')
+          }
+        })
       })
-      .then((userData) => {
+      .then(userData => {
         // Set user data in state
-        setUserData(userData);
-  
+        setUserData(userData)
+
         // Fetch advertisements for user
-        return fetch(`${API_BASE_URL}/advertisements/${userData.userId}`)
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error('Error fetching advertisements');
-            }
-          });
+        return fetch(`${API_BASE_URL}/advertisements/${userData.userId}`).then(response => {
+          if (response.ok) {
+            return response.json()
+          } else {
+            throw new Error('Error fetching advertisements')
+          }
+        })
       })
-      .then((advertisements) => {
+      .then(advertisements => {
         // Set advertisements in state
-        setContent(advertisements);
-  
+        setContent(advertisements)
       })
-      .catch((error) => {
-        Sentry.captureException(error);
-        console.error(error);
-      });
-  }, []);
+      .catch(error => {
+        Sentry.captureException(error)
+        console.error(error)
+      })
+  }, [])
 
   const goToAdverts = () => {
-
-    router.push('/content/view-content');
-
+    router.push('/content/view-content')
   }
-  
 
   const imageSrc = theme.palette.mode === 'light' ? 'triangle-light.png' : 'triangle-dark.png'
 

@@ -23,25 +23,16 @@ const FooterContent = () => {
       </Typography>
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
-          <Link
-            target='_blank'
-            href='#'
-          >
+          <Link target='_blank' href='#'>
             MIT License
           </Link>
           <Link target='_blank' href='#'>
             More Themes
           </Link>
-          <Link
-            target='_blank'
-            href='#'
-          >
+          <Link target='_blank' href='#'>
             Documentation
           </Link>
-          <Link
-            target='_blank'
-            href='#'
-          >
+          <Link target='_blank' href='#'>
             Support
           </Link>
         </Box>

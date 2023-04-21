@@ -19,24 +19,22 @@ function LanguageDropdown() {
   // const { i18n } = useTranslation();
 
   const [_, accountId, token] = useUserData()
-  const {response, error , get, post } = useCustomApiHook();
-
+  const { response, error, get, post } = useCustomApiHook()
 
   useEffect(() => {
-    if(accountId && token){
+    if (accountId && token) {
       handleGetSignleUser()
     }
-  }, [i18n, accountId, token]);
+  }, [i18n, accountId, token])
 
-
-  const handleGetSignleUser = async ()=> {
+  const handleGetSignleUser = async () => {
     const res = await get(`/users/getSingleUser/${accountId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
 
-    if(res?.data){
+    if (res?.data) {
       const savedLanguage = res.data?.defaultLanguage
         if (savedLanguage && i18n.language !== savedLanguage) {
           i18n?.changeLanguage(savedLanguage)
@@ -45,6 +43,10 @@ function LanguageDropdown() {
     }
   }
 
+  useEffect(() => {
+    response && console.log(response)
+    error && Sentry.captureException(error)
+  }, [response, error])
 
   useEffect(()=>{
    response && console.log(response);
@@ -59,28 +61,20 @@ function LanguageDropdown() {
 
     // Make a network request to update the user's language preference in the database
     await post(`/users/updateLanguagePreference?locale=${locale}&accountId=${accountId}`)
-
-  };
-  
+  }
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <TranslateIcon sx={{ mr: 1 }} />
       <FormControl variant='standard' sx={{ minWidth: 80 }}>
-        <Select
-          value={i18n.language}
-          onChange={handleChange}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Language' }}
-        >
+        <Select value={i18n.language} onChange={handleChange} displayEmpty inputProps={{ 'aria-label': 'Language' }}>
           <MenuItem value='en'>{en.languageName}</MenuItem>
           <MenuItem value='de'>{de.languageName}</MenuItem>
           <MenuItem value='bg'>{bg.languageName}</MenuItem>
         </Select>
       </FormControl>
     </Box>
-  );
+  )
 }
-
 
 export default LanguageDropdown

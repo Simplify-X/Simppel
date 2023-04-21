@@ -76,7 +76,7 @@ const ChangePassword = () => {
   const theme = useTheme()
   const router = useRouter()
   const [tokenValid, setTokenValid] = useState(true)
-  const {response, error, post } = useCustomApiHook();
+  const { response, error, post } = useCustomApiHook()
 
   const { token } = router.query
 
@@ -85,10 +85,9 @@ const ChangePassword = () => {
     token && handleCheckToken()
   }, [token])
 
-  const handleCheckToken = async ()=>{
+  const handleCheckToken = async () => {
     await post(`/users/checkToken?token=${token}`)
   }
-
 
   const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -137,23 +136,22 @@ const ChangePassword = () => {
   }
 
   useEffect(() => {
-    console.log(response);
-    if (response?.data === "Invalid or expired token") {
+    console.log(response)
+    if (response?.data === 'Invalid or expired token') {
       toast.error(response?.data, { autoClose: 3000 })
       setTokenValid(false)
     }
-    if(response?.data === "valid") {
+    if (response?.data === 'valid') {
       toast.success(response?.data, { autoClose: 3000 })
       setTokenValid(true)
-      router.push("/")
+      router.push('/')
     }
-    if(error){
+    if (error) {
       Sentry.captureException(error)
       toast.error(response?.data, { autoClose: 3000 })
       setTokenValid(false)
     }
   }, [response, error])
-
 
   return (
     <Box className='content-center'>

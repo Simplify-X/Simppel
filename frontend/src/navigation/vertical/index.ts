@@ -11,13 +11,13 @@ import * as Sentry from '@sentry/nextjs'
 import NotesIcon from '@mui/icons-material/Notes'
 import { useTranslation } from 'react-i18next'
 import AlarmAddIcon from '@mui/icons-material/AlarmAdd'
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
-import EmailIcon from '@mui/icons-material/Email';
-import ShareIcon from '@mui/icons-material/Share';
-import ArticleIcon from '@mui/icons-material/Article';
-import NoAccountsIcon from '@mui/icons-material/NoAccounts';
-import GroupsIcon from '@mui/icons-material/Groups';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import NotificationAddIcon from '@mui/icons-material/NotificationAdd'
+import EmailIcon from '@mui/icons-material/Email'
+import ShareIcon from '@mui/icons-material/Share'
+import ArticleIcon from '@mui/icons-material/Article'
+import NoAccountsIcon from '@mui/icons-material/NoAccounts'
+import GroupsIcon from '@mui/icons-material/Groups'
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -41,7 +41,7 @@ const navigation = (): VerticalNavItemsType => {
   })
 
   const [accountId, userId, token] = useUserData()
-  const {loading, error , get } = useCustomApiHook();
+  const { loading, error, get } = useCustomApiHook()
 
   useEffect(() => {
     token && handleGetUser(token)
@@ -53,11 +53,10 @@ const navigation = (): VerticalNavItemsType => {
         Authorization: `Bearer ${token}`
       }
     })
-    
+
     if (!userData?.data) throw new Error('Invalid token')
 
     userData?.data && setUserData(userData?.data as UserData)
-
   }
 
   useEffect(() => {
@@ -66,7 +65,6 @@ const navigation = (): VerticalNavItemsType => {
       window.location.replace('login')
     }
   }, [error])
-
 
   return [
     !userData.role && {
@@ -143,7 +141,7 @@ const navigation = (): VerticalNavItemsType => {
     },
 
     userData.role && {
-      sectionTitle: ' Management',
+      sectionTitle: ' Management'
     },
 
     userData.role && {
@@ -165,8 +163,7 @@ const navigation = (): VerticalNavItemsType => {
     },
 
     userData.role && {
-      sectionTitle: ' Account Management',
-
+      sectionTitle: ' Account Management'
     },
 
     userData.role && {
@@ -178,16 +175,14 @@ const navigation = (): VerticalNavItemsType => {
     userData.role && {
       title: 'Invited Accounts',
       icon: ShareIcon,
-      path: '/notifications'
+      path: '/global-administrator/invited-users'
     },
 
     userData.role && {
       title: 'Unactive Accounts',
       icon: NoAccountsIcon,
       path: '/global-administrator/unactive-accounts'
-    },
-
-
+    }
   ].filter(Boolean) as Array<NavLink | NavSectionTitle>
 }
 

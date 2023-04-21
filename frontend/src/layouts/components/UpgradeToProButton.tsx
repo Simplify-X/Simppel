@@ -58,8 +58,8 @@ const BuyNowButton = () => {
                 Project-X - React Admin Template
               </Typography>
               <Typography sx={{ mb: 4 }} variant='body2'>
-                Project-X Admin is the most developer friendly & highly customizable Admin Dashboard Template based on MUI
-                and NextJS.
+                Project-X Admin is the most developer friendly & highly customizable Admin Dashboard Template based on
+                MUI and NextJS.
               </Typography>
               <Typography sx={{ mb: 4 }} variant='body2'>
                 Click on below buttons to explore PRO version.

@@ -1,38 +1,37 @@
 // src/hooks/useAuthenticatedFetch.js
 // @ts-nocheck
-import { useState } from 'react';
-import Cookies from 'js-cookie';
+import { useState } from 'react'
+import Cookies from 'js-cookie'
 
 const useAuthenticatedFetch = () => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const token = Cookies.get('token');
+  const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const token = Cookies.get('token')
 
-  const fetchData = async (url) => {
+  const fetchData = async url => {
     try {
       if (!token) {
-        throw new Error('Token not found');
+        throw new Error('Token not found')
       }
       const response = await fetch(url, {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+          Authorization: `Bearer ${token}`
+        }
+      })
       if (!response.ok) {
-        throw new Error('Error fetching data');
+        throw new Error('Error fetching data')
       }
-      const data = await response.json();
-      setData(data);
-      setIsLoading(false);
+      const data = await response.json()
+      setData(data)
+      setIsLoading(false)
     } catch (error) {
-      console.error(error);
-      setData([]);
-      setIsLoading(false);
+      console.error(error)
+      setData([])
+      setIsLoading(false)
     }
-  };
+  }
 
-  return [data, isLoading, fetchData];
-};
+  return [data, isLoading, fetchData]
+}
 
-
-export default useAuthenticatedFetch;
+export default useAuthenticatedFetch

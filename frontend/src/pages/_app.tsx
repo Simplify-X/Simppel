@@ -1,6 +1,6 @@
 // ** Next Imports
 import Head from 'next/head'
-import {Router} from 'next/router'
+import { Router } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
@@ -31,7 +31,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
 import useAuthenticateUser from 'src/@core/hooks/useAuthenticateUser'
 import CircularProgress from "@mui/material/CircularProgress";
-
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -74,16 +73,17 @@ const App = (props: ExtendedAppProps) => {
   // @ts-ignore
   getLayout(<Component {...pageProps} />)
 
-    return  ( <CacheProvider value={emotionCache}>
-          <Head>
-            <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-            <meta
-              name='description'
-              content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-            />
-            <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
-            <meta name='viewport' content='initial-scale=1, width=device-width' />
-          </Head>
+  return (
+    <CacheProvider value={emotionCache}>
+      <Head>
+        <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
+        <meta
+          name='description'
+          content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+        />
+        <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+        <meta name='viewport' content='initial-scale=1, width=device-width' />
+      </Head>
 
           <SettingsProvider>
             <SettingsConsumer>

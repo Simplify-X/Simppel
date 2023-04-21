@@ -1,4 +1,3 @@
-
 // @ts-nocheck
 
 import { useState, useEffect } from 'react'
@@ -31,10 +30,10 @@ const ViewUserGroup = () => {
   const { id } = router.query
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
-  const {response , get, post } = useCustomApiHook();
-  const [accountId, userId] = useUserData();
+  const { response, get, post } = useCustomApiHook()
+  const [accountId, userId] = useUserData()
 
-  console,log(userId);
+  console.log(userId)
 
   const handleOpen = () => {
     setOpen(true)
@@ -85,7 +84,7 @@ const ViewUserGroup = () => {
       name: 'actions',
       label: 'Actions',
       options: {
-        customBodyRender: ( value, tableMeta) => {
+        customBodyRender: (value, tableMeta) => {
           const rowId = tableMeta.rowData[0]
 
           return (
@@ -104,22 +103,20 @@ const ViewUserGroup = () => {
   ]
 
   const handleEdit = rowData => {
-    const [selectedData] = groupMemberData.filter(data => data.id === rowData[0]);
-  
-    setOpen(true);
-    setSelectedUser(selectedData.userId);
-    setMemberRole(selectedData.role);
-  };
+    const [selectedData] = groupMemberData.filter(data => data.id === rowData[0])
+
+    setOpen(true)
+    setSelectedUser(selectedData.userId)
+    setMemberRole(selectedData.role)
+  }
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'checkbox'
   }
 
   const handleAddUser = () => {
     router.push('/user-management/new')
   }
-
-
 
   useEffect(() => {
     const fetchGroupMemberData = async () => {
@@ -130,7 +127,6 @@ const ViewUserGroup = () => {
     id && fetchGroupMemberData()
   }, [id])
 
-
   useEffect(() => {
     const fetchUserForAccount = async () => {
       const res = await get(`/users/getUserForAccount/${accountId}`)
@@ -139,10 +135,7 @@ const ViewUserGroup = () => {
     accountId && fetchUserForAccount()
   }, [accountId])
 
-
-
-
- async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const data = {
@@ -151,27 +144,22 @@ const ViewUserGroup = () => {
       teamGroupId: id
     }
 
-
     await post(`/groups/members/create/${accountId}`, data)
   }
 
-
   useEffect(() => {
-    const fetchGroupMembersData = async ()=> {
+    const fetchGroupMembersData = async () => {
       const res = await get(`/groups/members/${id}`)
-      res?.data &&  setGroupMemberData(res.data)
+      res?.data && setGroupMemberData(res.data)
     }
-    
+
     const status = response?.data.status
-    console.log(response?.data);
+    console.log(response?.data)
     if (status !== 'FAILED') {
       id && fetchGroupMembersData()
       handleClose()
     }
-    
   }, [response])
-
-  
 
   return (
     <>

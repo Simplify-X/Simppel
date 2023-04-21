@@ -14,8 +14,6 @@ import { useTranslation } from 'react-i18next'
 import Button from '@mui/material/Button'
 import { API_BASE_URL } from 'src/config'
 
-
-
 const SingleContent = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
