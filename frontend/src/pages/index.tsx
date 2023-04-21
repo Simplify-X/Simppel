@@ -22,56 +22,11 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
-import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
-import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route'
-import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+
 
 const Dashboard = () => {
-  const [userData, setUserData] = useState<UserData>({
-    role: '',
-    advertisementEnabled: false
-  })
-  const { error, get } = useCustomApiHook()
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      window.location.replace('login')
-
-      return;
-    }
-
-    token && handleGetUser(token)
-  }, [])
-
-  const handleGetUser = async (token: string) => {
-    const userData = await get(`/users/role`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    
-    if (!userData?.data) throw new Error('Invalid token')
-    userData?.data && setUserData(userData?.data as UserData)
-  }
-
-  useEffect(() => {
-    if (error) {
-      Sentry.captureException(error)
-      window.location.replace('login')
-    }
-  }, [error])
-
-  const router = useRouter()
-
-  if (userData.role) {
-    router.push('/global-administrator/users')
-
-    return null
-  } else {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
@@ -145,6 +100,6 @@ const Dashboard = () => {
       </Grid>
     </ApexChartWrapper>
   )
-}}
+}
 
 export default authRoute(Dashboard);

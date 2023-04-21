@@ -190,8 +190,8 @@ const Writing = () => {
 
     if (response?.data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
       router.push('/content/view-content')
     }
 
@@ -199,8 +199,8 @@ const Writing = () => {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
     }
 
     if (error) {
