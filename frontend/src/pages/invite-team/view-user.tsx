@@ -34,7 +34,7 @@ const ViewUserGroup = () => {
   const {response , get, post } = useCustomApiHook();
   const [accountId, userId] = useUserData();
 
-  console,log(userId);
+  console.log(userId);
 
   const handleOpen = () => {
     setOpen(true)
