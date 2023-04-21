@@ -23,6 +23,8 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
 import { API_BASE_URL } from 'src/config'
 import { Icon } from '@mui/material'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 interface UserData {
   role?: string
@@ -38,38 +40,31 @@ const navigation = (): VerticalNavItemsType => {
     advertisementEnabled: false
   })
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [accountId, userId, token] = useUserData()
+  const {loading, error , get } = useCustomApiHook();
+
   useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('login')
+    token && handleGetUser(token)
+  }, [token])
 
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/role`, {
+  const handleGetUser = async (token: string) => {
+    const userData = await get(`/users/role`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setUserData(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('login')
-      })
-  }, [])
+    
+    if (!userData?.data) throw new Error('Invalid token')
+    else setUserData(userData.data)
+  }
+
+  useEffect(() => {
+    if (error) {
+      Sentry.captureException(error)
+      window.location.replace('login')
+    }
+  }, [error])
+
 
   return [
     !userData.role && {

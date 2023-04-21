@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
+import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'
@@ -24,7 +24,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import Cookies from 'js-cookie';
 import * as Sentry from "@sentry/nextjs";
-import { API_BASE_URL } from '../../../../config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 
 
@@ -47,6 +47,7 @@ const UserDropdown = () => {
 
   // ** Hooks
   const router = useRouter()
+  const {response, loading, error , get, post } = useCustomApiHook();
 
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
@@ -60,25 +61,25 @@ const UserDropdown = () => {
     setAnchorEl(null)
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     const token = Cookies.get('token');
-    fetch(`${API_BASE_URL}/users/logout`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    
+    await post("/users/logout", null, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
     })
-    .then(response => {
-      if (response.ok) {
-        Cookies.remove('token');
-        router.push("/login");
-      } else {
-      }
-    })
-    .catch(error => {
-      Sentry.captureException(error);
-    });
-  };
+    
+  }
+
+  useEffect(()=>{
+    if(response?.status === 200){
+      Cookies.remove('token');
+      router.push("/login");
+    }
+    error &&  Sentry.captureException(error);
+    
+  },[response, error])
 
   const styles = {
     py: 2,

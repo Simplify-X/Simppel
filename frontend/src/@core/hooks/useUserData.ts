@@ -8,9 +8,10 @@ interface UserData {
 
 type UserType = 'me' | 'my'
 
-export const useUserData = (): [UserData | undefined, UserData | undefined] => {
+export const useUserData = (): [UserData | undefined, UserData | undefined, string] => {
   const [accountId, setAccountId] = useState<UserData | undefined>()
   const [userId, setUserId] = useState<UserData | undefined>()
+  const [token, setToken] = useState<string>("")
   const { loading, error, get } = useCustomApiHook()
 
   useEffect(() => {
@@ -20,6 +21,8 @@ export const useUserData = (): [UserData | undefined, UserData | undefined] => {
       window.location.replace('/login')
       return
     }
+
+    setToken(token)
 
     const fetchUserData = async (type: UserType, token: string) => {
       const response = await get(`/users/${type}`, {
@@ -48,5 +51,5 @@ export const useUserData = (): [UserData | undefined, UserData | undefined] => {
   }, [error])
 
 
-  return [accountId, userId]
+  return [accountId, userId, token]
 }

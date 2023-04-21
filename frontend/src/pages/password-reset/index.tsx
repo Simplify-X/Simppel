@@ -36,9 +36,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import axios from 'axios'
 import jwt_decode from 'jwt-decode'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 
 
@@ -56,6 +55,7 @@ const LinkStyled = styled('a')(({ theme }) => ({
 
 
 const PasswordResetPage = () => {
+  const {response, loading, error , get, post } = useCustomApiHook();
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -75,7 +75,7 @@ const PasswordResetPage = () => {
   const emailRef = useRef<HTMLInputElement>(null)
 
 
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault()
     const email = emailRef.current?.value
@@ -87,27 +87,20 @@ const PasswordResetPage = () => {
 
     }
 
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${API_BASE_URL}/users/reset/password?email=${email}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        console.log(response);
-        if (response.status === 200) {
-          toast.success(response.data, { autoClose: 3000 })
-        } else {  
-          toast.error(response.data, { autoClose: 3000 })
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error);
-      })
+    await post(`/users/reset/password?email=${email}`)
   }
+
+  useEffect(()=>{
+    if (response?.status === 200) {
+      toast.success(response.data, { autoClose: 3000 })
+    } else {  
+      toast.error(response?.data, { autoClose: 3000 })
+    }
+
+    error && Sentry.captureException(error);
+  },[response, error])
+
+
 
   return (
     <Box className='content-center'>
@@ -199,8 +192,8 @@ const PasswordResetPage = () => {
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
             </Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
-              Send Reset Link
+            <Button disabled={loading} fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type={'submit'}>
+             {loading ? " Sending Link..." : " Send Reset Link"}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>

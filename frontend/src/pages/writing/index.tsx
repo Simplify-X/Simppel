@@ -12,10 +12,8 @@ import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
-import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -37,7 +35,8 @@ import { styled } from '@mui/material/styles'
 import LanguageSelector from '../content/LanguageSelector'
 import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -84,7 +83,6 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const Writing = () => {
   // ** States
-  const [accountId, setAccountId] = useState(null)
   const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState('')
   const selectedTypeAd = '';
@@ -97,6 +95,9 @@ const Writing = () => {
 
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
+
+  const {response, loading, error , get, post } = useCustomApiHook();
+  const [accountId, userId] = useUserData();
 
 
   function handleLanguageChange(event) {
@@ -143,56 +144,25 @@ const Writing = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
-
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
 
   useEffect(() => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/users/getSingleUser/${accountId}`)
-        .then(response => response.json())
-        .then(data => {
-          setData(data)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+    const fetchSingleUser = async () =>{
+      const res = await get(`/users/getSingleUser/${accountId}`)
+      res?.data && setData(res.data)
     }
+
+    accountId && fetchSingleUser()
   }, [accountId])
+
+  useEffect(()=>{
+    error && Sentry.captureException(error)
+  },[error])
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const name = nameRef.current?.value
     const description = descriptionRef.current?.value
@@ -209,36 +179,34 @@ const Writing = () => {
       languageText: selectedLanguage
     }
 
-    const config = {
-      method: 'post',
-      url: `${API_BASE_URL}/advertisements/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
+    await post(`/advertisements/${accountId}`, data)
+
+  }
+
+  useEffect(() => {
+    const status = response?.data.status
+
+    if (response?.data) {
+      toast.success('Advertisement Added', { autoClose: 2000 })
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+      router.push('/content/view-content')
     }
 
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-          toast.error('Error', { autoClose: 3000 })
+    if (status === 'FAILED') {
+      toast.error('Error', { autoClose: 3000 })
 
-          // @ts-ignore
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-        } else {
-          toast.success('Advertisement Added', { autoClose: 2000 })
-          nameRef?.current?.value = ''
-          descriptionRef?.current?.value = ''
-          router.push('/content/view-content')
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-        toast.error('An error occurred. Please try again later', { autoClose: 3000 })
-      })
-  }
-  console.log('sc', scrapedData)
+      // @ts-ignore
+      nameRef?.current?.value = ''
+      descriptionRef?.current?.value = ''
+    }
+
+    if (error) {
+      Sentry.captureException(error)
+      toast.error('An error occurred. Please try again later', { autoClose: 3000 })
+    }
+  }, [response, error])
+
 
   return (
     <form onSubmit={submitForm}>
