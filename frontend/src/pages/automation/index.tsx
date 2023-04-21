@@ -140,6 +140,7 @@ const Automation = () => {
 
     if (status === 'FAILED') {
       toast.error('Error', { autoClose: 3000 })
+      
       // @ts-ignore
       nameRef?.current?.value = ''
       descriptionRef?.current?.value = ''
