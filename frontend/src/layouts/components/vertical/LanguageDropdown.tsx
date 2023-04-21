@@ -14,114 +14,54 @@ import i18n from '../../../i18n'; //@ts-ignore
 import { API_BASE_URL } from 'src/config'
 import * as Sentry from '@sentry/nextjs'
 import Cookies from 'js-cookie'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 function LanguageDropdown() {
   const { i18n } = useTranslation();
-  const [accountId, setAccountId] = useState(null)
+
+  const [_, accountId, token] = useUserData()
+  const {response, error , get, post } = useCustomApiHook();
+
 
   useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      window.location.replace('/login')
-
-      return
+    if(accountId && token){
+      handleGetSignleUser()
     }
+  }, [i18n, accountId, token]);
 
-    fetch(`${API_BASE_URL}/users/my`, {
+
+  const handleGetSignleUser = async ()=> {
+    const res = await get(`/users/getSingleUser/${accountId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw new Error('Invalid token')
+
+    if(res?.data){
+      const savedLanguage = res.data?.defaultLanguage
+        if (savedLanguage && i18n.language !== savedLanguage) {
+          i18n.changeLanguage(savedLanguage)
+          localStorage.setItem('language', savedLanguage)
         }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
-
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      window.location.replace('/login')
-
-      return
     }
-  
-    fetch(`${API_BASE_URL}/users/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
+  }
 
-        fetch(`${API_BASE_URL}/users/getSingleUser/${data}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json()
-            } else {
-              throw new Error('Unable to retrieve language preference')
-            }
-          })
-          .then(data => {
-            const savedLanguage = data.defaultLanguage
-            if (savedLanguage && i18n.language !== savedLanguage) {
-              i18n.changeLanguage(savedLanguage)
-              localStorage.setItem('language', savedLanguage)
-            }
-          })
-          .catch(error => {
-            Sentry.captureException(error)
-          })
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [i18n]);
+
+  useEffect(()=>{
+   response && console.log(response);
+   error && Sentry.captureException(error)
+  },[response, error])
   
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const locale = event.target.value;
     i18n.changeLanguage(locale);
     localStorage.setItem('language', locale);
 
-    
     // Make a network request to update the user's language preference in the database
-    fetch(`${API_BASE_URL}/users/updateLanguagePreference?locale=${locale}&accountId=${accountId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      // Handle response
-      console.log(response);
-    })
-    .catch(error => {
-      // Handle error
-      Sentry.captureException(error);
-    });
+    await post(`/users/updateLanguagePreference?locale=${locale}&accountId=${accountId}`)
+
   };
   
 

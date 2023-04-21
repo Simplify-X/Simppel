@@ -7,17 +7,15 @@ import AddIcon from '@mui/icons-material/Add'
 import MUIDataTable from 'mui-datatables'
 import authRoute from 'src/@core/utils/auth-route'
 import { useRouter } from 'next/router'
-import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import Cookies from 'js-cookie'
-import axios from 'axios'
 import { IconButton } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -30,11 +28,13 @@ const ViewUserGroup = () => {
   const [memberRole, setMemberRole] = useState('')
   const [groupMemberData, setGroupMemberData] = useState([])
   const router = useRouter()
-  const [accountId, setAccountId] = useState(null)
-  const [getToken, setToken] = useState(Cookies.get('token'))
   const { id } = router.query
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
+  const {response , get, post } = useCustomApiHook();
+  const [accountId, userId] = useUserData();
+
+  console,log(userId);
 
   const handleOpen = () => {
     setOpen(true)
@@ -85,7 +85,7 @@ const ViewUserGroup = () => {
       name: 'actions',
       label: 'Actions',
       options: {
-        customBodyRender: ( tableMeta) => {
+        customBodyRender: ( value, tableMeta) => {
           const rowId = tableMeta.rowData[0]
 
           return (
@@ -119,69 +119,30 @@ const ViewUserGroup = () => {
     router.push('/user-management/new')
   }
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
 
-      return
-    } else {
-      setToken(token)
-    }
-  }, [])
 
   useEffect(() => {
-    if (id) {
-      fetch(`${API_BASE_URL}/groups/members/${id}`)
-        .then(response => response.json())
-        .then(data => {
-          setGroupMemberData(data)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+    const fetchGroupMemberData = async () => {
+      const res = await get(`/groups/members/${id}`)
+      res?.data && setGroupMemberData(res.data)
     }
+
+    id && fetchGroupMemberData()
   }, [id])
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${getToken}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [getToken])
 
   useEffect(() => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/users/getUserForAccount/${accountId}`)
-        .then(response => response.json())
-        .then(data => {
-          setUsers(data)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+    const fetchUserForAccount = async () => {
+      const res = await get(`/users/getUserForAccount/${accountId}`)
+      res?.data && setUsers(res.data)
     }
+    accountId && fetchUserForAccount()
   }, [accountId])
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+
+
+
+ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const data = {
@@ -190,40 +151,27 @@ const ViewUserGroup = () => {
       teamGroupId: id
     }
 
-    console.log(data)
 
-    const config = {
-      method: 'post',
-      url: `${API_BASE_URL}/groups/members/create/${accountId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data
-    }
-
-    axios(config)
-      .then(function (response) {
-        if (response.data.status === 'FAILED') {
-          // handle the error case here
-        } else {
-          // add the newly created record to the state
-          fetch(`${API_BASE_URL}/groups/members/${id}`)
-            .then(response => response.json())
-            .then(data => {
-              setGroupMemberData(data)
-            })
-            .catch(error => {
-              Sentry.captureException(error)
-            })
-          handleClose()
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
+    await post(`/groups/members/create/${accountId}`, data)
   }
 
-  console.log(selectedUser)
+
+  useEffect(() => {
+    const fetchGroupMembersData = async ()=> {
+      const res = await get(`/groups/members/${id}`)
+      res?.data &&  setGroupMemberData(res.data)
+    }
+    
+    const status = response?.data.status
+    console.log(response?.data);
+    if (status !== 'FAILED') {
+      id && fetchGroupMembersData()
+      handleClose()
+    }
+    
+  }, [response])
+
+  
 
   return (
     <>

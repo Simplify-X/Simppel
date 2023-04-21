@@ -39,8 +39,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import axios from 'axios'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 interface State {
   password: string
@@ -77,32 +76,19 @@ const ChangePassword = () => {
   const theme = useTheme()
   const router = useRouter()
   const [tokenValid, setTokenValid] = useState(true)
+  const {response, error, post } = useCustomApiHook();
 
   const { token } = router.query
 
   useEffect(() => {
     // Checking if reset token is valid
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${API_BASE_URL}/users/checkToken?token=${token}`,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-
-    axios(config)
-      .then(function (response) {
-        if (response.data === 'Invalid or expired token') {
-          setTokenValid(false)
-        } else {
-          setTokenValid(true)
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
+    token && handleCheckToken()
   }, [token])
+
+  const handleCheckToken = async ()=>{
+    await post(`/users/checkToken?token=${token}`)
+  }
+
 
   const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -141,34 +127,33 @@ const ChangePassword = () => {
     router.push('/')
   }
 
-  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault()
 
     const password = event.target[0].value
 
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${API_BASE_URL}/users/reset-password?token=${token}&password=${password}`,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-
-    axios(config)
-      .then(function (response) {
-        if (response.status === 200) {
-          toast.success(response.data, { autoClose: 3000 })
-          router.push('/')
-        } else {
-          toast.error(response.data, { autoClose: 3000 })
-        }
-      })
-      .catch(function (error) {
-        Sentry.captureException(error)
-      })
+    await post(`/users/reset-password?token=${token}&password=${password}`)
   }
+
+  useEffect(() => {
+    console.log(response);
+    if (response?.data === "Invalid or expired token") {
+      toast.error(response?.data, { autoClose: 3000 })
+      setTokenValid(false)
+    }
+    if(response?.data === "valid") {
+      toast.success(response?.data, { autoClose: 3000 })
+      setTokenValid(true)
+      router.push("/")
+    }
+    if(error){
+      Sentry.captureException(error)
+      toast.error(response?.data, { autoClose: 3000 })
+      setTokenValid(false)
+    }
+  }, [response, error])
+
 
   return (
     <Box className='content-center'>

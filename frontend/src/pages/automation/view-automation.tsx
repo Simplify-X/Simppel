@@ -1,7 +1,6 @@
 // ** MUI Imports
 // @ts-nocheck
 import {useEffect, useState } from 'react'
-import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route';
 import MUIDataTable from "mui-datatables";
 import { useRouter } from 'next/router';
@@ -9,11 +8,17 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box'
 import * as Sentry from "@sentry/nextjs"
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook';
+import { useUserData } from 'src/@core/hooks/useUserData';
 
 const ViewAutomation = () => {
   const [content, setContent] = useState([]);
   const router = useRouter()
+
+  const {  error , get } = useCustomApiHook();
+  const [accountId, userId, token] = useUserData();
+
+  console.log(accountId, token);
 
   const columns = [
     {
@@ -70,61 +75,25 @@ const ViewAutomation = () => {
 
 
 
+  const handleClick = async (rowData) => {
+    const res = await get(`/advertisements/single/${rowData}`)
+    res?.data && router.push(`/content/content?id=${res.data?.id}`);
+  };  
 
-  const handleClick = (rowData) => {
 
-    fetch(`${API_BASE_URL}/advertisements/single/${rowData}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        router.push(`/content/content?id=${data.id}`);
-      }
-      )
-      .catch((error) => {
-        Sentry.captureException(error);
-      }
-      );
-  };
+  useEffect(()=>{
+   error && Sentry.captureException(error);
+  },[error])
 
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login');
+    userId && handlePostsData()
+  }, [userId]);
 
-      return;
-    }
-
-    fetch(`${API_BASE_URL}/users/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json();
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token');
-        }
-      })
-      .then((data) => {
-        fetch(`${API_BASE_URL}/posts/${data}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setContent(data);
-          });
-      })
-      .catch((error) => {
-        Sentry.captureException(error);
-        window.location.replace('/login');
-      });
-  }, []);
+  const handlePostsData = async ()=>{
+    const res = await get(`/posts/${userId}`)
+    res?.data && setContent(res?.data);
+  }
 
   const addAutomation = () => {
     router.push('/automation');

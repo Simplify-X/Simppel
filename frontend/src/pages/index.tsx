@@ -26,56 +26,52 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import Cookies from 'js-cookie';
 import authRoute from 'src/@core/utils/auth-route'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 const Dashboard = () => {
-
   const [userData, setUserData] = useState<UserData>({
     role: '',
     advertisementEnabled: false
   })
+  const { error, get } = useCustomApiHook()
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const token = Cookies.get('token')
     if (!token) {
-      // Token not found, redirect to login page
       window.location.replace('login')
 
-      return
+      return;
     }
 
-    fetch(`${API_BASE_URL}/users/role`, {
+    token && handleGetUser(token)
+  }, [])
+
+  const handleGetUser = async (token: string) => {
+    const userData = await get(`/users/role`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setUserData(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('login')
-      })
-  }, [])
+    
+    if (!userData?.data) throw new Error('Invalid token')
+    userData?.data && setUserData(userData?.data as UserData)
+  }
+
+  useEffect(() => {
+    if (error) {
+      Sentry.captureException(error)
+      window.location.replace('login')
+    }
+  }, [error])
 
   const router = useRouter()
 
-  if(userData.role){
-    router.push("/global-administrator/users")
+  if (userData.role) {
+    router.push('/global-administrator/users')
 
     return null
-  }
-  else {
+  } else {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
