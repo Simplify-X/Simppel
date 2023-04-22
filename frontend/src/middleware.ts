@@ -4,7 +4,6 @@ import { API_BASE_URL } from './config';
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname; // relative path
-  console.log("Middleware");
 
   // Manage route protection
   const token = req.cookies.get('token')
@@ -21,6 +20,20 @@ export async function middleware(req: NextRequest) {
   const adminRoutes = ["/global-administrator/", "/global-administrator/users/", "/global-administrator/unactive-accounts/", "/global-administrator/invited-users/"];
   const isOpenAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
   const isOpenUserRoute = userRoutes.some((route) => pathname.startsWith(route));
+
+
+  if (isAuthPage) {
+    if (isAuth) {
+      if(user?.role){
+        return NextResponse.redirect(new URL("/global-administrator/users", req.url))
+      }else{
+        return NextResponse.redirect(new URL("/", req.url))
+      }
+    }
+
+    return null;
+  }
+
 
   if(isOpenUserRoute) {
     if(user?.role) {
@@ -41,18 +54,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-
-  if (isAuthPage) {
-    if (isAuth) {
-      if(user?.role){
-        return NextResponse.rewrite(new URL("/global-administrator/users", req.url))
-      }else{
-        return NextResponse.rewrite(new URL("/", req.url))
-      }
-    }
-
-    return null;
-  }
 
 }
 
