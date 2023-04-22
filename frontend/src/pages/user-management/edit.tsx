@@ -59,7 +59,6 @@ const EditUsers = () => {
       })
   }
 
-  console.log(data)
 
   return (
     <Card>

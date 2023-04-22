@@ -136,7 +136,6 @@ const ChangePassword = () => {
   }
 
   useEffect(() => {
-    console.log(response)
     if (response?.data === 'Invalid or expired token') {
       toast.error(response?.data, { autoClose: 3000 })
       setTokenValid(false)

@@ -33,7 +33,8 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import Cookies from 'js-cookie'
-import * as Sentry from '@sentry/nextjs'
+
+// import * as Sentry from '@sentry/nextjs'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -70,7 +71,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
-  const { response, loading, error, post } = useCustomApiHook()
+  const { response, loading, post } = useCustomApiHook()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -128,8 +129,9 @@ const LoginPage = () => {
     }
 
     status === 'FAILED' && toast.error('Email or password is incorrect', { autoClose: 3000 })
-    error && Sentry.captureException(error)
-  }, [response, error])
+
+    // error && Sentry.captureException(error)
+  }, [response])
 
   return (
     <Box className='content-center'>

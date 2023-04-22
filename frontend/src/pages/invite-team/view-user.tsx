@@ -31,9 +31,8 @@ const ViewUserGroup = () => {
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
   const { response, get, post } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId } = useUserData()
 
-  console.log(userId)
 
   const handleOpen = () => {
     setOpen(true)
@@ -154,7 +153,6 @@ const ViewUserGroup = () => {
     }
 
     const status = response?.data.status
-    console.log(response?.data)
     if (status !== 'FAILED') {
       id && fetchGroupMembersData()
       handleClose()

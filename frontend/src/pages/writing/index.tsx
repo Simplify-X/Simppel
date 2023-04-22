@@ -97,9 +97,8 @@ const Writing = () => {
   const [scrapedData, setScrapedData] = useState({})
 
   const { response, error, get, post } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId } = useUserData()
 
-  console.log(userId)
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -186,8 +185,8 @@ const Writing = () => {
 
     if (response?.data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
       router.push('/content/view-content')
     }
 
@@ -195,8 +194,8 @@ const Writing = () => {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
     }
 
     if (error) {

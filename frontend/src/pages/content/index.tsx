@@ -104,9 +104,9 @@ const Content = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
-  const [_, accountId] = useUserData()
+  const { accountId } = useUserData()
 
-  console.log(_)
+  // console.log(userId)
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -216,8 +216,8 @@ const Content = () => {
 
     if (data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
       router.push('/content/view-content')
     }
 
@@ -225,8 +225,8 @@ const Content = () => {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
     }
 
     if (error) {

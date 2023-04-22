@@ -68,9 +68,9 @@ const Automation = () => {
   const [selectedTime, setSelectedTime] = useState(null)
 
   const { response, error, get, post } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId, userId } = useUserData()
 
-  console.log(selectedLocation)
+  // console.log(selectedLocation)
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader()
@@ -131,8 +131,8 @@ const Automation = () => {
 
     if (response?.data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
       router.push('/content/view-content')
     }
 
@@ -140,8 +140,8 @@ const Automation = () => {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
-      nameRef?.current?.value = ''
-      descriptionRef?.current?.value = ''
+      nameRef.current.value = ''
+      descriptionRef.current.value = ''
     }
 
     if (error) {

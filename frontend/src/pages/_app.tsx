@@ -73,16 +73,17 @@ const App = (props: ExtendedAppProps) => {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
 
-      <SettingsProvider>
-        <SettingsConsumer>
-          {({ settings }) => {
-            // @ts-ignore
-            return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-          }}
-        </SettingsConsumer>
-      </SettingsProvider>
-    </CacheProvider>
-  )
+          <SettingsProvider>
+            <SettingsConsumer>
+              {({ settings }) => {
+                // @ts-ignore
+                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+              }}
+            </SettingsConsumer>
+          </SettingsProvider>
+        </CacheProvider>
+    )
+
 }
 
 export default App

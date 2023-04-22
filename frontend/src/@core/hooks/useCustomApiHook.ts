@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import axiosClient from 'src/config'
 
@@ -39,6 +39,7 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     setLoading(true)
     try {
       const res = await axiosClient.get<T>(url, config)
+      
       return res
     } catch (err) {
       handleError(err)

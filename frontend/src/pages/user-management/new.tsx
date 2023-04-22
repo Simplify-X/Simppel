@@ -93,8 +93,6 @@ const NewUser = () => {
     }
   }
 
-  console.log(data)
-  console.log(accountId)
 
   return (
     <Card>

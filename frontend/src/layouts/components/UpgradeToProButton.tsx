@@ -16,7 +16,7 @@ const BuyNowButton = () => {
   // ** States
   const [open, setOpen] = useState<boolean>(false)
   const [popperElement, setPopperElement] = useState(null)
-  const [referenceElement, setReferenceElement] = useState(null)
+  const [referenceElement] = useState(null)
 
   const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
     placement: 'top-end'
