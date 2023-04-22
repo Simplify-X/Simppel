@@ -1,12 +1,11 @@
 // @ts-nocheck
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Box from '@mui/material/Box'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import TranslateIcon from '@mui/icons-material/Translate'
 
-import { useTranslation } from 'react-i18next';
 import en from '../../../locales/en/common';
 import de from '../../../locales/de/common';
 import bg from '../../../locales/bg/common';
@@ -16,10 +15,11 @@ import { useUserData } from 'src/@core/hooks/useUserData'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 function LanguageDropdown() {
-  // const { i18n } = useTranslation();
 
-  const [_, accountId, token] = useUserData()
+  const { accountId, token } = useUserData()
   const { response, error, get, post } = useCustomApiHook()
+
+  // console.log(userId);
 
   useEffect(() => {
     if (accountId && token) {
@@ -44,14 +44,8 @@ function LanguageDropdown() {
   }
 
   useEffect(() => {
-    response && console.log(response)
     error && Sentry.captureException(error)
   }, [response, error])
-
-  useEffect(()=>{
-   response && console.log(response);
-   error && Sentry.captureException(error)
-  },[response, error])
   
 
   const handleChange = async (event) => {

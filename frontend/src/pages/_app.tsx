@@ -29,8 +29,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // ** Global css styles
 import '../../styles/globals.css'
-import useAuthenticateUser from 'src/@core/hooks/useAuthenticateUser'
-import CircularProgress from "@mui/material/CircularProgress";
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -56,16 +54,6 @@ if (themeConfig.routingLoader) {
 // ** Configure JSS & ClassName
 const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
-  const {loading} = useAuthenticateUser();
-
-  if(loading) {
-    return (
-      <div style={{display: "flex", justifyContent: "center", alignItems: "center", paddingTop: 30}}>
-        <CircularProgress/>
-        Loading...
-      </div>
-    )
-  }
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)

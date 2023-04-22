@@ -68,9 +68,9 @@ const Automation = () => {
   const [selectedTime, setSelectedTime] = useState(null)
 
   const { response, error, get, post } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId, userId } = useUserData()
 
-  console.log(selectedLocation)
+  // console.log(selectedLocation)
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader()

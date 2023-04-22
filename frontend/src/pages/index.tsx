@@ -23,15 +23,16 @@ import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import authRoute from 'src/@core/utils/auth-route'
-import { CircularProgress } from '@mui/material'
 import { useEffect, useState } from 'react'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
+import Loader from 'src/@core/components/ui/Loader'
 
 interface UserData {
   role?: string,
   advertisementEnabled?: boolean,
+  accountId?: string
 }
 
 const Dashboard = () => {
@@ -46,7 +47,7 @@ const Dashboard = () => {
   useEffect(() => {
     const token = Cookies.get('token')
     if (!token) {
-      window.location.replace('login')
+      window.location.replace('/login')
 
       return
     }
@@ -70,18 +71,12 @@ const Dashboard = () => {
     }
   }, [error])
 
-  if(!userData?.accountId) {
-    return (
-      <div style={{display: "flex", justifyContent: "center", alignItems: "center", paddingTop: 30}}>
-        <CircularProgress/> <span style={{paddingLeft: 8}}>Loading...</span>
-      </div>
-    )
-  }
+  if(!userData?.accountId) return <Loader/>
 
   if (userData?.role) {
     router.push("/global-administrator/users")
     
-    return <p>Loading...</p>
+    return <Loader/>
   } else {
 
   return (

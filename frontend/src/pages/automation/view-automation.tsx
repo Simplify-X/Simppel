@@ -16,9 +16,7 @@ const ViewAutomation = () => {
   const router = useRouter()
 
   const { error, get } = useCustomApiHook()
-  const [accountId, userId, token] = useUserData()
-
-  console.log(accountId, token)
+  const { userId } = useUserData()
 
   const columns = [
     {

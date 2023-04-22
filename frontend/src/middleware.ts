@@ -4,11 +4,19 @@ import { API_BASE_URL } from './config';
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname; // relative path
+  // console.log("Middleware");
 
   // Manage route protection
   const token = req.cookies.get('token')
   const isAuth = !!token;
+  const isMainPage = req.nextUrl.pathname.startsWith("/");
   const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+
+  if(isMainPage){
+    if(!isAuth){
+      return NextResponse.redirect(new URL("/login", req.url))
+    }
+  }
 
   const user = await (await fetch(`${API_BASE_URL}/users/role`, {
     headers: {
@@ -27,7 +35,7 @@ export async function middleware(req: NextRequest) {
       if(user?.role){
         return NextResponse.redirect(new URL("/global-administrator/users", req.url))
       }else{
-        return NextResponse.redirect(new URL("/", req.url))
+        // return NextResponse.redirect(new URL("/", req.url))
       }
     }
 
@@ -54,14 +62,11 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-
 }
-
 
 export const config = {
   matcher: [
     "/",
-    "/login", 
     "/global-administrator/users", 
     "/global-administrator/unactive-accounts", 
     "/global-administrator/invited-users"

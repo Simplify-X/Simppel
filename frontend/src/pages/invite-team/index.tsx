@@ -36,9 +36,8 @@ const InviteTeam = () => {
   const [isCreating, setIsCreating] = useState(true)
   const [recordId, setRecordId] = useState('')
   const { response, error, del, get, post, put } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId } = useUserData()
 
-  console.log(userId)
 
   const handleOpen = () => {
     setOpen(true)

@@ -188,7 +188,6 @@ const RegisterPage = () => {
 
   useEffect(() => {
     const status = response?.data.status
-    console.log(response)
 
     if (status === 'OK') {
       setOpen(true)

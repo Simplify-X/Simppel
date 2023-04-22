@@ -97,9 +97,8 @@ const Writing = () => {
   const [scrapedData, setScrapedData] = useState({})
 
   const { response, error, get, post } = useCustomApiHook()
-  const [accountId, userId] = useUserData()
+  const { accountId } = useUserData()
 
-  console.log(userId)
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)

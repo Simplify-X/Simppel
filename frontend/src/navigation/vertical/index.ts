@@ -4,7 +4,6 @@ import HomeOutline from 'mdi-material-ui/HomeOutline'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
 import AddIcon from '@mui/icons-material/Add'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 import PeopleIcon from '@mui/icons-material/People'
 import * as Sentry from '@sentry/nextjs'
@@ -21,17 +20,16 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
-import { API_BASE_URL } from 'src/config'
-import { Icon } from '@mui/material'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 interface UserData {
   role?: string
   advertisementEnabled?: boolean
+  accountId?: string
 }
 
-const navigation = (): VerticalNavItemsType => {
+const Navigation = (): VerticalNavItemsType=> {
   const { t } = useTranslation()
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -40,8 +38,9 @@ const navigation = (): VerticalNavItemsType => {
     advertisementEnabled: false
   })
 
-  const [accountId, userId, token] = useUserData()
-  const { loading, error, get } = useCustomApiHook()
+  const { error, get } = useCustomApiHook()
+  const { token } = useUserData()
+
 
   useEffect(() => {
     token && handleGetUser(token)
@@ -61,10 +60,12 @@ const navigation = (): VerticalNavItemsType => {
 
   useEffect(() => {
     if (error) {
-      // Sentry.captureException(error)
-      window.location.replace('login')
+      Sentry.captureException(error)
+      window.location.replace('/login')
     }
   }, [error])
+
+  if(!userData.accountId) return null;
 
   return [
     !userData.role && {
@@ -186,4 +187,4 @@ const navigation = (): VerticalNavItemsType => {
   ].filter(Boolean) as Array<NavLink | NavSectionTitle>
 }
 
-export default navigation
+export default Navigation

@@ -70,7 +70,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
-  const { response, loading, error, post } = useCustomApiHook()
+  const { response, loading, post } = useCustomApiHook()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -128,8 +128,8 @@ const LoginPage = () => {
     }
 
     status === 'FAILED' && toast.error('Email or password is incorrect', { autoClose: 3000 })
-    error && Sentry.captureException(error)
-  }, [response, error])
+    // error && Sentry.captureException(error)
+  }, [response])
 
   return (
     <Box className='content-center'>
