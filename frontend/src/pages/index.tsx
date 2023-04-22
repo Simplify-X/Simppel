@@ -23,9 +23,27 @@ import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import authRoute from 'src/@core/utils/auth-route'
+import useAuthenticateUser from 'src/@core/hooks/useAuthenticateUser'
+import { CircularProgress } from '@mui/material'
 
 
 const Dashboard = () => {
+  const {loading, user} = useAuthenticateUser()
+  
+
+  if(loading || !user) {
+    return (
+      <div style={{display: "flex", justifyContent: "center", alignItems: "center", paddingTop: 30}}>
+        <CircularProgress/> <span style={{paddingLeft: 8}}>Loading...</span>
+      </div>
+    )
+  }
+
+  if (user?.role) {
+    window.location.replace("/global-administrator/users")
+
+    return <p>Loading...</p>
+  } else {
 
   return (
     <ApexChartWrapper>
@@ -100,6 +118,6 @@ const Dashboard = () => {
       </Grid>
     </ApexChartWrapper>
   )
-}
+}}
 
 export default authRoute(Dashboard);
