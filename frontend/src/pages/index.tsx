@@ -23,15 +23,54 @@ import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import authRoute from 'src/@core/utils/auth-route'
-import useAuthenticateUser from 'src/@core/hooks/useAuthenticateUser'
 import { CircularProgress } from '@mui/material'
+import { useEffect, useState } from 'react'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 
+interface UserData {
+  role?: string,
+  advertisementEnabled?: boolean,
+}
 
 const Dashboard = () => {
-  const {loading, user} = useAuthenticateUser()
-  
+  const [userData, setUserData] = useState<UserData>({
+    role: '',
+    advertisementEnabled: false
+  })
+  const { error, get } = useCustomApiHook()
+  const router = useRouter();
 
-  if(loading || !user) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const token = Cookies.get('token')
+    if (!token) {
+      window.location.replace('login')
+
+      return
+    }
+
+    token && handleGetUser(token)
+  }, [])
+
+  const handleGetUser = async (token: string) => {
+    const userData = await get(`/users/role`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    userData?.data && setUserData(userData?.data as UserData)
+  }
+
+  useEffect(() => {
+    if (error) {
+      // Sentry.captureException(error)
+    }
+  }, [error])
+
+  if(!userData?.accountId) {
     return (
       <div style={{display: "flex", justifyContent: "center", alignItems: "center", paddingTop: 30}}>
         <CircularProgress/> <span style={{paddingLeft: 8}}>Loading...</span>
@@ -39,9 +78,9 @@ const Dashboard = () => {
     )
   }
 
-  if (user?.role) {
-    window.location.replace("/global-administrator/users")
-
+  if (userData?.role) {
+    router.push("/global-administrator/users")
+    
     return <p>Loading...</p>
   } else {
 

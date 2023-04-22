@@ -54,14 +54,14 @@ const navigation = (): VerticalNavItemsType => {
       }
     })
 
-    if (!userData?.data) throw new Error('Invalid token')
+    // if (!userData?.data) throw new Error('Invalid token')
 
     userData?.data && setUserData(userData?.data as UserData)
   }
 
   useEffect(() => {
     if (error) {
-      Sentry.captureException(error)
+      // Sentry.captureException(error)
       window.location.replace('login')
     }
   }, [error])

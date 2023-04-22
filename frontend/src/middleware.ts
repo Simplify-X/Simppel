@@ -4,6 +4,7 @@ import { API_BASE_URL } from './config';
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname; // relative path
+  console.log("Middleware");
 
   // Manage route protection
   const token = req.cookies.get('token')
@@ -43,15 +44,14 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthPage) {
     if (isAuth) {
-      return NextResponse.redirect(new URL("/", req.url));
+      if(user?.role){
+        return NextResponse.rewrite(new URL("/global-administrator/users", req.url))
+      }else{
+        return NextResponse.rewrite(new URL("/", req.url))
+      }
     }
 
     return null;
-  }
-
-
-  if (!isAuth) {
-    return NextResponse.redirect(new URL("/login", req.url));
   }
 
 }
@@ -60,15 +60,6 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/content", 
-    "/content/view-content/", 
-    "/writing/", 
-    "/view-writing/", 
-    "/automation/", 
-    "/automation/view-automation/", 
-    "/user-management/", 
-    "/invite-team/", 
-    "/account-settings/", 
     "/login", 
     "/global-administrator/users", 
     "/global-administrator/unactive-accounts", 
