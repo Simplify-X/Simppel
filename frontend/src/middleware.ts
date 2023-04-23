@@ -9,10 +9,11 @@ export async function middleware(req: NextRequest) {
   // Manage route protection
   const token = req.cookies.get('token')
   const isAuth = !!token;
-  const isMainPage = req.nextUrl.pathname.startsWith("/");
   const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+  const userRoutes = ["/", "/content/", "/content/view-content/", "/writing/", "/view-writing/", "/automation/", "/automation/view-automation/", "/user-management/", "/invite-team/", "/account-settings/"]
+  const isOpenUserRoute = userRoutes.some((route) => pathname.startsWith(route));
 
-  if(isMainPage){
+  if(isOpenUserRoute){
     if(!isAuth){
       return NextResponse.redirect(new URL("/login", req.url))
     }
@@ -24,10 +25,8 @@ export async function middleware(req: NextRequest) {
     }
   })).json()
 
-  const userRoutes = ["/content/", "/content/view-content/", "/writing/", "/view-writing/", "/automation/", "/automation/view-automation/", "/user-management/", "/invite-team/", "/account-settings/"]
   const adminRoutes = ["/global-administrator/", "/global-administrator/users/", "/global-administrator/unactive-accounts/", "/global-administrator/invited-users/"];
   const isOpenAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
-  const isOpenUserRoute = userRoutes.some((route) => pathname.startsWith(route));
 
 
   if (isAuthPage) {
@@ -69,6 +68,15 @@ export const config = {
     "/",
     "/global-administrator/users", 
     "/global-administrator/unactive-accounts", 
-    "/global-administrator/invited-users"
+    "/global-administrator/invited-users",
+    "/content/", 
+    "/content/view-content/", 
+    "/writing/", 
+    "/view-writing/", 
+    "/automation/", 
+    "/automation/view-automation/", 
+    "/user-management/", 
+    "/invite-team/", 
+    "/account-settings/"
   ],
 };
