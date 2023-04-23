@@ -1,160 +1,107 @@
 // ** React Imports
 // @ts-nocheck
-import { useState, ElementType, ChangeEvent, SyntheticEvent, useEffect } from 'react'
+import { useState, SyntheticEvent, useEffect } from 'react'
 
 // ** MUI Imports
-import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import Select from '@mui/material/Select'
-import { styled } from '@mui/material/styles'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
 import AlertTitle from '@mui/material/AlertTitle'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
-import Button, { ButtonProps } from '@mui/material/Button'
-import Cookies from 'js-cookie'
+import Button from '@mui/material/Button'
 import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { Snackbar } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 // ** Icons Imports
 import Close from 'mdi-material-ui/Close'
 
-const ImgStyled = styled('img')(({ theme }) => ({
-  width: 120,
-  height: 120,
-  marginRight: theme.spacing(6.25),
-  borderRadius: theme.shape.borderRadius
-}))
 
-const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    textAlign: 'center'
-  }
-}))
-
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4.5),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
-  }
-}))
 
 const TabAccount = () => {
   // ** State
   const [openAlert, setOpenAlert] = useState<boolean>(true)
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [userData, setUserData] = useState([])
   const [loading, setLoading] = useState(false)
+  const { get, put, error } = useCustomApiHook()
+  const {userId, accountId} = useUserData()
+  const [editable, setEditable] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
 
-  const onChange = (file: ChangeEvent) => {
-    const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
-    if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
 
-      reader.readAsDataURL(files[0])
-    }
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleCloseError = () => {
+    setErrorOpen(false)
+  }
+
+
+  const fetchSingleUser = async ()  => {
+    const singleUserResult = await get(`/users/getSingleUser/${userId}`)
+    console.log(singleUserResult)
+    setUserData(singleUserResult?.data)
+    setLoading(true)
   }
 
   useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
+    userId && fetchSingleUser();
+  }, [userId])
 
-      return
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const data = JSON.stringify(userData)
+    try{
+      await put(`/users/users/management/${userId}`, data)
+      setOpen(true)
+    }catch(error){
+      setErrorOpen(true)
+      Sentry.captureException(error)
     }
 
-    fetch(`${API_BASE_URL}/users/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          Sentry.throwError('Invalid token')
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        fetch(`${API_BASE_URL}/users/getSingleUser/${data}`)
-          .then(response => response.json())
-          .then(data => {
-            setUserData(data)
-            setLoading(true)
-          })
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
+
+  }
 
   return (
     <CardContent>
-      <form>
+      <form onSubmit={submitForm}>
         {loading && (
           <Grid container spacing={7}>
-            <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ImgStyled src={imgSrc} alt='Profile Pic' />
-                <Box>
-                  <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
-                    Upload New Photo
-                    <input
-                      hidden
-                      type='file'
-                      onChange={onChange}
-                      accept='image/png, image/jpeg'
-                      id='account-settings-upload-image'
-                    />
-                  </ButtonStyled>
-                  <ResetButtonStyled
-                    color='error'
-                    variant='outlined'
-                    onClick={() => setImgSrc('/images/avatars/1.png')}
-                  >
-                    Reset
-                  </ResetButtonStyled>
-                  <Typography variant='body2' sx={{ marginTop: 5 }}>
-                    Allowed PNG or JPEG. Max size of 800K.
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue={userData.firstName} />
+              <TextField fullWidth label='Username' defaultValue={userData.username} disabled={!editable} onChange={e => setUserData({ ...userData, username: e.target.value })}/>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Name' placeholder='John Doe' defaultValue={userData.lastName} />
+              <TextField fullWidth label='First Name' defaultValue={userData.firstName} disabled={!editable} onChange={e => setUserData({ ...userData, firstName: e.target.value })}/>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth label='Last Name' defaultValue={userData.lastName} disabled={!editable} onChange={e => setUserData({ ...userData, lastName: e.target.value })}/>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 type='email'
                 label='Email'
-                placeholder='johnDoe@example.com'
+                disabled={!editable}
                 defaultValue={userData.email}
+                onChange={e => setUserData({ ...userData, email: e.target.value })}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Role</InputLabel>
-                <Select label='Role' value={userData.role} disabled>
+                <Select label='Role' value={userData.role} disabled onChange={e => setUserData({ ...userData, role: e.target.value })}>
                   <MenuItem value='true'>Admin</MenuItem>
                   <MenuItem value='false'>User</MenuItem>
                 </Select>
@@ -163,7 +110,7 @@ const TabAccount = () => {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
-                <Select label='Status' defaultValue='active'>
+                <Select label='Status' defaultValue='active' disabled={!editable} onChange={e => setUserData({ ...userData, status: e.target.value })}>
                   <MenuItem value='active'>Active</MenuItem>
                   <MenuItem value='inactive'>Inactive</MenuItem>
                   <MenuItem value='pending'>Pending</MenuItem>
@@ -171,7 +118,7 @@ const TabAccount = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Company' placeholder='ABC Pvt. Ltd.' defaultValue='ABC Pvt. Ltd.' />
+              <TextField fullWidth label='Company' disabled={!editable} placeholder='ABC Pvt. Ltd.' defaultValue='ABC Pvt. Ltd.' />
             </Grid>
 
             {openAlert ? (
@@ -194,13 +141,35 @@ const TabAccount = () => {
             ) : null}
 
             <Grid item xs={12}>
-              <Button variant='contained' sx={{ marginRight: 3.5 }}>
+
+              <Button variant='contained' sx={{ marginRight: 3.5 }} disabled={!editable} type='submit'>
                 Save Changes
               </Button>
-              <Button type='reset' variant='outlined' color='secondary'>
-                Reset
+              <Button type='reset' sx={{ marginRight: 3.5 }} variant='outlined' color='secondary' disabled={!editable} onClick={() => setEditable(false)}>
+                Cancel
               </Button>
+
+              <Button type='reset' style={{ display: editable ? 'none' : ''}} startIcon={<EditIcon />} variant='contained' onClick={() => setEditable(true)}>
+                Edit Profile
+              </Button>
+
             </Grid>
+            <Snackbar
+                  open={open}
+                  autoHideDuration={3000}
+                  onClose={handleClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                  <Alert severity='success'>User Data Saved</Alert>
+                </Snackbar>
+                <Snackbar
+                  open={errorOpen}
+                  autoHideDuration={3000}
+                  onClose={handleCloseError}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                  <Alert severity='error'>Error while saving data</Alert>
+                </Snackbar>
           </Grid>
         )}
       </form>

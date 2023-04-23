@@ -22,6 +22,9 @@ import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+
 interface State {
   newPassword: string
   currentPassword: string
@@ -41,6 +44,9 @@ const TabSecurity = () => {
     showCurrentPassword: false,
     showConfirmNewPassword: false
   })
+
+  const {put} = useCustomApiHook()
+  const {accountId, userId} = useUserData()
 
   // Handle Current Password
   const handleCurrentPasswordChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +81,20 @@ const TabSecurity = () => {
     event.preventDefault()
   }
 
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+
+    const data = JSON.stringify({
+      userId: userId,
+      password: values.newPassword,
+    })
+
+    await put('/users/updatePassword', data)
+  }
+
   return (
-    <form>
+    <form onSubmit={submitForm}>
       <CardContent sx={{ paddingBottom: 0 }}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={6}>
@@ -204,7 +222,7 @@ const TabSecurity = () => {
         </Box>
 
         <Box sx={{ mt: 11 }}>
-          <Button variant='contained' sx={{ marginRight: 3.5 }}>
+          <Button variant='contained' sx={{ marginRight: 3.5 }} type='submit'>
             Save Changes
           </Button>
           <Button

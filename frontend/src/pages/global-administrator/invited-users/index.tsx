@@ -16,7 +16,7 @@ const AllInvitedUsers = () => {
   const [teamGroup, setTeamGroup] = useState({})
   const [userExtension, setUserExtension] = useState({})
   const [isUserExtensionLoading, setIsUserExtensionLoading] = useState(true)
-  const [isTeamGroupLoading, setIsTeamGroupLoading] = useState(true)
+  const [isTeamGroupLoading, setIsTeamGroupLoading] = useState(false)
 
   const handleClick = rowData => {
     fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)

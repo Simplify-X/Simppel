@@ -4,10 +4,7 @@ import antlr.Token;
 import com.X.X.config.ResourceNotFoundException;
 import com.X.X.domains.PasswordReset;
 import com.X.X.domains.User;
-import com.X.X.dto.LoginDTO;
-import com.X.X.dto.LoginResponse;
-import com.X.X.dto.RegisterDTO;
-import com.X.X.dto.RegisterResponse;
+import com.X.X.dto.*;
 import com.X.X.help.Status;
 import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.repositories.UserRepository;
@@ -262,11 +259,21 @@ public class UserController {
 
     @CrossOrigin
     @PostMapping("/updateLanguagePreference")
-    public ResponseEntity<String> updateLanguagePreference(@RequestParam("locale") String locale, @RequestParam("accountId") UUID accountId) {
+    public ResponseEntity<String> updateLanguagePreference(@RequestParam("locale") String locale, @RequestParam("userId") UUID userId) {
 
-        val user = userService.getSingleUser(accountId);
+        val user = userService.getSingleUser(userId);
         user.setDefaultLanguage(locale);
         userService.saveDefaultLanguage(user);
+        return ResponseEntity.ok("Language Updated");
+
+    }
+
+    @CrossOrigin
+    @PutMapping("/updatePassword")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordDto userDetails) {
+
+        val user = userService.getSingleUser(userDetails.getUserId());
+        userService.updatePassword(user, userDetails);
         return ResponseEntity.ok("Language Updated");
 
     }

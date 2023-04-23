@@ -16,19 +16,19 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 function LanguageDropdown() {
 
-  const { accountId, token } = useUserData()
+  const { userId, token } = useUserData()
   const { response, error, get, post } = useCustomApiHook()
 
   // console.log(userId);
 
   useEffect(() => {
-    if (accountId && token) {
+    if (userId && token) {
       handleGetSignleUser()
     }
-  }, [i18n, accountId, token])
+  }, [i18n, userId, token])
 
   const handleGetSignleUser = async () => {
-    const res = await get(`/users/getSingleUser/${accountId}`, {
+    const res = await get(`/users/getSingleUser/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -54,7 +54,7 @@ function LanguageDropdown() {
     localStorage.setItem('language', locale);
 
     // Make a network request to update the user's language preference in the database
-    await post(`/users/updateLanguagePreference?locale=${locale}&accountId=${accountId}`)
+    await post(`/users/updateLanguagePreference?locale=${locale}&userId=${userId}`)
   }
 
   return (
