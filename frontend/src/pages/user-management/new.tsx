@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as React from 'react'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import authRoute from 'src/@core/utils/auth-route'
@@ -13,86 +14,58 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
 import CardContent from '@mui/material/CardContent'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Card from '@mui/material/Card'
-import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
-import { API_BASE_URL } from 'src/config'
-import Cookies from 'js-cookie'
 import FormHelperText from '@mui/material/FormHelperText'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { Snackbar } from '@mui/material'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const NewUser = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
-  const [accountId, setAccountId] = useState(null)
+  const { accountId } = useUserData()
 
   const router = useRouter()
   const { id } = router.query
+  const { get, post } = useCustomApiHook()
+  const [open, setOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleCloseError = () => {
+    setErrorOpen(false)
+  }
 
   useEffect(() => {
     if (id) {
-      fetch(`${API_BASE_URL}/users/getSingleUser/${id}`)
-        .then(response => response.json())
-        .then(data => {
-          setData(data)
-          setLoading(true)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+      fetchSingleUser()
     }
   }, [id])
 
-  useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      window.location.replace('/login')
-
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
-
-  const handleSave = () => {
-    if (accountId) {
-      fetch(`${API_BASE_URL}/users/register/account/${accountId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then(response => response.json())
-        .then(() => {
-          toast.success('User Updated', { autoClose: 3000 })
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-          toast.error('Error updating user', { autoClose: 3000 })
-        })
-    }
+  const fetchSingleUser = async () => {
+    const getUsers = await get(`/users/getSingleUser/${id}`)
+    setData(getUsers?.data)
+    setLoading(true)
   }
 
+  const handleSave = async () => {
+    if (accountId) {
+      try {
+        await post(`/users/register/account/${accountId}`, JSON.stringify(data))
+        setOpen(true)
+        router.push('/user-management/')
+      } catch (err) {
+        setErrorOpen(true)
+        console.log(err)
+      }
+    }
+  }
 
   return (
     <Card>
@@ -208,6 +181,22 @@ const NewUser = () => {
                   Save Changes
                 </Button>
               </Grid>
+              <Snackbar
+                open={open}
+                autoHideDuration={3000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              >
+                <Alert severity='success'>New User Added</Alert>
+              </Snackbar>
+              <Snackbar
+                open={errorOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              >
+                <Alert severity='error'>Error while creating user</Alert>
+              </Snackbar>
             </Grid>
           )}
         </form>

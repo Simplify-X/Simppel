@@ -1,29 +1,22 @@
 // ** MUI Imports
 // @ts-nocheck
 import { useEffect, useState } from 'react'
-import Cookies from 'js-cookie'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
-import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
 import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 const UserManagement = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
-  const [accountId, setAccountId] = useState(null)
+  const { get } = useCustomApiHook()
+  const { accountId, userId } = useUserData()
 
-  const handleClick = rowData => {
-    fetch(`${API_BASE_URL}/users/getAccountUser/${rowData}`)
-      .then(response => response.json())
-      .then(data => {
-        router.push(`/user-management/edit?id=${data.userId}`)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-      })
+  const handleClick = () => {
+    router.push(`/user-management/edit?id=${userId}`)
   }
 
   const columns = [
@@ -90,46 +83,15 @@ const UserManagement = () => {
   }
 
   useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      window.location.replace('/login')
-
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setAccountId(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
-  }, [])
-
-  useEffect(() => {
     if (accountId) {
-      fetch(`${API_BASE_URL}/users/getUserForAccount/${accountId}`)
-        .then(response => response.json())
-        .then(data => {
-          setRole(data)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+      fetchUserForAccount()
     }
   }, [accountId])
+
+  const fetchUserForAccount = async () => {
+    const getUsersForAccount = await get(`/users/getUserForAccount/${accountId}`)
+    setRole(getUsersForAccount?.data)
+  }
 
   return (
     <>

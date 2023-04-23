@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as React from 'react'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import authRoute from 'src/@core/utils/auth-route'
@@ -13,12 +14,12 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
 import CardContent from '@mui/material/CardContent'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Card from '@mui/material/Card'
-import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { Snackbar } from '@mui/material'
 
 const EditUsers = () => {
   const [data, setData] = useState([])
@@ -26,39 +27,36 @@ const EditUsers = () => {
 
   const router = useRouter()
   const { id } = router.query
+  const { get, put } = useCustomApiHook()
+  const [open, setOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleCloseError = () => {
+    setErrorOpen(false)
+  }
 
   useEffect(() => {
     if (id) {
-      fetch(`${API_BASE_URL}/users/getAccountUser/${id}`)
-        .then(response => response.json())
-        .then(data => {
-          setData(data)
-          setLoading(true)
-        })
-        .catch(error => {
-          Sentry.captureException(error)
-        })
+      fetchAccountUser()
     }
   }, [id])
 
-  const handleSave = () => {
-    fetch(`${API_BASE_URL}/users/users/management/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(response => response.json())
-      .then(() => {
-        toast.success('User Updated', { autoClose: 3000 })
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        toast.error('Error updating user', { autoClose: 3000 })
-      })
+  const fetchAccountUser = async () => {
+    const getUsers = await get(`/users/getAccountUser/${id}`)
+    setData(getUsers?.data)
+    setLoading(true)
   }
 
+  const handleSave = async () => {
+    await put(`/users/users/management/${id}`, JSON.stringify(data))
+    setOpen(true)
+  }
+
+  console.log(data)
 
   return (
     <Card>
@@ -151,7 +149,7 @@ const EditUsers = () => {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Role</InputLabel>
-                  <Select label='Role' value={data.accountRole}>
+                  <Select label='Role' value={data.role}>
                     <MenuItem value='true'>Account Admin</MenuItem>
                     <MenuItem value='false'>User</MenuItem>
                   </Select>
@@ -163,6 +161,22 @@ const EditUsers = () => {
                   Save Changes
                 </Button>
               </Grid>
+              <Snackbar
+                open={open}
+                autoHideDuration={3000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              >
+                <Alert severity='success'>User Data Saved</Alert>
+              </Snackbar>
+              <Snackbar
+                open={errorOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              >
+                <Alert severity='error'>Error while saving data</Alert>
+              </Snackbar>
             </Grid>
           )}
         </form>
