@@ -3,6 +3,7 @@
 import { useState, SyntheticEvent, useEffect } from 'react'
 
 // ** MUI Imports
+import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
@@ -20,6 +21,8 @@ import { useUserData } from 'src/@core/hooks/useUserData'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { Snackbar } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import CircularProgress from '@mui/material/CircularProgress'
+
 
 
 // ** Icons Imports
@@ -77,7 +80,11 @@ const TabAccount = () => {
   return (
     <CardContent>
       <form onSubmit={submitForm}>
-        {loading && (
+      {!loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress />
+            </Box>
+          ) :  (
           <Grid container spacing={7}>
             <Grid item xs={12} sm={6}>
               <TextField fullWidth label='Username' defaultValue={userData.username} disabled={!editable} onChange={e => setUserData({ ...userData, username: e.target.value })}/>

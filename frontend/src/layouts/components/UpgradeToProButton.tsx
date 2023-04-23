@@ -55,11 +55,10 @@ const BuyNowButton = () => {
             </a>
             <CardContent>
               <Typography sx={{ mb: 4 }} variant='h6'>
-                Project-X - React Admin Template
+                Simppel - Level up your business in seconds
               </Typography>
               <Typography sx={{ mb: 4 }} variant='body2'>
-                Project-X Admin is the most developer friendly & highly customizable Admin Dashboard Template based on
-                MUI and NextJS.
+                Simppel provides businesses with the ability to perform day to day activities instantly
               </Typography>
               <Typography sx={{ mb: 4 }} variant='body2'>
                 Click on below buttons to explore PRO version.
