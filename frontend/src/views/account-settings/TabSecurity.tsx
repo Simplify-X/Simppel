@@ -46,7 +46,7 @@ const TabSecurity = () => {
   })
 
   const {put} = useCustomApiHook()
-  const {accountId, userId} = useUserData()
+  const {userId} = useUserData()
 
   // Handle Current Password
   const handleCurrentPasswordChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
