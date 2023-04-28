@@ -127,6 +127,11 @@ public record UserService(UserRepository userRepo,
         return userRepo.save(user);
     }
 
+    public User changeTheme(User user, String theme){
+        user.setThemeMode(theme);
+        return userRepo.save(user);
+    }
+
     public User updateUser(UUID accountId, User userDetails) {
         User user = userRepo.findByAccountId(accountId);
         if (user == null) {

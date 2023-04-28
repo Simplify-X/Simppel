@@ -104,7 +104,7 @@ const Content = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
-  const { accountId } = useUserData()
+  const { accountId, userId } = useUserData()
 
   // console.log(userId)
 
@@ -160,12 +160,13 @@ const Content = () => {
   }
 
   useEffect(() => {
-    accountId && fetchSingleUser()
-    accountId && fetchAdvertisements()
-  }, [accountId])
+    userId && fetchSingleUser()
+    userId && fetchAdvertisements()
+  }, [userId])
 
   const fetchSingleUser = async () => {
-    const response = await get(`/users/getSingleUser/${accountId}`)
+    const response = await get(`/users/getSingleUser/${userId}`)
+    console.log(response);
     if (response?.data) {
       setData(response.data)
       const advertisementLimit = response.data?.advertisementLimit
@@ -174,7 +175,7 @@ const Content = () => {
   }
 
   const fetchAdvertisements = async () => {
-    const response = await get(`/advertisements/${accountId}`)
+    const response = await get(`/advertisements/${userId}`)
     response?.advertisements && setAdCount(response.advertisements?.length)
   }
 
@@ -207,7 +208,7 @@ const Content = () => {
       languageText: selectedLanguage
     }
 
-    await post(`/advertisements/${accountId}`, data)
+    await post(`/advertisements/${userId}`, data)
   }
 
   useEffect(() => {

@@ -278,5 +278,12 @@ public class UserController {
 
     }
 
+    @CrossOrigin
+    @PostMapping("/changeThemeMode")
+    public ResponseEntity<String> changeThemeMode(@RequestParam("theme") String theme, @RequestParam("userId") UUID userId) {
+        val user = userService.getSingleUser(userId);
+        userService.changeTheme(user, theme);
+        return ResponseEntity.ok("Mode changed");
+    }
 
 }
