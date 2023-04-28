@@ -104,7 +104,7 @@ const Content = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
-  const { accountId, userId } = useUserData()
+  const { userId } = useUserData()
 
   // console.log(userId)
 

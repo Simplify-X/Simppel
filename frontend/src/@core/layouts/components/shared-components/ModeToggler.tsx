@@ -21,6 +21,7 @@ const ModeToggler = (props: Props) => {
   const { get, post } = useCustomApiHook()
   const {userId} = useUserData()
   const [mode, setThemeMode] = useState('')
+  
   // ** Props
   const { settings, saveSettings } = props
 
