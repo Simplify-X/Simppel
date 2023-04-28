@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ** MUI Imports
 import { PaletteMode } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
@@ -21,7 +22,7 @@ const ModeToggler = (props: Props) => {
   const { get, post } = useCustomApiHook()
   const {userId} = useUserData()
   const [mode, setThemeMode] = useState('')
-  
+
   // ** Props
   const { settings, saveSettings } = props
 
