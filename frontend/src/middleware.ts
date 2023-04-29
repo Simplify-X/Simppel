@@ -42,13 +42,6 @@ export async function middleware(req: NextRequest) {
   }
 
 
-  // if(isOpenUserRoute) {
-  //   if(user?.role) {
-  //     return NextResponse.rewrite(new URL("/global-administrator/users/", req.url))
-  //   }
-  // }
-
-
   if (isOpenAdminRoute) {
     if(user?.role){
       return NextResponse.rewrite(new URL(pathname, req.url))

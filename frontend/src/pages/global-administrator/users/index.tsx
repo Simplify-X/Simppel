@@ -1,26 +1,18 @@
 // ** MUI Imports
 // @ts-nocheck
 import { useEffect, useState } from 'react'
-import Cookies from 'js-cookie'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
-import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 const Users = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
+  const { get } = useCustomApiHook()
 
   const handleClick = rowData => {
-    fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)
-      .then(response => response.json())
-      .then(data => {
-        router.push(`/global-administrator/users/view-user?id=${data.userId}`)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-      })
+    router.push(`/global-administrator/users/view-user?id=${rowData}`)
   }
 
   const columns = [
@@ -74,32 +66,17 @@ const Users = () => {
   }
 
   useEffect(() => {
-    const token = Cookies.get('token')
-    if (!token) {
-      // Token not found, redirect to login page
-      window.location.replace('/login')
-
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/getAllUsers`)
-      .then(response => {
-        if (response.ok) {
-          // Get account ID from response body
-          return response.json()
-        } else {
-          // Token not valid, redirect to login page
-          throw new Error('Invalid token')
-        }
-      })
-      .then(data => {
-        setRole(data)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-        window.location.replace('/login')
-      })
+    getAllUsers();
   }, [])
+
+
+  const getAllUsers = async () => {
+    const users = await get('/users/getAllUsers');
+    setRole(users?.data)
+  }
+
+
+
 
   return <MUIDataTable title={'Users List'} data={role} columns={columns} options={options} />
 }
