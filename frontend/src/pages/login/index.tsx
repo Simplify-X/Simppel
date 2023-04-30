@@ -5,7 +5,7 @@ import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 // ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // ** MUI Components
