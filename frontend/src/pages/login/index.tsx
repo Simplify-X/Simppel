@@ -5,7 +5,7 @@ import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 // ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // ** MUI Components
@@ -33,6 +33,8 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import Cookies from 'js-cookie'
+import { Snackbar } from '@mui/material'
+import { Alert } from '@mui/material'
 
 // import * as Sentry from '@sentry/nextjs'
 
@@ -51,6 +53,8 @@ interface State {
   password: string
   showPassword: boolean
 }
+
+
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -72,6 +76,9 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 
 const LoginPage = () => {
   const { response, loading, post } = useCustomApiHook()
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -85,6 +92,10 @@ const LoginPage = () => {
       }
     }
   })
+
+  function handleSnackbarClose() {
+    setOpenSnackbar(false);
+  }
 
   // ** State
   const [values, setValues] = useState<State>({
@@ -123,12 +134,16 @@ const LoginPage = () => {
     const status = response?.data.status
 
     if (status === 'OK') {
-      Cookies.set('token', response.data.token)
-      toast.success('Login successful', { autoClose: 3000 })
-      router.push('/')
+      Cookies.set('token', response.data.token);
+      setSnackbarMessage('Login successful');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+      router.push('/');
+    } else if (status === 'FAILED') {
+      setSnackbarMessage('Email or password is incorrect');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
-
-    status === 'FAILED' && toast.error('Email or password is incorrect', { autoClose: 3000 })
 
     // error && Sentry.captureException(error)
   }, [response])
@@ -216,9 +231,9 @@ const LoginPage = () => {
             </Typography>
             <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={submitForm}>
+          <form autoComplete='on' onSubmit={submitForm}>
             <ToastContainer position={'top-center'} draggable={false} />
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} required />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
@@ -227,6 +242,7 @@ const LoginPage = () => {
                 id='auth-login-password'
                 onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
+                required
                 endAdornment={
                   <InputAdornment position='end'>
                     <IconButton
@@ -294,6 +310,16 @@ const LoginPage = () => {
                 </IconButton>
               </Link>
             </Box>
+            <Snackbar
+              open={openSnackbar}
+              autoHideDuration={2000}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              onClose={handleSnackbarClose}
+            >
+              <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
           </form>
         </CardContent>
       </Card>

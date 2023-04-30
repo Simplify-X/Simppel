@@ -73,15 +73,12 @@ const RegisterPage = () => {
   const [activeStep, setActiveStep] = useState(0)
   const { response, loading, error, post } = useCustomApiHook()
 
-  const [open, setOpen] = useState(false)
-  const [errorOpen, setErrorOpen] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleCloseError = () => {
-    setErrorOpen(false)
+  function handleSnackbarClose() {
+    setOpenSnackbar(false);
   }
 
   const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
@@ -101,7 +98,7 @@ const RegisterPage = () => {
     password: '',
     showPassword: false
   })
-  const [formInfo, setformInfo] = useState({
+  const [formInfo, setFormInfo] = useState({
     firstName: '',
     lastName: '',
     password: '',
@@ -142,7 +139,7 @@ const RegisterPage = () => {
   }
 
   function handleEmailChange(e) {
-    setformInfo({ ...formInfo, email: e.target.value })
+    setFormInfo({ ...formInfo, email: e.target.value })
     setEmailError(!validateEmail(e.target.value))
   }
 
@@ -190,12 +187,14 @@ const RegisterPage = () => {
     const status = response?.data.status
 
     if (status === 'OK') {
-      setOpen(true)
+      setSnackbarMessage('Successfully Registered');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
       router.push('/')
     }
 
     status === 'FAILED' &&
-      setformInfo({
+      setFormInfo({
         firstName: '',
         lastName: '',
         username: '',
@@ -204,11 +203,14 @@ const RegisterPage = () => {
         country: '',
         postalCode: '',
         city: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        password: '',
       })
 
     if (error) {
-      setErrorOpen(true)
+      setSnackbarMessage('Failed to register, please try again later');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
       Sentry.captureException(error)
     }
   }, [response, error])
@@ -325,7 +327,7 @@ const RegisterPage = () => {
                       label='First Name'
                       sx={{ marginBottom: 4 }}
                       value={formInfo.firstName}
-                      onChange={e => setformInfo({ ...formInfo, firstName: e.target.value })}
+                      onChange={e => setFormInfo({ ...formInfo, firstName: e.target.value })}
                       required
                     />
                   </Box>
@@ -337,7 +339,7 @@ const RegisterPage = () => {
                       label='Last Name'
                       sx={{ marginBottom: 4 }}
                       value={formInfo.lastName}
-                      onChange={e => setformInfo({ ...formInfo, lastName: e.target.value })}
+                      onChange={e => setFormInfo({ ...formInfo, lastName: e.target.value })}
                       required
                     />
                   </Box>
@@ -350,7 +352,7 @@ const RegisterPage = () => {
                   label='Username'
                   sx={{ marginBottom: 4 }}
                   value={formInfo.username}
-                  onChange={e => setformInfo({ ...formInfo, username: e.target.value })}
+                  onChange={e => setFormInfo({ ...formInfo, username: e.target.value })}
                   required
                 />
                 <TextField
@@ -376,7 +378,7 @@ const RegisterPage = () => {
                     controlledValue={formInfo.password}
                     onChange={e => {
                       handleChange('password')(e) // Call the handleChange function for the controlled component
-                      setformInfo({ ...formInfo, password: e.target.value }) // Update the state value
+                      setFormInfo({ ...formInfo, password: e.target.value }) // Update the state value
                     }}
                     endAdornment={
                       <InputAdornment position='end'>
@@ -418,7 +420,7 @@ const RegisterPage = () => {
               <>
                 <TextField
                   value={formInfo.address}
-                  onChange={e => setformInfo({ ...formInfo, address: e.target.value })}
+                  onChange={e => setFormInfo({ ...formInfo, address: e.target.value })}
                   fullWidth
                   id='outlined-basic -1'
                   label='Address Line'
@@ -428,7 +430,7 @@ const RegisterPage = () => {
                 <Box sx={{ display: 'flex', gap: 2 }}>
                   <TextField
                     value={formInfo.postalCode}
-                    onChange={e => setformInfo({ ...formInfo, postalCode: e.target.value })}
+                    onChange={e => setFormInfo({ ...formInfo, postalCode: e.target.value })}
                     fullWidth
                     id='outlined-basic -1'
                     label='Postal code'
@@ -437,7 +439,7 @@ const RegisterPage = () => {
                   />
                   <TextField
                     value={formInfo.city}
-                    onChange={e => setformInfo({ ...formInfo, city: e.target.value })}
+                    onChange={e => setFormInfo({ ...formInfo, city: e.target.value })}
                     fullWidth
                     id='outlined-basic -1'
                     label='City/Place'
@@ -447,7 +449,7 @@ const RegisterPage = () => {
                 </Box>
                 <TextField
                   value={formInfo.phoneNumber}
-                  onChange={e => setformInfo({ ...formInfo, phoneNumber: e.target.value })}
+                  onChange={e => setFormInfo({ ...formInfo, phoneNumber: e.target.value })}
                   fullWidth
                   id='outlined-basic -1'
                   label='Phone Number'
@@ -457,7 +459,7 @@ const RegisterPage = () => {
 
                 <TextField
                   value={formInfo.country}
-                  onChange={e => setformInfo({ ...formInfo, country: e.target.value })}
+                  onChange={e => setFormInfo({ ...formInfo, country: e.target.value })}
                   fullWidth
                   id='outlined-basic -2'
                   label='Country'
@@ -496,20 +498,14 @@ const RegisterPage = () => {
                 </Box>
                 <Divider sx={{ my: 5 }}></Divider>
                 <Snackbar
-                  open={open}
-                  autoHideDuration={3000}
-                  onClose={handleClose}
+                  open={openSnackbar}
+                  autoHideDuration={2000}
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  onClose={handleSnackbarClose}
                 >
-                  <Alert severity='success'>Registration successful</Alert>
-                </Snackbar>
-                <Snackbar
-                  open={errorOpen}
-                  autoHideDuration={3000}
-                  onClose={handleCloseError}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                >
-                  <Alert severity='error'>Registration Failed</Alert>
+                  <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                  </Alert>
                 </Snackbar>
               </>
             )}
