@@ -21,7 +21,7 @@ const typeOptions = [
 const AdvertisementCategorySelector = ({ selectedTypeAd, handleTypeAd }) => {
   return (
     <Grid item xs={12}>
-      <FormControl style={{ minWidth: 500 }}>
+      <FormControl style={{ minWidth: 370 }}>
         <InputLabel>Type of Advertisement</InputLabel>
         <Select label='Type' value={selectedTypeAd} onChange={handleTypeAd}>
           {typeOptions.map(option => (

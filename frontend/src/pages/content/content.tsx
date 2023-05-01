@@ -11,8 +11,17 @@ import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
-import Button from '@mui/material/Button'
+import { Dialog, DialogContent, DialogContentText, LinearProgress, CircularProgress } from '@mui/material'
 import { API_BASE_URL } from 'src/config'
+import TextField from '@mui/material/TextField'
+import EditIcon from '@mui/icons-material/Edit'
+import IconButton from '@mui/material/IconButton'
+import Divider from '@mui/material/Divider'
+import CachedIcon from '@mui/icons-material/Cached'
+import Tooltip from '@mui/material/Tooltip'
+import PrintIcon from '@mui/icons-material/Print'
+import SaveIcon from '@mui/icons-material/Save';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const SingleContent = () => {
   const [data, setData] = useState([])
@@ -21,9 +30,24 @@ const SingleContent = () => {
   const [showAd, setAd] = useState(false)
   const [newd, setNewData] = useState([])
   const [updated, setUpdated] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter()
   const { id } = router.query
+
+  const [editMode, setEditMode] = useState(false)
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode)
+  }
+
+  const handleTitleChange = e => {
+    setNewData({ ...newd, title: e.target.value })
+  }
+
+  const handleDescriptionChange = e => {
+    setNewData({ ...newd, description: e.target.value })
+  }
 
   useEffect(() => {
     if (id) {
@@ -55,8 +79,17 @@ const SingleContent = () => {
     fetchRequest()
   }, [id, updated])
 
+  const handlePrintClick = () => {
+    window.print()
+  }
+
+  const handleGeneratedAdvertisementEdit = async () => {
+    console.log('updating text')
+  }
+
   const generateAdvertisement = async () => {
     setAd(false)
+    setIsLoading(true)
 
     const titleRequestBody = {
       productName: data.name,
@@ -109,7 +142,7 @@ const SingleContent = () => {
       })
 
       const savedResult = await resultResponse.json()
-
+      setIsLoading(false)
       console.log('Advertisement result saved:', savedResult)
 
       setAd(true)
@@ -120,61 +153,174 @@ const SingleContent = () => {
     }
   }
 
+  console.log(data)
+
   return (
     <>
-      <Button
-        type='submit'
-        variant='contained'
-        size='large'
-        style={{ marginBottom: '20px' }}
-        onClick={generateAdvertisement}
-      >
-        {t('generate_advertisement')}
-      </Button>
-      <Card>
-        <CardHeader title={data.name} titleTypographyProps={{ variant: 'h6' }} />
-        <CardContent>
-          {!loading ? (
-            <Typography variant='body1'>{t('loading')}</Typography>
-          ) : (
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant='h6'>{t('product_name')}</Typography>
-                <Typography variant='body1'>{data.name}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant='h6'>{t('product_description')}</Typography>
-                <Typography variant='body1'>{data.description}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant='h6'>{t('target_audience')}</Typography>
-                <Typography variant='body1'>{data.targetAudience}</Typography>
-              </Grid>
-            </Grid>
-          )}
-        </CardContent>
-      </Card>
+      <Grid container spacing={10}>
+        <Grid item xs={6}>
+          <Card>
+            <CardHeader
+              title='Advertisement HL1'
+              titleTypographyProps={{ variant: 'h6' }}
+              action={
+                <>
+                  <Tooltip title='Click to generate an advertisement using our AI'>
+                    <IconButton onClick={generateAdvertisement}>
+                      <CachedIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title='Click to print'>
+                    <IconButton onClick={handlePrintClick}>
+                      <PrintIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              }
+            />
+            <Divider />
+            <CardContent>
+              {!loading ? (
+                <Typography variant='body1'>{t('loading')}</Typography>
+              ) : (
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('product_name')}</Typography>
+                    <Typography variant='body1'>{data.name ? data.name : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('product_description')}</Typography>
+                    <Typography variant='body1'>{data.description ? data.description : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='caption'>{t('target_audience')}</Typography>
+                    <Typography variant='body1'>{data.targetAudience ? data.targetAudience : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>Advertisement Data</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('language_text')}</Typography>
+                    <Typography variant='body1'>{data.languageText ? data.languageText : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('advertisement_location')}</Typography>
+                    <Typography variant='body1'>
+                      {data.advertisementLocation ? data.advertisementLocation : '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('advertisement_length')}</Typography>
+                    <Typography variant='body1'>{data.advertisementLength ? data.advertisementLength : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Advertisement Mood</Typography>
+                    <Typography variant='body1'>{data.advertisementMood ? data.advertisementMood : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>{t('advertisement_type')}</Typography>
+                    <Typography variant='body1'>{data.advertisementType ? data.advertisementType : '-'}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>Other</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Created Date</Typography>
+                    <Typography variant='body1'>-</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Created By</Typography>
+                    <Typography variant='body1'>User</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Date of Generated Advertisement</Typography>
+                    <Typography variant='body1'>-</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Updated By</Typography>
+                    <Typography variant='body1'>-</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Number of Generated Times</Typography>
+                    <Typography variant='body1'>1</Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        {showAd && (
+          <Grid item xs={6}>
+            <Card>
+            <CardHeader
+              title='AI Generated Advertisements'
+              titleTypographyProps={{ variant: 'h6' }}
+              action={
+                <>
+                  {editMode && (
+                    <Tooltip title='Click to save generated advertisement'>
+                      <IconButton onClick={handleGeneratedAdvertisementEdit}>
+                        <SaveIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
 
-      {showAd && (
-        <Card style={{ marginTop: '20px' }}>
-          <CardContent>
-            {!loading ? (
-              <Typography variant='body1'>{t('loading')}</Typography>
-            ) : (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Typography variant='h6'>{t('advertisement_name')}</Typography>
-                  <Typography variant='body1'>{newd?.title}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant='h6'>{t('advertisement_description')}</Typography>
-                  <Typography variant='body1'>{newd?.description}</Typography>
-                </Grid>
-              </Grid>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                <Tooltip title={editMode ? 'Click to cancel editing' : 'Click to edit generated advertisement'}>
+                  <IconButton onClick={toggleEditMode}>
+                    {editMode ? <ClearIcon /> : <EditIcon />}
+                  </IconButton>
+                </Tooltip>
+
+                </>
+              }
+            />
+            <Divider />
+              <CardContent>
+                {!loading ? (
+                  <CircularProgress/>
+                ) : (
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      {editMode ? (
+                        <TextField variant='outlined' fullWidth value={newd?.title} onChange={handleTitleChange} />
+                      ) : (
+                        <Typography variant='body1'>{newd?.title}</Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant='caption'>{t('advertisement_description')}</Typography>
+                      {editMode ? (
+                        <TextField
+                          variant='outlined'
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={newd?.description}
+                          onChange={handleDescriptionChange}
+                        />
+                      ) : (
+                        <Typography variant='body1'>{newd?.description}</Typography>
+                      )}
+                    </Grid>
+                  </Grid>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+        <Dialog open={isLoading}>
+          <DialogContent>
+            <DialogContentText>Generating... Please wait..</DialogContentText>
+            <LinearProgress color='primary' />
+          </DialogContent>
+        </Dialog>
+      </Grid>
     </>
   )
 }

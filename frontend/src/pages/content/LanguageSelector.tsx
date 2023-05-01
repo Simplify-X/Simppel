@@ -21,7 +21,7 @@ const LanguageSelector = ({ selectedLanguage, onChange }) => {
 
   return (
     <Grid item xs={12}>
-      <FormControl style={{ minWidth: 500 }}>
+      <FormControl style={{ minWidth: 370 }}>
         <InputLabel>{t('language_text')}</InputLabel>
         <Select
           label='Language'

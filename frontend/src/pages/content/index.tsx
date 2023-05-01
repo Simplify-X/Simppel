@@ -373,7 +373,7 @@ const Content = () => {
                   </Grid>
 
                   <Grid item xs={12} style={{ marginTop: '20px' }}>
-                    <FormControl sx={{ minWidth: 500 }}>
+                    <FormControl sx={{ minWidth: 370 }}>
                       <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
                       <Select
                         labelId='demo-multiple-chip-label'
