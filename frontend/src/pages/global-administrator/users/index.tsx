@@ -12,7 +12,7 @@ const Users = () => {
   const { get } = useCustomApiHook()
 
   const handleClick = rowData => {
-    router.push(`/global-administrator/users/view-user?id=${rowData}`)
+    router.push(`/global-administrator/users/view-user/${rowData}`)
   }
 
   const columns = [
