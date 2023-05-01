@@ -166,7 +166,7 @@ const Content = () => {
 
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
-    console.log(response);
+    console.log(response)
     if (response?.data) {
       setData(response.data)
       const advertisementLimit = response.data?.advertisementLimit
@@ -305,6 +305,48 @@ const Content = () => {
           </Grid>
         </CardContent>
       </Card>
+
+      <Grid container spacing={5} style={{ marginTop: '20px' }}>
+        <Grid item xs={12}>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+              <Typography>{t('branding_information')}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label={t('branding_name')}
+                  inputRef={nameRef}
+                  required
+                  helperText={t('branding_name_helper_text')}
+                />
+              </Grid>
+              <Grid item xs={12} style={{ marginTop: '10px' }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  type='text'
+                  label={t('branding_description')}
+                  placeholder='A flying bottle'
+                  helperText={t('branding_description_helper_text')}
+                  inputRef={descriptionRef}
+                  value={scrapedData.description}
+                  required
+                  onChange={event => {
+                    setScrapedData({
+                      ...scrapedData,
+                      description: event.target.value
+                    })
+                  }}
+                />
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+      </Grid>
+
       <Card style={{ marginTop: '20px' }}>
         <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
