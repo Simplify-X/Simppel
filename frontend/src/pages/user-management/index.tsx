@@ -16,7 +16,7 @@ const UserManagement = () => {
   const { accountId, userId } = useUserData()
 
   const handleClick = () => {
-    router.push(`/user-management/edit?id=${userId}`)
+    router.push(`/user-management/edit/${userId}`)
   }
 
   const columns = [

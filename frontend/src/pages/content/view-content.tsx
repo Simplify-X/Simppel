@@ -67,7 +67,7 @@ const ViewContent = () => {
     })
       .then(response => response.json())
       .then(data => {
-        router.push(`/content/content?id=${data.id}`)
+        router.push(`/content/view-single/${data.id}`)
       })
       .catch(error => {
         Sentry.captureException(error)

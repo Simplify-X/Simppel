@@ -58,7 +58,7 @@ const InviteTeam = () => {
   }
 
   const handleClick = rowData => {
-    router.push(`/invite-team/view-user?id=${rowData}`)
+    router.push(`/invite-team/view-user/${rowData}`)
   }
 
   const columns = [
