@@ -42,6 +42,8 @@ import WebScraper from './WebScraper'
 import Tooltip from '@mui/material/Tooltip'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import { Helmet } from 'react-helmet'
+
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -238,6 +240,9 @@ const Content = () => {
 
   return (
     <form onSubmit={submitForm}>
+      <Helmet>
+        <title>Create Advertisement</title>
+      </Helmet>
       <Card>
         <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>

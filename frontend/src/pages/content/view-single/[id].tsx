@@ -22,6 +22,25 @@ import Tooltip from '@mui/material/Tooltip'
 import PrintIcon from '@mui/icons-material/Print'
 import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
+import { Helmet } from 'react-helmet'
+import styled from 'styled-components';
+
+
+
+const StyledDialogContentText = styled(DialogContentText)`
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const ImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  overflow: hidden;
+`;
 
 const SingleContent = () => {
   const [data, setData] = useState([])
@@ -36,6 +55,25 @@ const SingleContent = () => {
   const { id } = router.query
 
   const [editMode, setEditMode] = useState(false)
+
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    const imageUrls = [
+      'https://picsum.photos/seed/image1/800/400',
+      'https://picsum.photos/seed/image2/800/400',
+      'https://picsum.photos/seed/image3/800/400',
+      'https://picsum.photos/seed/image4/800/400',
+      'https://picsum.photos/seed/image5/800/400',
+    ];
+
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * imageUrls.length);
+      setImageUrl(imageUrls[randomIndex]);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleEditMode = () => {
     setEditMode(!editMode)
@@ -157,8 +195,11 @@ const SingleContent = () => {
 
   return (
     <>
+      <Helmet>
+        <title>View Advertisement</title>
+      </Helmet>
       <Grid container spacing={10}>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <Card>
             <CardHeader
               title='Advertisement HL1'
@@ -256,7 +297,7 @@ const SingleContent = () => {
           </Card>
         </Grid>
         {showAd && (
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Card>
             <CardHeader
               title='AI Generated Advertisements'
@@ -314,12 +355,17 @@ const SingleContent = () => {
             </Card>
           </Grid>
         )}
-        <Dialog open={isLoading}>
-          <DialogContent>
-            <DialogContentText>Generating... Please wait..</DialogContentText>
-            <LinearProgress color='primary' />
-          </DialogContent>
-        </Dialog>
+      <Dialog open={isLoading}>
+        <DialogContent>
+          <StyledDialogContentText>
+            Generating... Please wait...
+          </StyledDialogContentText>
+          <ImageContainer>
+            <img src={imageUrl} alt="" />
+          </ImageContainer>
+          <LinearProgress color="primary" />
+        </DialogContent>
+      </Dialog>
       </Grid>
     </>
   )
