@@ -57,6 +57,10 @@ public class Advertisement extends Auditable  {
 
     private String languageText;
 
+    private String brandName;
+
+    private String brandDescription;
+
 
 
 
