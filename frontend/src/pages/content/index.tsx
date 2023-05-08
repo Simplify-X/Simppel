@@ -184,6 +184,8 @@ const Content = () => {
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
+  const brandNameRef = useRef<HTMLInputElement>(null)
+  const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -198,6 +200,8 @@ const Content = () => {
     const name = nameRef.current?.value
     const description = descriptionRef.current?.value
     const targetAudience = targetAudienceRef.current?.value
+    const brandName = brandNameRef.current?.value
+    const brandDescription = brandNameDescriptionRef.current?.value
 
     const data = {
       name,
@@ -207,7 +211,9 @@ const Content = () => {
       advertisementType: selectedTypeAd,
       advertisementMood: selectedMood,
       advertisementLength: selectedTextLength,
-      languageText: selectedLanguage
+      languageText: selectedLanguage,
+      brandName,
+      brandDescription
     }
 
     await post(`/advertisements/${userId}`, data)
@@ -322,8 +328,7 @@ const Content = () => {
                 <TextField
                   fullWidth
                   label={t('branding_name')}
-                  inputRef={nameRef}
-                  required
+                  inputRef={brandNameRef}
                   helperText={t('branding_name_helper_text')}
                 />
               </Grid>
@@ -336,15 +341,7 @@ const Content = () => {
                   label={t('branding_description')}
                   placeholder='A flying bottle'
                   helperText={t('branding_description_helper_text')}
-                  inputRef={descriptionRef}
-                  value={scrapedData.description}
-                  required
-                  onChange={event => {
-                    setScrapedData({
-                      ...scrapedData,
-                      description: event.target.value
-                    })
-                  }}
+                  inputRef={brandNameDescriptionRef}
                 />
               </Grid>
             </AccordionDetails>
