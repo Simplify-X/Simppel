@@ -17,6 +17,7 @@ import ArticleIcon from '@mui/icons-material/Article'
 import NoAccountsIcon from '@mui/icons-material/NoAccounts'
 import GroupsIcon from '@mui/icons-material/Groups'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
+import CategoryIcon from '@mui/icons-material/Category';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -89,6 +90,13 @@ const Navigation = (): VerticalNavItemsType=> {
         icon: VisibilityIcon,
         path: '/content/view-content'
       },
+    
+    userData.advertisementEnabled &&
+    !userData.role && {
+      title: "Product Information",
+      icon: CategoryIcon,
+      path: '/content/product-details'
+    },
 
     !userData.role && {
       sectionTitle: 'Copy Writing'
