@@ -13,10 +13,10 @@ const UserManagement = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
   const { get } = useCustomApiHook()
-  const { accountId, userId } = useUserData()
+  const { accountId } = useUserData()
 
-  const handleClick = () => {
-    router.push(`/user-management/edit/${userId}`)
+  const handleClick = ( rowData ) => {
+    router.push(`/user-management/edit/${rowData}`)
   }
 
   const columns = [
