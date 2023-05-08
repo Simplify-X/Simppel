@@ -1,6 +1,7 @@
 package com.X.X.controller;
 
 import com.X.X.domains.GenerateDescription;
+import com.X.X.domains.GenerateProductDescription;
 import com.X.X.domains.GenerateTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -17,7 +18,7 @@ public class AdvertisementGenerator {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final float TEMPERATURE = 0.7f;
-    private final int MAX_TOKENS = 300;
+    private final int MAX_TOKENS = 800;
 
     @CrossOrigin
     @PostMapping("/generate-title")
@@ -48,6 +49,27 @@ public class AdvertisementGenerator {
 
         return ResponseEntity.ok(description);
     }
+
+    @CrossOrigin
+    @PostMapping("/generateProductInformation")
+    public ResponseEntity<String> generateProductInformation(
+            @RequestBody GenerateProductDescription generateProductDescription
+    )
+
+    {
+        String prompt = "I will give you a link to a product please extract all information possible below. Extract the product information from this link " + generateProductDescription.getUrl() +
+                " is the product viable in this market? Is there a high demand on this product? Is there any competition and is the product hard to scale? " +
+                " Also please provide in detail how i can advertise this product and list the potential target audience for this product and what kind of advertisement will be suitable for this product" +
+                " Give me some steps to sell this product and my profit margins if i decide to sell this product. Please separate all the information based on the questions asked so it can be extracted easily";
+
+
+        String requestBody = "{ \"prompt\": \"" + prompt + "\", \"temperature\": " + TEMPERATURE + ", \"max_tokens\": " + MAX_TOKENS + " }";
+        String description = generateText(requestBody, "text-davinci-003");
+
+        return ResponseEntity.ok(description);
+    }
+
+
 
     private String generateText(String requestBody, String engine) {
         HttpHeaders headers = new HttpHeaders();
