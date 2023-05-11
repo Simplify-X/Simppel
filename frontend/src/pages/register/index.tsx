@@ -91,9 +91,12 @@ const RegisterPage = () => {
       if (formError?.firstName || formError?.lastName || formError?.username || formError?.email || formError?.password)
 
         return
-      if (!formInfo?.firstName || !formInfo?.lastName || !formInfo?.username || !formInfo?.email || !formInfo?.password)
+      if (!formInfo?.firstName || !formInfo?.lastName || !formInfo?.username || !formInfo?.email || !formInfo?.password){
+        toast.error("Opps! Some information is missing.")
 
         return
+      }
+
       setActiveStep(prevActiveStep => prevActiveStep + 1)
     }
   }
@@ -149,7 +152,7 @@ const RegisterPage = () => {
 
     if (!isCheck) {
       toast.error('Please agree with the terms', { autoClose: 3000 })
-      
+
       return
     }
 
@@ -200,9 +203,6 @@ const RegisterPage = () => {
       Sentry.captureException(error)
     }
   }, [response, error])
-
-
-  console.log(formInfo);
 
   return (
     <Box className='content-center'>

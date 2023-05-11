@@ -20,15 +20,15 @@ const cityRegex = /^[A-Za-z\s]+$/
 export const validateUserInput = (values: User, id: string) => {
   const error: User = {}
 
-  if (values.firstName === '') error.firstName = 'Firstname is required.'
-  if (values.lastName === '') error.lastName = 'Lastname is required.'
-  if (values.username === '') error.username = 'Username is required.'
+  if (id === 'firstName' && values.firstName === '') error.firstName = 'Firstname is required.'
+  if (id === 'lastName' && values.lastName === '') error.lastName = 'Lastname is required.'
+  if (id === 'username' && values.username === '') error.username = 'Username is required.'
 
-  if (!emailRegex.test(String(values.email))) {
+  if (id === 'email' && !emailRegex.test(String(values.email))) {
     error.email = 'Invalid email address'
   }
 
-  if (!passwordRegex.test(String(values.password))) {
+  if (id === 'password' && !passwordRegex.test(String(values.password))) {
     error.password = 'Password must be atleast 6 characters long with one upercase.'
   }
 
