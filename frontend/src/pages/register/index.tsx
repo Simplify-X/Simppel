@@ -86,12 +86,12 @@ const RegisterPage = () => {
   const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
     if (activeStep === steps.length - 1) {
       if (formError?.postalCode || formError?.phoneNumber || formError?.city || formError?.country) {
-        toast.error('Opps! Please fill out required information.')
+        toast.error('Please fill all required fields.')
 
         return
       }
       if (!formInfo?.postalCode || !formInfo?.phoneNumber || !formInfo?.city || !formInfo?.country) {
-        toast.error('Opps! Please fill out required information.')
+        toast.error('Please fill all required fields.')
 
         return
       }
@@ -106,7 +106,7 @@ const RegisterPage = () => {
         !formInfo?.email ||
         !formInfo?.password
       ) {
-        toast.error('Opps! Please fill out required information.')
+        toast.error('Please fill all required fields.')
 
         return
       }
