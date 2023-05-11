@@ -15,11 +15,10 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordRegex = /^(?=.*[A-Z])[a-zA-Z0-9]{6,}$/
 const postalCodeRegex = /^[0-9]+$/
 const phoneNumberRegex = /^[0-9]+$/
+const cityRegex = /^[A-Za-z\s]+$/
 
 export const validateUserInput = (values: User, id: string) => {
   const error: User = {}
-
-  console.log("object");
 
   if (values.firstName === '') error.firstName = 'Firstname is required.'
   if (values.lastName === '') error.lastName = 'Lastname is required.'
@@ -33,20 +32,20 @@ export const validateUserInput = (values: User, id: string) => {
     error.password = 'Password must be atleast 6 characters long with one upercase.'
   }
 
-  if (!postalCodeRegex.test(String(values.postalCode))) {
+  if (id === 'postalCode' && !postalCodeRegex.test(String(values.postalCode))) {
     error.postalCode = 'Postal code only numbers.'
   }
 
-  if (!phoneNumberRegex.test(String(values.phoneNumber))) {
+  if (id === 'phoneNumber' && !phoneNumberRegex.test(String(values.phoneNumber))) {
     error.phoneNumber = 'Phone number must be only number.'
   }
 
-  if (String(values.city).trim() === '') {
+  if (id === 'city' && !cityRegex.test(String(values.city))) {
     error.city = 'City/Place should be text.'
   }
 
-  if (String(values.country).trim() === '') {
-    error.country = "Country name isn't correct"
+  if (id === 'country' && String(values.country).trim() === '') {
+    error.country = 'Country name required'
   }
 
   return error

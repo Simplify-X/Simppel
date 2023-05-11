@@ -43,6 +43,7 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Step, StepLabel, Stepper } from '@mui/material'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { validateUserInput } from 'src/@core/utils/validation'
+import LoadCountry from 'src/@core/layouts/components/LoadCountry'
 
 interface State {
   password: string
@@ -87,8 +88,12 @@ const RegisterPage = () => {
       if (formError?.postalCode || formError?.phoneNumber || formError?.city || formError?.country) return
       submitForm(event)
     } else {
-      if (formError?.firstName || formError?.lastName || formError?.username || formError?.email || formError?.password) return
-      if (!formInfo?.firstName || !formInfo?.lastName || !formInfo?.username || !formInfo?.email || !formInfo?.password) return
+      if (formError?.firstName || formError?.lastName || formError?.username || formError?.email || formError?.password)
+
+        return
+      if (!formInfo?.firstName || !formInfo?.lastName || !formInfo?.username || !formInfo?.email || !formInfo?.password)
+
+        return
       setActiveStep(prevActiveStep => prevActiveStep + 1)
     }
   }
@@ -144,6 +149,7 @@ const RegisterPage = () => {
 
     if (!isCheck) {
       toast.error('Please agree with the terms', { autoClose: 3000 })
+      
       return
     }
 
@@ -194,6 +200,9 @@ const RegisterPage = () => {
       Sentry.captureException(error)
     }
   }, [response, error])
+
+
+  console.log(formInfo);
 
   return (
     <Box className='content-center'>
@@ -457,17 +466,10 @@ const RegisterPage = () => {
                   helperText={formError?.phoneNumber ?? ''}
                 />
 
-                <TextField
-                  value={formInfo.country}
-                  onChange={e => setFormInfo({ ...formInfo, country: e.target.value })}
-                  fullWidth
-                  id='country'
-                  label='Country'
-                  variant='outlined'
-                  sx={{ marginBottom: 4 }}
-                  onChange={handleFormInfoChange}
-                  error={formError?.country ? true : false}
-                  helperText={formError?.country ?? ''}
+                
+                <LoadCountry
+                  searchTerm={formInfo?.country}
+                  handleChange={c => setFormInfo({ ...formInfo, country: c })}
                 />
 
                 <FormControlLabel
