@@ -24,7 +24,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-import { Snackbar } from '@mui/material'
+import { FormHelperText, Snackbar } from '@mui/material'
 import { Alert } from '@mui/material'
 
 // ** Icons Imports
@@ -42,6 +42,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Step, StepLabel, Stepper } from '@mui/material'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { validateUserInput } from 'src/@core/utils/validation'
+import LoadCountry from 'src/@core/layouts/components/LoadCountry'
 
 interface State {
   password: string
@@ -73,18 +75,42 @@ const RegisterPage = () => {
   const [activeStep, setActiveStep] = useState(0)
   const { response, loading, error, post } = useCustomApiHook()
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success')
 
   function handleSnackbarClose() {
-    setOpenSnackbar(false);
+    setOpenSnackbar(false)
   }
 
   const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
     if (activeStep === steps.length - 1) {
+      if (formError?.postalCode || formError?.phoneNumber || formError?.city || formError?.country) {
+        toast.error('Please fill all required fields.')
+
+        return
+      }
+      if (!formInfo?.postalCode || !formInfo?.phoneNumber || !formInfo?.city || !formInfo?.country) {
+        toast.error('Please fill all required fields.')
+
+        return
+      }
       submitForm(event)
     } else {
+      if (formError?.firstName || formError?.lastName || formError?.username || formError?.email || formError?.password)
+        return
+      if (
+        !formInfo?.firstName ||
+        !formInfo?.lastName ||
+        !formInfo?.username ||
+        !formInfo?.email ||
+        !formInfo?.password
+      ) {
+        toast.error('Please fill all required fields.')
+
+        return
+      }
+
       setActiveStep(prevActiveStep => prevActiveStep + 1)
     }
   }
@@ -113,9 +139,8 @@ const RegisterPage = () => {
   const passwordRef = useRef<HTMLInputElement>(null)
   const agreeRef = useRef<HTMLInputElement>(false)
 
-  const [emailError, setEmailError] = useState('')
+  const [formError, setFormError] = useState<object | null>(null)
 
-  // ** Hook
   const theme = useTheme()
   const router = useRouter()
 
@@ -129,40 +154,18 @@ const RegisterPage = () => {
     event.preventDefault()
   }
 
-  // const [emailError, setEmailError] = useState(false);
-
-  function validateEmail(email) {
-    // use a regular expression to validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-    return emailRegex.test(email)
-  }
-
-  function handleEmailChange(e) {
-    setFormInfo({ ...formInfo, email: e.target.value })
-    setEmailError(!validateEmail(e.target.value))
+  const handleFormInfoChange = e => {
+    const formData = { ...formInfo, [e.target.id]: e.target.value }
+    setFormError(validateUserInput(formData, e.target.id))
+    setFormInfo(formData)
   }
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const isCheck = agreeRef.current?.checked
 
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/ // regular expression for email validation
-    if (!emailRegex.test(formInfo.email!)) {
-      setEmailError('Invalid email address')
-
-      return
-    }
-
     if (!isCheck) {
       toast.error('Please agree with the terms', { autoClose: 3000 })
-
-      return
-    }
-
-    // Add form validation logic
-    if (!formInfo.username || !formInfo.email || !formInfo.password || !formInfo.firstName || !formInfo.lastName) {
-      toast.error('Please fill in all the fields', { autoClose: 3000 })
 
       return
     }
@@ -187,9 +190,9 @@ const RegisterPage = () => {
     const status = response?.data.status
 
     if (status === 'OK') {
-      setSnackbarMessage('Successfully Registered');
-      setSnackbarSeverity('success');
-      setOpenSnackbar(true);
+      setSnackbarMessage('Successfully Registered')
+      setSnackbarSeverity('success')
+      setOpenSnackbar(true)
       router.push('/')
     }
 
@@ -204,13 +207,14 @@ const RegisterPage = () => {
         postalCode: '',
         city: '',
         phoneNumber: '',
-        password: '',
+        password: ''
       })
 
     if (error) {
-      setSnackbarMessage('Failed to register, please try again later');
-      setSnackbarSeverity('error');
-      setOpenSnackbar(true);
+      console.log(error, "EEEEEEEEE")
+      setSnackbarMessage('Failed to register, please try again later')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
       Sentry.captureException(error)
     }
   }, [response, error])
@@ -317,7 +321,6 @@ const RegisterPage = () => {
           <form autoComplete='off' onSubmit={submitForm}>
             {activeStep === 0 ? (
               <>
-                <ToastContainer position={'top-center'} draggable={false} />
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                   <Box sx={{ flexGrow: 1 }}>
                     <TextField
@@ -327,7 +330,9 @@ const RegisterPage = () => {
                       label='First Name'
                       sx={{ marginBottom: 4 }}
                       value={formInfo.firstName}
-                      onChange={e => setFormInfo({ ...formInfo, firstName: e.target.value })}
+                      onChange={handleFormInfoChange}
+                      error={formError?.firstName ? true : false}
+                      helperText={formError?.firstName ?? ''}
                       required
                     />
                   </Box>
@@ -339,7 +344,9 @@ const RegisterPage = () => {
                       label='Last Name'
                       sx={{ marginBottom: 4 }}
                       value={formInfo.lastName}
-                      onChange={e => setFormInfo({ ...formInfo, lastName: e.target.value })}
+                      onChange={handleFormInfoChange}
+                      error={formError?.lastName ? true : false}
+                      helperText={formError?.lastName ?? ''}
                       required
                     />
                   </Box>
@@ -352,18 +359,21 @@ const RegisterPage = () => {
                   label='Username'
                   sx={{ marginBottom: 4 }}
                   value={formInfo.username}
-                  onChange={e => setFormInfo({ ...formInfo, username: e.target.value })}
+                  onChange={handleFormInfoChange}
+                  error={formError?.username ? true : false}
+                  helperText={formError?.username ?? ''}
                   required
                 />
                 <TextField
                   value={formInfo.email}
+                  id='email'
                   fullWidth
                   type='email'
                   label='Email'
                   sx={{ marginBottom: 4 }}
-                  onChange={handleEmailChange}
-                  error={emailError}
-                  helperText={emailError ? 'Invalid email' : ''}
+                  onChange={handleFormInfoChange}
+                  error={formError?.email ? true : false}
+                  helperText={formError?.email ?? ''}
                   required
                 />
                 <FormControl fullWidth>
@@ -372,13 +382,14 @@ const RegisterPage = () => {
                   </InputLabel>
                   <OutlinedInput
                     label='Password'
-                    value={values.password}
-                    id='auth-register-password'
+                    value={formInfo.password}
+                    id='password'
                     type={values.showPassword ? 'text' : 'password'}
                     controlledValue={formInfo.password}
+                    error={formError?.password ? true : false}
                     onChange={e => {
                       handleChange('password')(e) // Call the handleChange function for the controlled component
-                      setFormInfo({ ...formInfo, password: e.target.value }) // Update the state value
+                      handleFormInfoChange(e)
                     }}
                     endAdornment={
                       <InputAdornment position='end'>
@@ -395,6 +406,11 @@ const RegisterPage = () => {
                     inputRef={passwordRef}
                     required
                   />
+                  {formError?.password && (
+                    <FormHelperText error id='form-error'>
+                      {formError.password}
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <Box
                   sx={{
@@ -420,51 +436,54 @@ const RegisterPage = () => {
               <>
                 <TextField
                   value={formInfo.address}
-                  onChange={e => setFormInfo({ ...formInfo, address: e.target.value })}
                   fullWidth
-                  id='outlined-basic -1'
+                  id='address'
                   label='Address Line'
                   variant='outlined'
                   sx={{ marginBottom: 4 }}
+                  onChange={handleFormInfoChange}
+                  error={formError?.address ? true : false}
+                  helperText={formError?.address ?? ''}
                 />
                 <Box sx={{ display: 'flex', gap: 2 }}>
                   <TextField
                     value={formInfo.postalCode}
-                    onChange={e => setFormInfo({ ...formInfo, postalCode: e.target.value })}
                     fullWidth
-                    id='outlined-basic -1'
+                    id='postalCode'
                     label='Postal code'
                     variant='outlined'
                     sx={{ marginBottom: 4 }}
+                    onChange={handleFormInfoChange}
+                    error={formError?.postalCode ? true : false}
+                    helperText={formError?.postalCode ?? ''}
                   />
                   <TextField
                     value={formInfo.city}
-                    onChange={e => setFormInfo({ ...formInfo, city: e.target.value })}
                     fullWidth
-                    id='outlined-basic -1'
+                    id='city'
                     label='City/Place'
                     variant='outlined'
                     sx={{ marginBottom: 4 }}
+                    onChange={handleFormInfoChange}
+                    error={formError?.city ? true : false}
+                    helperText={formError?.city ?? ''}
                   />
                 </Box>
                 <TextField
                   value={formInfo.phoneNumber}
-                  onChange={e => setFormInfo({ ...formInfo, phoneNumber: e.target.value })}
                   fullWidth
-                  id='outlined-basic -1'
+                  id='phoneNumber'
                   label='Phone Number'
                   variant='outlined'
                   sx={{ marginBottom: 4 }}
+                  onChange={handleFormInfoChange}
+                  error={formError?.phoneNumber ? true : false}
+                  helperText={formError?.phoneNumber ?? ''}
                 />
 
-                <TextField
-                  value={formInfo.country}
-                  onChange={e => setFormInfo({ ...formInfo, country: e.target.value })}
-                  fullWidth
-                  id='outlined-basic -2'
-                  label='Country'
-                  variant='outlined'
-                  sx={{ marginBottom: 4 }}
+                <LoadCountry
+                  searchTerm={formInfo?.country}
+                  handleChange={c => setFormInfo({ ...formInfo, country: c })}
                 />
 
                 <FormControlLabel
@@ -524,6 +543,8 @@ const RegisterPage = () => {
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />
+
+      <ToastContainer position={'top-center'} draggable={false} />
     </Box>
   )
 }
