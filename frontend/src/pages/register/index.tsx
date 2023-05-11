@@ -85,14 +85,28 @@ const RegisterPage = () => {
 
   const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
     if (activeStep === steps.length - 1) {
-      if (formError?.postalCode || formError?.phoneNumber || formError?.city || formError?.country) return
+      if (formError?.postalCode || formError?.phoneNumber || formError?.city || formError?.country) {
+        toast.error('Opps! Please fill out required information.')
+
+        return
+      }
+      if (!formInfo?.postalCode || !formInfo?.phoneNumber || !formInfo?.city || !formInfo?.country) {
+        toast.error('Opps! Please fill out required information.')
+
+        return
+      }
       submitForm(event)
     } else {
       if (formError?.firstName || formError?.lastName || formError?.username || formError?.email || formError?.password)
-
         return
-      if (!formInfo?.firstName || !formInfo?.lastName || !formInfo?.username || !formInfo?.email || !formInfo?.password){
-        toast.error("Opps! Some information is missing.")
+      if (
+        !formInfo?.firstName ||
+        !formInfo?.lastName ||
+        !formInfo?.username ||
+        !formInfo?.email ||
+        !formInfo?.password
+      ) {
+        toast.error('Opps! Please fill out required information.')
 
         return
       }
@@ -197,6 +211,7 @@ const RegisterPage = () => {
       })
 
     if (error) {
+      console.log(error, "EEEEEEEEE")
       setSnackbarMessage('Failed to register, please try again later')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
@@ -466,7 +481,6 @@ const RegisterPage = () => {
                   helperText={formError?.phoneNumber ?? ''}
                 />
 
-                
                 <LoadCountry
                   searchTerm={formInfo?.country}
                   handleChange={c => setFormInfo({ ...formInfo, country: c })}

@@ -12,7 +12,7 @@ interface User {
 }
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const passwordRegex = /^(?=.*[A-Z])[a-zA-Z0-9]{6,}$/
+const passwordRegex = /^(?=.*[A-Z])[@!$%^&*#()a-zA-Z0-9]{6,}$/
 const postalCodeRegex = /^[0-9]+$/
 const phoneNumberRegex = /^[0-9]+$/
 const cityRegex = /^[A-Za-z\s]+$/

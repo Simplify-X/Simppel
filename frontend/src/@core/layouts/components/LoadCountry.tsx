@@ -24,10 +24,14 @@ const SearchCountry: React.FC<Props> = ({ handleChange }) => {
   useEffect(() => {
     setLoading(true)
     const fetchCountries = async () => {
-      const response = await fetch(countriesUrl)
-      const data = await response.json()
-      setCountries(data)
-      setLoading(false)
+      try {
+        const response = await fetch(countriesUrl)
+        const data = await response.json()
+        setCountries(data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+      }
     }
     fetchCountries()
   }, [])
