@@ -59,6 +59,10 @@ const ViewContent = () => {
     }
   }
 
+  const goToAddContent = () => {
+    router.push('add')
+  }
+
   const handleClick = rowData => {
     fetch(`${API_BASE_URL}/advertisements/single/${rowData}`, {
       headers: {
@@ -67,7 +71,7 @@ const ViewContent = () => {
     })
       .then(response => response.json())
       .then(data => {
-        router.push(`/content/view-single/${data.id}`)
+        router.push(`/content/view/${data.id}`)
       })
       .catch(error => {
         Sentry.captureException(error)
@@ -118,7 +122,7 @@ const ViewContent = () => {
     <Box sx={{ width: '100%' }}>
       <MUIDataTable title={'Content List'} data={sortedArray} columns={columns} options={options} />
 
-      <Fab color='primary' aria-label='add' style={{ marginTop: '10px' }}>
+      <Fab color='primary' aria-label='add' style={{ marginTop: '10px' }} onClick={goToAddContent}>
         <AddIcon />
       </Fab>
     </Box>

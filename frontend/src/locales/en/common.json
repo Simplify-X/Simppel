@@ -39,6 +39,13 @@
   "target_audience": "Target Audience",
   "view_advertisement": "View Advertisement",
   "view_copy": "View Copy",
+  "create_copy_writing" : "Create Copy Writing",
+  "title_of_copy" : "Title",
+  "title_helper_text" : "Enter a title for a copy",
+  "tone" : "Tone of copy", 
+  "description_copy" : "Description of copy",
+  "keywords" : "Specific keywords for copy (SEO Related)",
+  "enter_keywords" : "Enter specific keywords for a better generated copy",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
   "web_scraper_url": "Website URL"
 }

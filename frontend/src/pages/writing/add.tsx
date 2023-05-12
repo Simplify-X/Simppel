@@ -99,7 +99,6 @@ const Writing = () => {
   const { response, error, get, post } = useCustomApiHook()
   const { accountId } = useUserData()
 
-
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
   }
@@ -207,17 +206,17 @@ const Writing = () => {
   return (
     <form onSubmit={submitForm}>
       <Card>
-        <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
+        <CardHeader title={t('create_copy_writing')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
           <ToastContainer position={'top-center'} draggable={false} />
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
+          <Grid container spacing={10}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
-                label={scrapedData.title ? '' : t('name_of_copy')}
+                label={scrapedData.title ? '' : t('title_of_copy')}
                 inputRef={nameRef}
                 required
-                helperText={t('enter_product_name')}
+                helperText={t('title_helper_text')}
                 value={scrapedData.title}
                 onChange={event => {
                   setScrapedData({
@@ -227,25 +226,7 @@ const Writing = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                type='text'
-                label={scrapedData.description ? '' : t('purpose')}
-                placeholder='A flying bottle'
-                helperText={t('product_description_helper_text')}
-                inputRef={descriptionRef}
-                value={scrapedData.description}
-                required
-                onChange={event => {
-                  setScrapedData({
-                    ...scrapedData,
-                    description: event.target.value
-                  })
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 type='text'
@@ -256,60 +237,137 @@ const Writing = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControl>
-                <FormLabel id='demo-row-radio-buttons-group-label'>{t('tone')}</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby='demo-row-radio-buttons-group-label'
-                  name='row-radio-buttons-group'
-                  value={selectedLocation}
-                  onChange={handleLocationChange}
-                >
-                  <FormControlLabel value='formal' control={<Radio />} label='Formal' />
-                  <FormControlLabel value='informal' control={<Radio />} label='Informal' />
-                  <FormControlLabel value='humorous' control={<Radio />} label='Humorous' />
-                  <FormControlLabel value='serious' control={<Radio />} label='Serious' />
-                </RadioGroup>
-              </FormControl>
+            <Grid item xs={4}>
+              <TextField fullWidth label={t('keywords')} inputRef={nameRef} required helperText={t('enter_keywords')} />
             </Grid>
-            <Grid item xs={12}>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-                  <Typography>{t('branding')}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label={t('branding_information')}
-                      inputRef={nameRef}
-                      required
-                      helperText={t('enter_product_name')}
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+                type='text'
+                label={scrapedData.description ? '' : t('description_copy')}
+                placeholder='A flying bottle'
+                helperText={t('product_description_helper_text')}
+                inputRef={descriptionRef}
+                value={scrapedData.description}
+                required
+                multiline
+                rows={8} // Specify the number of rows here
+                onChange={event => {
+                  setScrapedData({
+                    ...scrapedData,
+                    description: event.target.value
+                  })
+                }}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Grid item xs={12}>
+                <FormControl component='fieldset'>
+                  <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
+                    {t('tone')}
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby='demo-row-radio-buttons-group-label'
+                    name='row-radio-buttons-group'
+                    value={selectedLocation}
+                    onChange={handleLocationChange}
+                  >
+                    <FormControlLabel
+                      value='formal'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Formal</span>}
                     />
-                  </Grid>
+                    <FormControlLabel
+                      value='informal'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Informal</span>}
+                    />
+                    <FormControlLabel
+                      value='humorous'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Humorous</span>}
+                    />
+                    <FormControlLabel
+                      value='serious'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Serious</span>}
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label={t('brand_description')}
-                      inputRef={nameRef}
-                      required
-                      helperText={t('enter_product_name')}
+              <Grid item xs={12} style={{ marginTop: '17px' }}>
+                <FormControl component='fieldset'>
+                  <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
+                    {t('advertisement_location')}
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby='demo-row-radio-buttons-group-label'
+                    name='row-radio-buttons-group'
+                    value={selectedLocation}
+                    onChange={handleLocationChange}
+                  >
+                    <FormControlLabel
+                      value='facebook'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Facebook</span>}
                     />
-                  </Grid>
+                    <FormControlLabel
+                      value='instagram'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Instagram</span>}
+                    />
+                    <FormControlLabel
+                      value='tiktok'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Tiktok</span>}
+                    />
+                    <FormControlLabel
+                      value='other'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Other</span>}
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label={t('keywords')}
-                      inputRef={nameRef}
-                      required
-                      helperText={t('enter_product_name')}
+              <Grid item xs={12} style={{ marginTop: '17px' }}>
+                <FormControl component='fieldset'>
+                  <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
+                    {t('advertisement_length')}
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby='demo-row-radio-buttons-group-label'
+                    name='row-radio-buttons-group'
+                    value={selectedTextLength}
+                    onChange={handleTextLength}
+                  >
+                    <FormControlLabel
+                      value='short'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Short</span>}
                     />
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
+                    <FormControlLabel
+                      value='medium'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Medium</span>}
+                    />
+                    <FormControlLabel
+                      value='long'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Long</span>}
+                    />
+                    <FormControlLabel
+                      value='long'
+                      control={<Radio />}
+                      label={<span style={{ width: '100px', display: 'inline-block' }}>Random</span>}
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>
@@ -318,25 +376,26 @@ const Writing = () => {
         <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
           <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <FormControl>
-                <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_location')}</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby='demo-row-radio-buttons-group-label'
-                  name='row-radio-buttons-group'
-                  value={selectedLocation}
-                  onChange={handleLocationChange}
-                >
-                  <FormControlLabel value='facebook' control={<Radio />} label='Facebook' />
-                  <FormControlLabel value='instagram' control={<Radio />} label='Instagram' />
-                  <FormControlLabel value='tiktok' control={<Radio />} label='Tiktok' />
-                  <FormControlLabel value='other' control={<Radio />} label='other' />
-                </RadioGroup>
-              </FormControl>
+            <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
+            <Grid item xs={4}>
+              <TextField
+                fullWidth
+                label={t('branding_name')}
+                inputRef={nameRef}
+                required
+                helperText={t('branding_name_helper_text')}
+              />
             </Grid>
 
-            <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
+            <Grid item xs={4}>
+              <TextField
+                fullWidth
+                label={t('branding_description')}
+                inputRef={nameRef}
+                required
+                helperText={t('enter_product_name')}
+              />
+            </Grid>
 
             <Grid item xs={12}>
               <Accordion>
@@ -344,23 +403,6 @@ const Writing = () => {
                   <Typography>{t('advanced_settings')}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Grid item xs={12}>
-                    <FormControl>
-                      <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_length')}</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby='demo-row-radio-buttons-group-label'
-                        name='row-radio-buttons-group'
-                        value={selectedTextLength}
-                        onChange={handleTextLength}
-                      >
-                        <FormControlLabel value='short' control={<Radio />} label='Short Text' />
-                        <FormControlLabel value='medium' control={<Radio />} label='Medium Text' />
-                        <FormControlLabel value='long' control={<Radio />} label='Long Text' />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-
                   <Grid item xs={12}>
                     <FormControl>
                       <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
