@@ -9,7 +9,7 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 const Copy = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
-  const { get } = useCustomApiHook()
+  //const { get } = useCustomApiHook()
 
   const handleClick = rowData => {
     router.push(`/global-administrator/users/view-user/${rowData}`)
@@ -74,7 +74,7 @@ const Copy = () => {
 
   const getAllUsers = async () => {
     // const users = await get('/users/getAllUsers');
-    // setRole(users?.data)
+    setRole([])
   }
 
   const sortedArray = [...role].sort((a, b) => {
