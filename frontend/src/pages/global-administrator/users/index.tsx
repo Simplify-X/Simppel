@@ -53,7 +53,8 @@ const Users = () => {
       label: 'Role',
       options: {
         filter: true,
-        sort: false
+        sort: false,
+        customBodyRender: (value) => (value ? 'Admin' : 'User')
       }
     }
   ]
@@ -75,10 +76,12 @@ const Users = () => {
     setRole(users?.data)
   }
 
+  const sortedArray = [...role].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
 
-
-  return <MUIDataTable title={'Users List'} data={role} columns={columns} options={options} />
+  return <MUIDataTable title={'Users List'} data={sortedArray} columns={columns} options={options} />
 }
 
 // @ts-ignore
