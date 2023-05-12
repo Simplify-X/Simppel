@@ -108,6 +108,10 @@ const AllInvitedUsers = () => {
     setIsUserExtensionLoading(false)
   }
 
+  const sortedArray = [...role].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   useEffect(() => {
     role.forEach(user => {
       if (user.teamGroupId) {
@@ -127,12 +131,14 @@ const AllInvitedUsers = () => {
   useEffect(() => {
     getInvitedUsers()
   }, [])
+  
+  
 
   if (isUserExtensionLoading || isTeamGroupLoading) {
     return <CircularProgress />
   }
 
-  return <MUIDataTable title={'Invited User List'} data={role} columns={columns} options={options} />
+  return <MUIDataTable title={'Invited User List'} data={sortedArray} columns={columns} options={options} />
 }
 
 // @ts-ignore

@@ -80,12 +80,16 @@ const UnactiveAccounts = () => {
     setAccountLoading(false);
   }
 
+  const sortedArray = [...role].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   
   if (accountLoading) {
     return <CircularProgress />
   }
 
-  return <MUIDataTable title={'Unactive User List'} data={role} columns={columns} options={options} />
+  return <MUIDataTable title={'Unactive User List'} data={sortedArray} columns={columns} options={options} />
 }
 
 // @ts-ignore

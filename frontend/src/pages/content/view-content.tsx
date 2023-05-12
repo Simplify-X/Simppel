@@ -110,9 +110,13 @@ const ViewContent = () => {
       })
   }, [])
 
+  const sortedArray = [...content].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   return (
     <Box sx={{ width: '100%' }}>
-      <MUIDataTable title={'Content List'} data={content} columns={columns} options={options} />
+      <MUIDataTable title={'Content List'} data={sortedArray} columns={columns} options={options} />
 
       <Fab color='primary' aria-label='add' style={{ marginTop: '10px' }}>
         <AddIcon />
