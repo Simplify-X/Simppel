@@ -82,13 +82,13 @@ const Navigation = (): VerticalNavItemsType=> {
       !userData.role && {
         title: t('add_advertisement'),
         icon: AddIcon,
-        path: '/content'
+        path: '/content/add'
       },
     userData.advertisementEnabled &&
       !userData.role && {
         title: t('view_advertisement'),
         icon: VisibilityIcon,
-        path: '/content/view-content'
+        path: '/content/view'
       },
     
     userData.advertisementEnabled &&
@@ -105,12 +105,12 @@ const Navigation = (): VerticalNavItemsType=> {
     !userData.role && {
       title: t('create_copy'),
       icon: NotesIcon,
-      path: '/writing'
+      path: '/writing/add'
     },
     !userData.role && {
       title: t('view_copy'),
       icon: VisibilityIcon,
-      path: '/view-writing'
+      path: '/writing/view'
     },
 
     !userData.role && {
@@ -119,12 +119,12 @@ const Navigation = (): VerticalNavItemsType=> {
     !userData.role && {
       title: 'Create Post Automation',
       icon: AlarmAddIcon,
-      path: '/automation'
+      path: '/automation/add'
     },
     !userData.role && {
       title: 'View Automation',
       icon: VisibilityIcon,
-      path: '/automation/view-automation'
+      path: '/automation/view'
     },
 
     !userData.role && {
