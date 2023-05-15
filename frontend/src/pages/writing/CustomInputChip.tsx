@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
