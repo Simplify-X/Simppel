@@ -44,11 +44,7 @@ const MenuProps = {
 
 const names = ['Physical Product', 'Digital Product']
 
-function getStyles(name: string, personName: readonly string[] | undefined, theme: Theme) {
-  return {
-    fontWeight: personName && personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
-  }
-}
+
 
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -93,6 +89,12 @@ const AdditionalFeatures = ({
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked)
+  }
+
+  function getStyles(name: string, personName: readonly string[] | undefined, theme: Theme) {
+    return {
+      fontWeight: personName && personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
+    }
   }
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
