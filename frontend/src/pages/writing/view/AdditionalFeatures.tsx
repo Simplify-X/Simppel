@@ -44,11 +44,12 @@ const MenuProps = {
 
 const names = ['Physical Product', 'Digital Product']
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
+function getStyles(name: string, personName: readonly string[] | undefined, theme: Theme) {
   return {
-    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
+    fontWeight: personName && personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
   }
 }
+
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
