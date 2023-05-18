@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { useState } from 'react'
+
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
 import 'react-toastify/dist/ReactToastify.css'
@@ -21,6 +23,19 @@ const SummarizeForm = ({
   descriptionRef
 }) => {
   const { t } = useTranslation()
+
+  const [selectedChecbox, setSelectedChecbox] = useState([]); 
+
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      // Add the value to the selectedLocation array
+      setSelectedChecbox([...selectedChecbox, value]);
+    } else {
+      // Remove the value from the selectedLocation array
+      setSelectedChecbox(selectedChecbox.filter(item => item !== value));
+    }
+  };
 
   return (
     <>
@@ -134,15 +149,15 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedLocation.includes('technology')} onChange={handleLocationChange} value='technology' />
+                <Checkbox checked={selectedChecbox.includes('technology')} onChange={handleCheckboxChange} value='technology' />
               }
               label={'Technology'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('science')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('science')}
+                  onChange={handleCheckboxChange}
                   value='science'
                 />
               }
@@ -151,8 +166,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('business')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('business')}
+                  onChange={handleCheckboxChange}
                   value='business'
                 />
               }
@@ -161,8 +176,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('finance')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('finance')}
+                  onChange={handleCheckboxChange}
                   value='finance'
                 />
               }
@@ -178,15 +193,15 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedLocation.includes('health')} onChange={handleLocationChange} value='health' />
+                <Checkbox checked={selectedChecbox.includes('health')} onChange={handleCheckboxChange} value='health' />
               }
               label={'Health'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('politics')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('politics')}
+                  onChange={handleCheckboxChange}
                   value='politics'
                 />
               }
@@ -195,8 +210,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('sports')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('sports')}
+                  onChange={handleCheckboxChange}
                   value='sports'
                 />
               }
@@ -205,8 +220,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('entertainment')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('entertainment')}
+                  onChange={handleCheckboxChange}
                   value='entertainment'
                 />
               }
@@ -222,15 +237,15 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedLocation.includes('arts')} onChange={handleLocationChange} value='arts' />
+                <Checkbox checked={selectedChecbox.includes('arts')} onChange={handleCheckboxChange} value='arts' />
               }
               label={'Art and Culture'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('education')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('education')}
+                  onChange={handleCheckboxChange}
                   value='education'
                 />
               }
@@ -239,8 +254,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('environment')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('environment')}
+                  onChange={handleCheckboxChange}
                   value='environment'
                 />
               }
@@ -249,8 +264,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('travel')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('travel')}
+                  onChange={handleCheckboxChange}
                   value='travel'
                 />
               }
@@ -266,15 +281,15 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedLocation.includes('history')} onChange={handleLocationChange} value='history' />
+                <Checkbox checked={selectedChecbox.includes('history')} onChange={handleCheckboxChange} value='history' />
               }
               label={'History'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('socialIssues')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('socialIssues')}
+                  onChange={handleCheckboxChange}
                   value='socialIssues'
                 />
               }
@@ -283,8 +298,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('personalDevelopment')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('personalDevelopment')}
+                  onChange={handleCheckboxChange}
                   value='personalDevelopment'
                 />
               }
@@ -293,8 +308,8 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedLocation.includes('other')}
-                  onChange={handleLocationChange}
+                  checked={selectedChecbox.includes('other')}
+                  onChange={handleCheckboxChange}
                   value='other'
                 />
               }
@@ -313,8 +328,8 @@ const SummarizeForm = ({
                 row
                 aria-labelledby='demo-row-radio-buttons-group-label'
                 name='row-radio-buttons-group'
-                value={selectedLocation}
-                onChange={handleLocationChange}
+                value={selectedChecbox}
+                onChange={handleCheckboxChange}
               >
                 <FormControlLabel
                   value='facebook'

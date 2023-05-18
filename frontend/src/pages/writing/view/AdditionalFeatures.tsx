@@ -30,6 +30,7 @@ import { styled } from '@mui/material/styles'
 import LanguageSelector from '../../content/LanguageSelector'
 import { useTranslation } from 'react-i18next'
 import Divider from '@mui/material/Divider'
+import SelectChangeEvent from '@mui/material/Select'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -77,8 +78,6 @@ const AdditionalFeatures = ({
   nameRef,
   selectedMood,
   handleMood,
-  personName,
-  handleChange,
   data
 }) => {
   const { t } = useTranslation()
@@ -86,9 +85,18 @@ const AdditionalFeatures = ({
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
   const [isChecked, setIsChecked] = useState(false)
+  const [personName, setPersonName] = useState<string[]>([])
+
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked)
+  }
+
+  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+    const {
+      target: { value }
+    } = event
+    setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
   function getStyles(name: string, personName: readonly string[] | undefined, theme: Theme) {
@@ -225,7 +233,7 @@ const AdditionalFeatures = ({
         </CardContent>
       </Card>
 
-      {data.imageUploadFeatureEnabled && (
+      {data?.imageUploadFeatureEnabled && (
         <Card style={{ marginTop: '20px' }}>
           <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
           <CardContent>

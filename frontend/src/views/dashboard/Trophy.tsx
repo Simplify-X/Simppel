@@ -54,7 +54,7 @@ const Trophy = () => {
           // Get account ID from response body
           return response.json()
         } else {
-          Sentry.throwError('Invalid token')
+          // Sentry.throwError('Invalid token')
           throw new Error('Invalid token')
         }
       })

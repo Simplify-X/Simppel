@@ -19,7 +19,8 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 
-import SelectChangeEvent from '@mui/material/Select'
+// import SelectChangeEvent from '@mui/material/Select'
+
 import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
@@ -55,7 +56,7 @@ const Writing = () => {
     setSelectedValue(event.target.value)
   }
 
-  const [personName, setPersonName] = useState<string[]>([])
+  // const [personName, setPersonName] = useState<string[]>([])
 
   const handleLocationChange = event => {
     setSelectedLocation(event.target.value)
@@ -69,12 +70,12 @@ const Writing = () => {
     setSelectedTextLength(event.target.value)
   }
 
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    const {
-      target: { value }
-    } = event
-    setPersonName(typeof value === 'string' ? value.split(',') : value)
-  }
+  // const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  //   const {
+  //     target: { value }
+  //   } = event
+  //   setPersonName(typeof value === 'string' ? value.split(',') : value)
+  // }
 
   useEffect(() => {
     const fetchSingleUser = async () => {
@@ -233,8 +234,6 @@ const Writing = () => {
         nameRef={nameRef}
         selectedMood={selectedMood}
         handleMood={handleMood}
-        personName={personName}
-        handleChange={handleChange}
         data={data}
       />
 
