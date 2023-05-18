@@ -46,6 +46,17 @@
   "description_copy" : "Description of copy",
   "keywords" : "Specific keywords for copy (SEO Related)",
   "enter_keywords" : "Enter specific keywords for a better generated copy",
+  "title_of_summary" : "Title of summary",
+  "context" : "Context",
+  "additional_instructions" : "Additional instructions",
+  "additional_instructions_helper" : "Any instructions you would like to provide",
+  "summary_text" : "Summary text",
+  "summary_helper" : "Enter your text here to summarize",
+  "summary_length" : "Summary length",
+  "summary_expertise_level" : "Summary Expert Level",
+  "summary_context" : "Summary context",
+  "context_helper" : "Context or background information about the text",
+  "custom_command" : "Enter a custom command to get customized information",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
   "web_scraper_url": "Website URL"
 }

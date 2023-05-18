@@ -249,7 +249,7 @@ const Content = () => {
       <Helmet>
         <title>Create Advertisement</title>
       </Helmet>
-      <Card>
+      <Card style={{ padding: 15 }}>
         <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
           <ToastContainer position={'top-center'} draggable={false} />
@@ -349,7 +349,7 @@ const Content = () => {
         </Grid>
       </Grid>
 
-      <Card style={{ marginTop: '20px' }}>
+      <Card style={{ marginTop: '20px',  padding: 15 }}>
         <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
           <Grid container spacing={5}>
@@ -451,7 +451,7 @@ const Content = () => {
       </Card>
 
       {data.imageUploadFeatureEnabled && (
-        <Card style={{ marginTop: '20px' }}>
+        <Card style={{ marginTop: '20px',  padding: 15 }}>
           <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
           <CardContent>
             <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
