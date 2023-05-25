@@ -89,7 +89,7 @@ public class UserController {
             return userService.register(registerDTO);
         }
         catch (Exception e){
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 
@@ -100,7 +100,7 @@ public class UserController {
             return userService.registerOrganisationUser(registerDTO, accountId);
         }
         catch (Exception e){
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 

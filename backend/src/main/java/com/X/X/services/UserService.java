@@ -45,7 +45,7 @@ public record UserService(UserRepository userRepo,
     public RegisterResponse register(RegisterDTO registerDTO) {
         // Check if a user with the same username already exists
         if (userRepo.findByUsername(registerDTO.getUsername()) != null || userRepo.findByEmail(registerDTO.getEmail()) != null) {
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Exists");
         }
 
         // Register the new user
@@ -67,10 +67,10 @@ public record UserService(UserRepository userRepo,
                 .build();
         try {
             userRepo.save(newUser);
-            return new RegisterResponse(Status.OK);
+            return new RegisterResponse(Status.OK, "Saved");
         } catch (Exception e) {
             System.out.println(e);
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 
@@ -217,7 +217,7 @@ public record UserService(UserRepository userRepo,
     public RegisterResponse registerOrganisationUser(RegisterDTO registerDTO, UUID accountId) {
         // Check if a user with the same username already exists
         if (userRepo.findByUsername(registerDTO.getUsername()) != null || userRepo.findByEmail(registerDTO.getEmail()) != null) {
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Exists");
         }
 
         // Register the new user
@@ -239,10 +239,10 @@ public record UserService(UserRepository userRepo,
                 .build();
         try {
             userRepo.save(newUser);
-            return new RegisterResponse(Status.OK);
+            return new RegisterResponse(Status.OK, "Ok");
         } catch (Exception e) {
             System.out.println(e);
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 
