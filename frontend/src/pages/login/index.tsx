@@ -88,7 +88,7 @@ const LoginPage = () => {
       if (decodedToken.exp * 1000 < Date.now()) {
         Cookies.remove('token')
       } else {
-        router.push('/')
+        router.push('/writing/add/')
       }
     }
   })

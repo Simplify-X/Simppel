@@ -4,22 +4,29 @@ import { useEffect, useState } from 'react'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 //import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
 const Copy = () => {
-  const [role, setRole] = useState([])
+  const [copy, setCopy] = useState([])
   const router = useRouter()
+  const {  get } = useCustomApiHook()
+
+  const { accountId } = useUserData()
+
+
 
   //const { get } = useCustomApiHook()
 
   const handleClick = rowData => {
-    router.push(`/global-administrator/users/view-user/${rowData}`)
+    router.push(`/writing/view/${rowData}`)
   }
 
   const columns = [
     {
-      name: 'userId',
+      name: 'id',
       label: 'Id',
       options: {
         filter: true,
@@ -28,7 +35,7 @@ const Copy = () => {
       }
     },
     {
-      name: 'name',
+      name: 'title',
       label: 'Title',
       options: {
         filter: true,
@@ -44,20 +51,19 @@ const Copy = () => {
       }
     },
     {
-      name: 'targetAudience',
-      label: 'Target Audience',
+      name: 'formType',
+      label: 'Form Type',
       options: {
         filter: true,
         sort: false
       }
     },
     {
-      name: 'purpose',
-      label: 'Purpose',
+      name: 'languageText',
+      label: 'Language',
       options: {
         filter: true,
         sort: false,
-        customBodyRender: (value) => (value ? 'Admin' : 'User')
       }
     }
   ]
@@ -70,16 +76,17 @@ const Copy = () => {
   }
 
   useEffect(() => {
-    getAllUsers();
-  }, [])
+    accountId && getAllUsers();
+  }, [accountId])
 
 
   const getAllUsers = async () => {
-    // const users = await get('/users/getAllUsers');
-    setRole([])
+    const copyWritingData = await get(`/copyWriting/${accountId}`);
+    console.log(copyWritingData)
+    setCopy(copyWritingData.data)
   }
 
-  const sortedArray = [...role].sort((a, b) => {
+  const sortedArray = [...copy].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 

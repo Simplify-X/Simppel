@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.rewrite(new URL(pathname, req.url))
     }else{
       if(token){
-        return NextResponse.redirect(new URL("/", req.url))
+        return NextResponse.redirect(new URL("/writing/add/", req.url))
       }else{
         return NextResponse.redirect(new URL("/login", req.url))
       }

@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { useState } from 'react'
 
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
@@ -20,22 +19,12 @@ const SummarizeForm = ({
   handleTextLength,
   nameRef,
   targetAudienceRef,
-  descriptionRef
+  descriptionRef,
+  handleCheckboxChange,
+  selectedChecbox
 }) => {
   const { t } = useTranslation()
 
-  const [selectedChecbox, setSelectedChecbox] = useState([]); 
-
-  const handleCheckboxChange = (event) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      // Add the value to the selectedLocation array
-      setSelectedChecbox([...selectedChecbox, value]);
-    } else {
-      // Remove the value from the selectedLocation array
-      setSelectedChecbox(selectedChecbox.filter(item => item !== value));
-    }
-  };
 
   return (
     <>
@@ -131,8 +120,8 @@ const SummarizeForm = ({
             <RadioGroup
               aria-labelledby='demo-row-radio-buttons-group-label'
               name='row-radio-buttons-group'
-              value={selectedLocation}
-              onChange={handleLocationChange}
+              value={selectedTextLength}
+              onChange={handleTextLength}
             >
               <FormControlLabel value='none' control={<Radio />} label={<span>None</span>} />
               <FormControlLabel value='little' control={<Radio />} label={<span>Somewhat familiar with text</span>} />
@@ -149,14 +138,14 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedChecbox.includes('technology')} onChange={handleCheckboxChange} value='technology' />
+                <Checkbox checked={selectedChecbox?.includes('technology')} onChange={handleCheckboxChange} value='technology' />
               }
               label={'Technology'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('science')}
+                  checked={selectedChecbox?.includes('science')}
                   onChange={handleCheckboxChange}
                   value='science'
                 />
@@ -166,7 +155,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('business')}
+                  checked={selectedChecbox?.includes('business')}
                   onChange={handleCheckboxChange}
                   value='business'
                 />
@@ -176,7 +165,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('finance')}
+                  checked={selectedChecbox?.includes('finance')}
                   onChange={handleCheckboxChange}
                   value='finance'
                 />
@@ -193,14 +182,14 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedChecbox.includes('health')} onChange={handleCheckboxChange} value='health' />
+                <Checkbox checked={selectedChecbox?.includes('health')} onChange={handleCheckboxChange} value='health' />
               }
               label={'Health'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('politics')}
+                  checked={selectedChecbox?.includes('politics')}
                   onChange={handleCheckboxChange}
                   value='politics'
                 />
@@ -210,7 +199,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('sports')}
+                  checked={selectedChecbox?.includes('sports')}
                   onChange={handleCheckboxChange}
                   value='sports'
                 />
@@ -220,7 +209,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('entertainment')}
+                  checked={selectedChecbox?.includes('entertainment')}
                   onChange={handleCheckboxChange}
                   value='entertainment'
                 />
@@ -237,14 +226,14 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedChecbox.includes('arts')} onChange={handleCheckboxChange} value='arts' />
+                <Checkbox checked={selectedChecbox?.includes('arts')} onChange={handleCheckboxChange} value='arts' />
               }
               label={'Art and Culture'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('education')}
+                  checked={selectedChecbox?.includes('education')}
                   onChange={handleCheckboxChange}
                   value='education'
                 />
@@ -254,7 +243,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('environment')}
+                  checked={selectedChecbox?.includes('environment')}
                   onChange={handleCheckboxChange}
                   value='environment'
                 />
@@ -264,7 +253,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('travel')}
+                  checked={selectedChecbox?.includes('travel')}
                   onChange={handleCheckboxChange}
                   value='travel'
                 />
@@ -281,14 +270,14 @@ const SummarizeForm = ({
             </FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={selectedChecbox.includes('history')} onChange={handleCheckboxChange} value='history' />
+                <Checkbox checked={selectedChecbox?.includes('history')} onChange={handleCheckboxChange} value='history' />
               }
               label={'History'}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('socialIssues')}
+                  checked={selectedChecbox?.includes('socialIssues')}
                   onChange={handleCheckboxChange}
                   value='socialIssues'
                 />
@@ -298,7 +287,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('personalDevelopment')}
+                  checked={selectedChecbox?.includes('personalDevelopment')}
                   onChange={handleCheckboxChange}
                   value='personalDevelopment'
                 />
@@ -308,7 +297,7 @@ const SummarizeForm = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedChecbox.includes('other')}
+                  checked={selectedChecbox?.includes('other')}
                   onChange={handleCheckboxChange}
                   value='other'
                 />
@@ -316,80 +305,6 @@ const SummarizeForm = ({
               label={'Other'}
             />
           </FormControl>
-        </Grid>
-
-        <Grid item xs={4}>
-          <Grid item xs={12} style={{ marginTop: '17px' }}>
-            <FormControl component='fieldset'>
-              <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
-                {t('advertisement_location')}
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby='demo-row-radio-buttons-group-label'
-                name='row-radio-buttons-group'
-                value={selectedChecbox}
-                onChange={handleCheckboxChange}
-              >
-                <FormControlLabel
-                  value='facebook'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Facebook</span>}
-                />
-                <FormControlLabel
-                  value='instagram'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Instagram</span>}
-                />
-                <FormControlLabel
-                  value='tiktok'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Tiktok</span>}
-                />
-                <FormControlLabel
-                  value='other'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Other</span>}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} style={{ marginTop: '17px' }}>
-            <FormControl component='fieldset'>
-              <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
-                {t('advertisement_length')}
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby='demo-row-radio-buttons-group-label'
-                name='row-radio-buttons-group'
-                value={selectedTextLength}
-                onChange={handleTextLength}
-              >
-                <FormControlLabel
-                  value='short'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Short</span>}
-                />
-                <FormControlLabel
-                  value='medium'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Medium</span>}
-                />
-                <FormControlLabel
-                  value='long'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Long</span>}
-                />
-                <FormControlLabel
-                  value='long'
-                  control={<Radio />}
-                  label={<span style={{ width: '80px', display: 'inline-block' }}>Random</span>}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
         </Grid>
       </Grid>
     </>

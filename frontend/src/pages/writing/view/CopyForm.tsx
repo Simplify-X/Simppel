@@ -9,7 +9,8 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import CustomInputChip from '../CustomInputChip'
+
+// import CustomInputChip from '../CustomInputChip'
 import Divider from '@mui/material/Divider'
 
 const CopyForm = ({
@@ -19,7 +20,8 @@ const CopyForm = ({
   handleTextLength,
   nameRef,
   targetAudienceRef,
-  descriptionRef
+  descriptionRef,
+  keywordInput
 }) => {
   const { t } = useTranslation()
 
@@ -49,8 +51,19 @@ const CopyForm = ({
             required
           />
         </Grid>
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <CustomInputChip />
+        </Grid> */}
+        <Grid item xs={4}>
+        <TextField
+            fullWidth
+            type='text'
+            label={t('keywords_title')}
+            placeholder='Mouse, Elephant, Space.'
+            helperText={t('keywords')}
+            inputRef={keywordInput}
+            required
+          />
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -62,7 +75,7 @@ const CopyForm = ({
             inputRef={descriptionRef}
             required
             multiline
-            rows={8} // Specify the number of rows here
+            rows={8}
           />
         </Grid>
 
@@ -89,22 +102,22 @@ const CopyForm = ({
                 <FormControlLabel
                   value='formal'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Formal</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Formal</span>}
                 />
                 <FormControlLabel
                   value='informal'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Informal</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Informal</span>}
                 />
                 <FormControlLabel
                   value='humorous'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Humorous</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Humorous</span>}
                 />
                 <FormControlLabel
                   value='serious'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Serious</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Serious</span>}
                 />
               </RadioGroup>
             </FormControl>
@@ -113,43 +126,7 @@ const CopyForm = ({
           <Grid item xs={12} style={{ marginTop: '17px' }}>
             <FormControl component='fieldset'>
               <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
-                {t('advertisement_location')}
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby='demo-row-radio-buttons-group-label'
-                name='row-radio-buttons-group'
-                value={selectedLocation}
-                onChange={handleLocationChange}
-              >
-                <FormControlLabel
-                  value='facebook'
-                  control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Facebook</span>}
-                />
-                <FormControlLabel
-                  value='instagram'
-                  control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Instagram</span>}
-                />
-                <FormControlLabel
-                  value='tiktok'
-                  control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Tiktok</span>}
-                />
-                <FormControlLabel
-                  value='other'
-                  control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Other</span>}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} style={{ marginTop: '17px' }}>
-            <FormControl component='fieldset'>
-              <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
-                {t('advertisement_length')}
+                {t('copy_length')}
               </FormLabel>
               <RadioGroup
                 row
@@ -161,22 +138,22 @@ const CopyForm = ({
                 <FormControlLabel
                   value='short'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Short</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Short</span>}
                 />
                 <FormControlLabel
                   value='medium'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Medium</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Medium</span>}
                 />
                 <FormControlLabel
                   value='long'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Long</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Long</span>}
                 />
                 <FormControlLabel
                   value='long'
                   control={<Radio />}
-                  label={<span style={{ width: '100px', display: 'inline-block' }}>Random</span>}
+                  label={<span style={{ width: '70px', display: 'inline-block' }}>Random</span>}
                 />
               </RadioGroup>
             </FormControl>
