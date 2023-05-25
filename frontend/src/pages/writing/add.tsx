@@ -27,7 +27,6 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import Divider from '@mui/material/Divider'
 import CopyForm from './view/CopyForm'
-import AlterCopyForm from './view/AlterCopyForm'
 import SummarizeForm from './view/SummarizeForm'
 import EmailForm from './view/EmailForm'
 import AdditionalFeatures from './view/AdditionalFeatures'
@@ -36,12 +35,12 @@ import AcUnitIcon from '@mui/icons-material/AcUnit';
 const Writing = () => {
   // ** States
   const router = useRouter()
-  const selectedTypeAd = ''
   const { t } = useTranslation()
 
   const { accountId } = useUserData()
   const [data, setData] = useState([])
   const [selectedMood, setSelectedMood] = useState('')
+  const [selectedCopyType, setSelectedCopyType] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState('')
@@ -66,16 +65,26 @@ const Writing = () => {
     setSelectedMood(event.target.value)
   }
 
+  const handleCopyType = event => {
+    setSelectedCopyType(event.target.value)
+  }
+
   const handleTextLength = event => {
     setSelectedTextLength(event.target.value)
   }
 
-  // const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-  //   const {
-  //     target: { value }
-  //   } = event
-  //   setPersonName(typeof value === 'string' ? value.split(',') : value)
-  // }
+  const [selectedChecbox, setSelectedChecbox] = useState([]); 
+
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      // Add the value to the selectedLocation array
+      setSelectedChecbox([...selectedChecbox, value]);
+    } else {
+      // Remove the value from the selectedLocation array
+      setSelectedChecbox(selectedChecbox.filter(item => item !== value));
+    }
+  };
 
   useEffect(() => {
     const fetchSingleUser = async () => {
@@ -93,35 +102,68 @@ const Writing = () => {
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
   const targetAudienceRef = useRef<HTMLInputElement>(null)
+  const brandName = useRef<HTMLInputElement>(null)
+  const brandDescription = useRef<HTMLInputElement>(null)
+  const customCommandRef = useRef<HTMLInputElement>(null)
+  const keywordInput = useRef<HTMLInputElement>(null)
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const name = nameRef.current?.value
     const description = descriptionRef.current?.value
     const targetAudience = targetAudienceRef.current?.value
+    const brandNames = brandName.current?.value
+    const brandDescriptions = brandDescription.current?.value
+    const customCommands = customCommandRef.current?.value
+    const keyWords = keywordInput.current?.value
 
-    const data = {
-      name,
-      description,
-      targetAudience: targetAudience,
-      advertisementLocation: selectedLocation,
-      advertisementType: selectedTypeAd,
-      advertisementMood: selectedMood,
-      advertisementLength: selectedTextLength,
-      languageText: selectedLanguage
+    console.log(selectedChecbox)
+    
+    const formSupplyType = selectedValue
+    let formattedSupplyType
+
+    switch (formSupplyType) {
+      case 'create':
+        formattedSupplyType = 'Copy Form'
+        break
+      case 'summarize':
+        formattedSupplyType = 'Summarize Form'
+        break
+      case 'email':
+        formattedSupplyType = 'Email Form'
+        break
+      default:
+        formattedSupplyType = ""
+        break
     }
 
-    await post(`/advertisements/${accountId}`, data)
+    const data = {
+      title:name,
+      keyWords,
+      description,
+      formType:formattedSupplyType,
+      targetAudience: targetAudience,
+      toneOfCopy: selectedLocation,
+      copyLength: selectedTextLength,
+      languageText: selectedLanguage,
+      brandName: brandNames,
+      brandDescription: brandDescriptions,
+      customCommands,
+      copyWritingType: selectedCopyType !== "" ? selectedCopyType : null,
+      copyWritingContext: selectedChecbox,
+    }
+
+    await post(`/copyWriting/${accountId}`, data)
   }
 
   useEffect(() => {
     const status = response?.data.status
 
     if (response?.data) {
-      toast.success('Advertisement Added', { autoClose: 2000 })
+      toast.success('Copy Added', { autoClose: 2000 })
       nameRef.current.value = ''
       descriptionRef.current.value = ''
-      router.push('/content/view-content')
+      router.push('/writing/view')
     }
 
     if (status === 'FAILED') {
@@ -157,11 +199,11 @@ const Writing = () => {
                   control={<Radio checked={selectedValue === 'create'} />}
                   label='Create Copy'
                 />
-                <FormControlLabel
+                {/* <FormControlLabel
                   value='edit'
                   control={<Radio checked={selectedValue === 'edit'} />}
                   label='Alter Copy'
-                />
+                /> */}
                 <FormControlLabel
                   value='summarize'
                   control={<Radio checked={selectedValue === 'summarize'} />}
@@ -187,10 +229,11 @@ const Writing = () => {
               nameRef={nameRef}
               targetAudienceRef={targetAudienceRef}
               descriptionRef={descriptionRef}
+              keywordInput={keywordInput}
             />
           )}
 
-          {selectedValue === 'edit' && (
+          {/* {selectedValue === 'edit' && (
             <AlterCopyForm
               handleLocationChange={handleLocationChange}
               selectedLocation={selectedLocation}
@@ -200,7 +243,7 @@ const Writing = () => {
               targetAudienceRef={targetAudienceRef}
               descriptionRef={descriptionRef}
             />
-          )}
+          )} */}
 
           {selectedValue === 'summarize' && (
             <SummarizeForm
@@ -211,6 +254,8 @@ const Writing = () => {
               nameRef={nameRef}
               targetAudienceRef={targetAudienceRef}
               descriptionRef={descriptionRef}
+              selectedChecbox={selectedChecbox}
+              handleCheckboxChange={handleCheckboxChange}
             />
           )}
 
@@ -231,10 +276,15 @@ const Writing = () => {
       <AdditionalFeatures
         selectedLanguage={selectedLanguage}
         handleLanguageChange={handleLanguageChange}
-        nameRef={nameRef}
+        brandName={brandName}
+        brandDescription={brandDescription}
+        customCommandRef={customCommandRef}
         selectedMood={selectedMood}
         handleMood={handleMood}
         data={data}
+        selectedValue={selectedValue}
+        selectedCopyType={selectedCopyType}
+        handleCopyType={handleCopyType}
       />
 
       <Button type='submit' variant='contained' size='large' style={{ marginTop: '20px' }}>

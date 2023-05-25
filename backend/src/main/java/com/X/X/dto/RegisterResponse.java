@@ -10,4 +10,5 @@ import com.X.X.help.Status;
 @NoArgsConstructor
 public class RegisterResponse {
     private Status status;
+    private String message;
 }

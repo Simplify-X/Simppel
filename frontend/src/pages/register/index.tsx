@@ -1,6 +1,6 @@
 // ** React Imports
 // @ts-nocheck
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef, useEffect } from 'react'
+import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -170,6 +170,9 @@ const RegisterPage = () => {
       return
     }
 
+    console.log(formInfo);
+    console.log(formInfo.country)
+
     const data = JSON.stringify({
       firstName: formInfo.firstName,
       lastName: formInfo.lastName,
@@ -184,10 +187,10 @@ const RegisterPage = () => {
     })
 
     if (isCheck) await post('/users/register', data)
-  }
 
-  useEffect(() => {
     const status = response?.data.status
+
+    console.log(response)
 
     if (status === 'OK') {
       setSnackbarMessage('Successfully Registered')
@@ -196,7 +199,7 @@ const RegisterPage = () => {
       router.push('/')
     }
 
-    status === 'FAILED' &&
+    status === 'FAILED' && response?.data.message === 'Error' &&
       setFormInfo({
         firstName: '',
         lastName: '',
@@ -210,6 +213,22 @@ const RegisterPage = () => {
         password: ''
       })
 
+    
+    if(response?.data.message === 'Exists'){
+      setSnackbarMessage('Username or Email already exists')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
+
+      // setActiveStep(0)
+    }
+
+    if(response?.data.message === 'Error'){
+      setSnackbarMessage('Failed to register, please try again later')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
+      Sentry.captureException(error)
+    }
+
     if (error) {
       console.log(error, "EEEEEEEEE")
       setSnackbarMessage('Failed to register, please try again later')
@@ -217,7 +236,9 @@ const RegisterPage = () => {
       setOpenSnackbar(true)
       Sentry.captureException(error)
     }
-  }, [response, error])
+  }
+
+
 
   return (
     <Box className='content-center'>
@@ -531,7 +552,7 @@ const RegisterPage = () => {
           </form>
 
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button variant='contained' color='inherit' disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
+            <Button variant='contained' disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
               Previous Step
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />

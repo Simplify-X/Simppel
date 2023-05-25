@@ -44,6 +44,7 @@
   "title_helper_text" : "Enter a title for a copy",
   "tone" : "Tone of copy", 
   "description_copy" : "Description of copy",
+  "keywords_title" : "Keywords for copy",
   "keywords" : "Specific keywords for copy (SEO Related)",
   "enter_keywords" : "Enter specific keywords for a better generated copy",
   "title_of_summary" : "Title of summary",
@@ -57,6 +58,11 @@
   "summary_context" : "Summary context",
   "context_helper" : "Context or background information about the text",
   "custom_command" : "Enter a custom command to get customized information",
+  "copy_length" : "Copy length",
+  "copy_title" : "Copy title",
+  "copy_description" : "Copy description",
+  "custom_command_text" : "Custom command",
+  "form_type" : "Form type",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
   "web_scraper_url": "Website URL"
 }

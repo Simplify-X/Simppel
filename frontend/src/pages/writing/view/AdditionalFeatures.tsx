@@ -45,9 +45,6 @@ const MenuProps = {
 
 const names = ['Physical Product', 'Digital Product']
 
-
-
-
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
   height: 120,
@@ -75,9 +72,14 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 const AdditionalFeatures = ({
   selectedLanguage,
   handleLanguageChange,
-  nameRef,
+  brandName,
+  brandDescription,
+  customCommandRef,
   selectedMood,
   handleMood,
+  selectedValue,
+  selectedCopyType,
+  handleCopyType,
   data
 }) => {
   const { t } = useTranslation()
@@ -86,7 +88,6 @@ const AdditionalFeatures = ({
 
   const [isChecked, setIsChecked] = useState(false)
   const [personName, setPersonName] = useState<string[]>([])
-
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked)
@@ -101,7 +102,10 @@ const AdditionalFeatures = ({
 
   function getStyles(name: string, personName: readonly string[] | undefined, theme: Theme) {
     return {
-      fontWeight: personName && personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
+      fontWeight:
+        personName && personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium
     }
   }
 
@@ -136,7 +140,7 @@ const AdditionalFeatures = ({
               <TextField
                 fullWidth
                 label={t('branding_name')}
-                inputRef={nameRef}
+                inputRef={brandName}
                 required
                 helperText={t('branding_name_helper_text')}
               />
@@ -146,7 +150,7 @@ const AdditionalFeatures = ({
               <TextField
                 fullWidth
                 label={t('branding_description')}
-                inputRef={nameRef}
+                inputRef={brandDescription}
                 required
                 helperText={t('enter_product_name')}
               />
@@ -167,68 +171,92 @@ const AdditionalFeatures = ({
               {isChecked && (
                 <TextField
                   fullWidth
-                  label={"Custom Command"}
+                  label={'Custom Command'}
                   placeholder={'Include all references from this material'}
-                  inputRef={nameRef}
+                  inputRef={customCommandRef}
                   required
                   helperText={t('custom_command')}
                 />
               )}
             </Grid>
-            <Grid item xs={12}>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-                  <Typography>{t('advanced_settings')}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid item xs={12}>
-                    <FormControl>
-                      <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby='demo-row-radio-buttons-group-label'
-                        name='row-radio-buttons-group'
-                        value={selectedMood}
-                        onChange={handleMood}
-                      >
-                        <FormControlLabel value='sell' control={<Radio />} label='Sell' />
-                        <FormControlLabel value='promote' control={<Radio />} label='Promote' />
-                        <FormControlLabel value='engage' control={<Radio />} label='Engage' />
-                        <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12} style={{ marginTop: '20px' }}>
-                    <FormControl sx={{ minWidth: 500 }}>
-                      <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
-                      <Select
-                        labelId='demo-multiple-chip-label'
-                        id='demo-multiple-chip'
-                        multiple
-                        value={personName}
-                        onChange={handleChange}
-                        input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
-                        renderValue={selected => (
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {selected.map(value => (
-                              <Chip key={value} label={value} />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={MenuProps}
-                      >
-                        {names.map(name => (
-                          <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
+            {selectedValue === "create" && (
+              <Grid item xs={12}>
+              <FormControl>
+                <FormLabel id='demo-row-radio-buttons-group-label'>Copy Writing Type</FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby='demo-row-radio-buttons-group-label'
+                  name='row-radio-buttons-group'
+                  value={selectedCopyType}
+                  onChange={handleCopyType}
+                >
+                  <FormControlLabel value='WEBSITE_COPY' control={<Radio />} label='Website' />
+                  <FormControlLabel value='SEO_COPY' control={<Radio />} label='SEO' />
+                  <FormControlLabel value='B2B_COPY' control={<Radio />} label='B2B' />
+                  <FormControlLabel value='B2C_COPY' control={<Radio />} label='B2C' />
+                  <FormControlLabel value='DIRECT_COPY' control={<Radio />} label='Direct' />
+                  <FormControlLabel value='AD_COPY' control={<Radio />} label='Ad' />
+                  <FormControlLabel value='SOCIAL_MEDIA_COPY' control={<Radio />} label='Social Media' />
+                </RadioGroup>
+              </FormControl>
             </Grid>
+            )}
+            {selectedValue !== 'create' && selectedValue !== "summarize" && selectedValue !== "email" && (
+              <Grid item xs={12}>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+                    <Typography>{t('advanced_settings')}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Grid item xs={12}>
+                      <FormControl>
+                        <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
+                        <RadioGroup
+                          row
+                          aria-labelledby='demo-row-radio-buttons-group-label'
+                          name='row-radio-buttons-group'
+                          value={selectedMood}
+                          onChange={handleMood}
+                        >
+                          <FormControlLabel value='sell' control={<Radio />} label='Sell' />
+                          <FormControlLabel value='promote' control={<Radio />} label='Promote' />
+                          <FormControlLabel value='engage' control={<Radio />} label='Engage' />
+                          <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
+                        </RadioGroup>
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} style={{ marginTop: '20px' }}>
+                      <FormControl sx={{ minWidth: 500 }}>
+                        <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
+                        <Select
+                          labelId='demo-multiple-chip-label'
+                          id='demo-multiple-chip'
+                          multiple
+                          value={personName}
+                          onChange={handleChange}
+                          input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
+                          renderValue={selected => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map(value => (
+                                <Chip key={value} label={value} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {names.map(name => (
+                            <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                              {name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
+              </Grid>
+            )}
           </Grid>
         </CardContent>
       </Card>
