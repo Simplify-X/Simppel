@@ -150,7 +150,7 @@ const Writing = () => {
       brandDescription: brandDescriptions,
       customCommands,
       copyWritingType: selectedCopyType !== "" ? selectedCopyType : null,
-      copyWritingContext: selectedChecbox,
+      copyWritingContext: null,
     }
 
     await post(`/copyWriting/${accountId}`, data)
