@@ -18,6 +18,7 @@ import NoAccountsIcon from '@mui/icons-material/NoAccounts'
 import GroupsIcon from '@mui/icons-material/Groups'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import CategoryIcon from '@mui/icons-material/Category';
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -74,6 +75,13 @@ const Navigation = (): VerticalNavItemsType=> {
       icon: HomeOutline,
       path: '/'
     },
+
+    !userData.role && {
+      title: t('product_search'),
+      icon: LocationSearchingIcon,
+      path: '/product/search'
+    },
+    
     userData.advertisementEnabled &&
       !userData.role && {
         sectionTitle: 'Content'

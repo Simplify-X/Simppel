@@ -64,5 +64,6 @@
   "custom_command_text" : "Custom command",
   "form_type" : "Form type",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
-  "web_scraper_url": "Website URL"
+  "web_scraper_url": "Website URL",
+  "product_search" : "Product search"
 }
