@@ -115,7 +115,7 @@ export default function StickyHeadTable({ data }) {
             <img src={value} alt='Image' width='130' height='130' />
             <div style={{ marginLeft: '10px', width: 'auto', display: 'grid' }}>
             <span title={rowData.title} style={{ fontWeight: 'bold'}}>
-              {rowData.title.slice(0, 15)}
+              {rowData?.title?.slice(0, 15)}
               <ContentCopyIcon
                 style={{ marginLeft: '5px', verticalAlign: 'middle', cursor: 'pointer', fontSize: '1rem' }}
                 onClick={() => handleCopyClick(rowData.title)}
@@ -157,7 +157,7 @@ export default function StickyHeadTable({ data }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: any) => {
+            {data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: any) => {
               const rowId = `${row.code}-${index}`
 
               return (

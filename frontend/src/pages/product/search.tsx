@@ -318,7 +318,7 @@ const Search: React.FC = () => {
               {selectedFields.map(field => (
                 <TextField
                   key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  label={field.charAt(0).toUpperCase() + field?.slice(1)}
                   name={field}
                   value={filters[field]}
                   onChange={handleFilterChange}
