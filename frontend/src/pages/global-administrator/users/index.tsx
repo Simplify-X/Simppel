@@ -17,6 +17,15 @@ const Users = () => {
 
   const columns = [
     {
+      name: 'userId',
+      label: 'Id',
+      options: {
+        filter: true,
+        sort: true,
+        display: 'false'
+      }
+    },
+    {
       name: 'firstName',
       label: 'First Name',
       options: {
