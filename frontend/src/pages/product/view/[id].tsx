@@ -9,10 +9,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
-import * as Sentry from '@sentry/nextjs'
 import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogContentText, LinearProgress, CircularProgress } from '@mui/material'
-import { API_BASE_URL } from 'src/config'
 import TextField from '@mui/material/TextField'
 import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
@@ -52,7 +50,6 @@ const AdvancedProduct = () => {
   const { t } = useTranslation()
   const [showAd, setAd] = useState(false)
   const [newd, setNewData] = useState([])
-  const [updated, setUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter()
@@ -108,6 +105,7 @@ const AdvancedProduct = () => {
 
           const salesEstimation = await estimateSalesByASIN(id, 'amazon.com');
           console.log(salesEstimation)
+
           // setProductData(prevData => ({
           //   ...prevData,
           //   salesEstimation: salesEstimation
@@ -141,74 +139,12 @@ const AdvancedProduct = () => {
   }
 
   const generateAdvertisement = async () => {
-    setAd(false)
+    setData('test')
+    setAd(true)
     setIsLoading(true)
-
-    const titleRequestBody = {
-      productName: data.name,
-      language: data.languageText
-    }
-
-    const descriptionRequestBody = {
-      productName: data.name,
-      productDescription: data.description,
-      targetAudience: data.targetAudience,
-      advertisementLocation: data.advertisementLocation,
-      language: data.languageText,
-      length: data.advertisementLength,
-      mood: data.advertisementMood,
-      productType: data.productType,
-      brandName: data.brandName,
-      brandDescription: data.brandDescription
-    }
-
-    try {
-      const titleResponse = await fetch(`${API_BASE_URL}/gpt3/generate-title`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(titleRequestBody)
-      })
-
-      const generatedTitle = await titleResponse.json()
-
-      const descriptionResponse = await fetch(`${API_BASE_URL}/gpt3/generate-description`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(descriptionRequestBody)
-      })
-
-      const generatedDescription = await descriptionResponse.json()
-
-      const resultRequestBody = {
-        title: generatedTitle?.choices?.[0]?.text ?? null,
-        description: generatedDescription?.choices?.[0]?.text ?? null
-      }
-
-      const resultResponse = await fetch(`${API_BASE_URL}/advertisement/result/${id}/${data.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(resultRequestBody)
-      })
-
-      const savedResult = await resultResponse.json()
-      setIsLoading(false)
-      console.log('Advertisement result saved:', savedResult)
-
-      setAd(true)
-      setUpdated(true)
-    } catch (error) {
-      console.error('Error:', error)
-      Sentry.captureException(error)
-    }
+    console.log('test');
   }
 
-  console.log(data)
 
   return (
     <>
