@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import * as React from 'react'
 import Paper from '@mui/material/Paper'
@@ -10,16 +10,17 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
-import AddIcon from '@mui/icons-material/Add'
+import ClearIcon from '@mui/icons-material/Clear'
 import LaunchIcon from '@mui/icons-material/Launch'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useRouter } from 'next/router'
 import { Snackbar } from '@mui/material'
 import { Alert } from '@mui/material'
 
 interface Column {
-  id: 'image' | 'ratings_total' | 'rating' | 'unit_price'
+  id: 'image' | 'totalRatings' | 'sellerRatings' | 'pricePerUnit'
   label: string
   minWidth?: number
   align?: 'right'
@@ -29,39 +30,58 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'image', label: 'Title', minWidth: 170 },
   {
-    id: 'ratings_total',
+    id: 'totalRatings',
     label: 'Total Ratings',
     minWidth: 170
   },
   {
-    id: 'rating',
+    id: 'sellerRatings',
     label: 'Seller Rating',
     minWidth: 170
   },
   {
-    id: 'unit_price',
+    id: 'pricePerUnit',
     label: 'Price Per Unit',
     minWidth: 100
   }
 ]
 
-export default function StickyHeadTable({ data }) {
+export default function Tracker() {
   const [page, setPage] = React.useState(0)
+  const [product, setProduct] = React.useState([])
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const { get, del } = useCustomApiHook()
   const { userId } = useUserData()
-  const { post } = useCustomApiHook()
-  const [productData, setData] = useState(data)
-
+  const router = useRouter()
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
-
   function handleSnackbarClose() {
     setOpenSnackbar(false)
+  }
+
+  const getSavedProduct = async () => {
+    const product = await get(`/product/tracker/${userId}`)
+    console.log(product)
+
+    // Sorting the product array based on the created_at property
+    product?.data.sort((a, b) => {
+      const dateA = new Date(a.created_at)
+      const dateB = new Date(b.created_at)
+
+      return dateB - dateA
+    })
+
+    setProduct(product?.data)
+  }
+
+  useEffect(() => {
+    userId && getSavedProduct()
+  }, [userId])
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
   }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,32 +89,18 @@ export default function StickyHeadTable({ data }) {
     setPage(0)
   }
 
-  const handleAddProductTracker = async (e: any, rowData: any) => {
+  const handleRemoveProduct = async (e: any, rowData: any) => {
     e.preventDefault()
     e.stopPropagation()
 
-    const data = {
-      title: rowData.title,
-      image: rowData.image,
-      asin: rowData.asin,
-      totalRatings: rowData.ratings_total,
-      sellerRatings: rowData.rating,
-      pricePerUnit: rowData.unit_price
-    }
+    // Handle click event here with rowData
+    await del(`/product/tracker/delete/${rowData.id}`)
 
-    await post(`/product/tracker/${userId}`, data)
-
-    setSnackbarMessage('Added successfully to product tracker')
+    // Update the product state after successful deletion
+    setProduct(prevProduct => prevProduct.filter(product => product.id !== rowData.id))
+    setSnackbarMessage('Removed product from the product tracker')
     setSnackbarSeverity('success')
     setOpenSnackbar(true)
-
-    const updatedData = productData.filter(product => product.asin !== rowData.asin)
-
-    // Update the data array with the updated data
-    setData(updatedData)
-
-    // Handle click event here with rowData
-    console.log('Plus icon clicked!', rowData)
   }
 
   const handleSupplierButtonClick = (e: any, rowData: any) => {
@@ -133,11 +139,11 @@ export default function StickyHeadTable({ data }) {
             <div style={{ marginRight: '10px', display: 'grid' }}>
               <a
                 href='#'
-                onClick={e => handleAddProductTracker(e, rowData)}
+                onClick={e => handleRemoveProduct(e, rowData)}
                 className='plus-icon'
                 style={{ color: '#808080' }}
               >
-                <AddIcon />
+                <ClearIcon />
               </a>
               <a
                 href='#'
@@ -191,26 +197,39 @@ export default function StickyHeadTable({ data }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: any) => {
-              const rowId = `${row.code}-${index}`
+            {product?.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} align='center'>
+                  No data to display
+                </TableCell>
+              </TableRow>
+            ) : (
+              product?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: any) => {
+                const rowId = `${row.code}-${index}`
 
-              return (
-                <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                  {columns.map(column => (
-                    <React.Fragment key={column.id}>
-                      {renderTitleCell(row[column.id], column.id, rowId, row)}
-                    </React.Fragment>
-                  ))}
-                </TableRow>
-              )
-            })}
+                const handleRowClick = () => {
+                  router.push(`/product/view/${row.asin}`)
+                  console.log('Row clicked!', row) // Log the clicked row data
+                }
+
+                return (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={row.code} onClick={handleRowClick}>
+                    {columns.map(column => (
+                      <React.Fragment key={column.id}>
+                        {renderTitleCell(row[column.id], column.id, rowId, row)}
+                      </React.Fragment>
+                    ))}
+                  </TableRow>
+                )
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'
-        count={productData?.length}
+        count={product?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

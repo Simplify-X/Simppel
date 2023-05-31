@@ -20,11 +20,12 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/nextjs'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
+
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -140,14 +141,16 @@ const UserDropdown = () => {
             Inbox
           </Box>
         </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/product/tracker"); 
+                                                handleDropdownClose()}}>
           <Box sx={styles}>
-            <MessageOutline sx={{ marginRight: 2 }} />
-            Chat
+            <TroubleshootIcon sx={{ marginRight: 2 }} />
+            Product Tracker
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/account-settings/"); 
+                                                handleDropdownClose()}}>
           <Box sx={styles}>
             <CogOutline sx={{ marginRight: 2 }} />
             Settings
