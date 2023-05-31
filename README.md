@@ -85,13 +85,15 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Our SaaS platform is designed to help digital marketing companies and advertisers streamline their ad creation and social media management. With our tool, users can easily generate high-quality ads for various platforms, including Instagram and Facebook, without the need for complex design skills.
+Our SaaS platform is designed to help digital marketing companies, advertisers, and Amazon sellers streamline their advertising efforts and social media management. With our comprehensive toolset, users can easily create high-quality ads for platforms such as Instagram, Facebook, and Amazon, without the need for complex design skills.
 
-In addition to ad creation, our platform offers copywriting services that help users craft compelling ad copy and social media posts. This can be a game-changer for businesses looking to boost their engagement and drive conversions.
+In addition to ad creation, our platform offers valuable copywriting services to assist users in crafting compelling ad copy and social media posts. This service can be a game-changer for businesses looking to enhance their engagement and drive conversions.
 
-To further simplify the social media management process, our platform includes social media post automation. This means users can schedule and publish their social media posts in advance, freeing up time and resources for other important tasks.
+To simplify the social media management process, our platform includes social media post automation. Users can schedule and publish their social media posts in advance, freeing up time and resources for other important tasks.
 
-Our platform is the perfect solution for digital marketing agencies, advertisers, and anyone looking to improve their social media presence and boost their business results. With our powerful tools and easy-to-use interface, users can create and manage effective ad campaigns and social media posts with ease
+Furthermore, we have incorporated a product search functionality specifically tailored for Amazon sellers. This feature enables sellers to easily find profitable products, empowering them to make informed decisions and optimize their Amazon business.
+
+Our platform caters to digital marketing agencies, advertisers, and Amazon sellers alike, providing them with the necessary tools to improve their social media presence and drive business results. With our powerful features and intuitive interface, users can effortlessly create and manage effective ad campaigns and social media posts, while also finding profitable products on Amazon.
 
 
 
