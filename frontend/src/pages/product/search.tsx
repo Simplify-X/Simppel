@@ -27,7 +27,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 
 const useStyles = makeStyles({
   textField: {
-    marginLeft: '10px',
     marginBottom: '12px'
   },
   filterButton: {
@@ -75,7 +74,7 @@ const Search: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [product, setProducts] = useState([])
   const [categories, setCategories] = useState([])
-  const [marketplaceURL, setMarketplaceURL] = useState('amazon.com');
+  const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -107,14 +106,12 @@ const Search: React.FC = () => {
         if (storedCategories) {
           setCategories(JSON.parse(storedCategories))
         } else {
-          const response = await get(
-            `https://api.rainforestapi.com/categories?api_key=${apiKey}&domain=${domain}`
-          )
+          const response = await get(`https://api.rainforestapi.com/categories?api_key=${apiKey}&domain=${domain}`)
           const data = response?.data
           const categoryNames = data.categories.map(category => category.name)
           const sortedCategoryNames = categoryNames.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
           setCategories(sortedCategoryNames)
-  
+
           // Store categories in localStorage for future use
           localStorage.setItem('categories', JSON.stringify(sortedCategoryNames))
         }
@@ -122,11 +119,17 @@ const Search: React.FC = () => {
         console.error('Error fetching categories:', error)
       }
     }
-  
-    const domain = filters.productMarketPlace === 'USA' ? 'amazon.com' : filters.productMarketPlace === 'France' ? 'amazon.fr' : filters.productMarketPlace === 'Italy' ? 'amazon.it' : 'amazon.com'
+
+    const domain =
+      filters.productMarketPlace === 'USA'
+        ? 'amazon.com'
+        : filters.productMarketPlace === 'France'
+        ? 'amazon.fr'
+        : filters.productMarketPlace === 'Italy'
+        ? 'amazon.it'
+        : 'amazon.com'
     fetchCategories(domain) // Initial fetch based on selected marketplace
   }, [filters.productMarketPlace])
-  
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
@@ -233,6 +236,7 @@ const Search: React.FC = () => {
                 value={filters.productMarketPlace}
                 onInputChange={handleMarketPlaceChange}
                 sx={{ width: 300 }}
+                className={classes.textField }
                 renderInput={params => <TextField {...params} label='Marketplace' />}
               />
             </Grid>
@@ -243,7 +247,8 @@ const Search: React.FC = () => {
                 options={categories}
                 value={filters.productCategory}
                 onChange={handleCategoryChange}
-                sx={{ width: 300 }}
+                className={classes.textField }
+                sx={{ width: 280 }}
                 renderInput={params => <TextField {...params} label='Category' />}
               />
             </Grid>
@@ -315,15 +320,15 @@ const Search: React.FC = () => {
             </Grid>
 
             <Grid item>
-              {selectedFields.map(field => (
+              {selectedFields.map((field, index) => (
                 <TextField
-                  key={field}
+                  key={index}
                   label={field.charAt(0).toUpperCase() + field?.slice(1)}
                   name={field}
                   value={filters[field]}
                   onChange={handleFilterChange}
                   className={classes.textField}
-                  style={{ marginLeft: '15px' }} // Add margin-bottom for spacing
+                  style={{ marginRight: '10px' }}
                 />
               ))}
             </Grid>
