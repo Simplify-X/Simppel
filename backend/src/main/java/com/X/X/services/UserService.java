@@ -1,11 +1,14 @@
 package com.X.X.services;
 import com.X.X.config.ResourceNotFoundException;
+import com.X.X.domains.LoginLog;
 import com.X.X.domains.PasswordReset;
 import com.X.X.dto.*;
+import com.X.X.repositories.LoginLogRepository;
 import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.token.TokenServices;
 import com.X.X.domains.User;
 import com.X.X.help.Status;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +28,9 @@ import java.util.UUID;
 @Service
 public record UserService(UserRepository userRepo,
                           PasswordEncoder passwordEncoder,
-                          TokenServices tokenServices, EmailService emailService, PasswordResetRepository passwordResetRepository) {
+                          TokenServices tokenServices, EmailService emailService, PasswordResetRepository passwordResetRepository,
+                          LoginLogRepository loginLogRepository,  HttpServletRequest request) {
+
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
@@ -246,7 +252,34 @@ public record UserService(UserRepository userRepo,
         }
     }
 
+    public void performLogin(String username) {
+        String userIp = request.getHeader("X-Forwarded-For");
+        if (userIp == null || userIp.isEmpty() || "unknown".equalsIgnoreCase(userIp)) {
+            userIp = request.getRemoteAddr();
+        }
 
+        LocalDateTime loginTime = LocalDateTime.now();
+        String userAgent = request.getHeader("User-Agent");
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+
+        LoginLog loginLog = LoginLog.builder()
+                .userEmail(username)
+                .userIp(userIp)
+                .loginTime(loginTime)
+                .userAgent(userAgent)
+                .requestTimestamp(requestTimestamp)
+                .build();
+
+        try {
+            loginLog.setResultStatus("SUCCESS");
+
+        } catch (Exception e) {
+            loginLog.setResultStatus("FAILED");
+            loginLog.setErrorDetails(e.getMessage());
+        }
+
+        loginLogRepository.save(loginLog);
+    }
 
 
 }

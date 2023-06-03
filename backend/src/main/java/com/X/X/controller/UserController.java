@@ -6,6 +6,7 @@ import com.X.X.domains.PasswordReset;
 import com.X.X.domains.User;
 import com.X.X.dto.*;
 import com.X.X.help.Status;
+import com.X.X.repositories.LoginLogRepository;
 import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.repositories.UserRepository;
 import com.X.X.services.EmailService;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
+
     private final UserService userService;
     private TokenServices tokenServices;
     private UserRepository userRepository;
@@ -39,14 +41,17 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     private PasswordResetService passwordResetService;
     private PasswordResetRepository passwordResetRepository;
+    private LoginLogRepository loginLogRepository;
 
 
-    public UserController(UserService userService, EmailService emailService, PasswordEncoder passwordEncoder, PasswordResetService passwordResetService, PasswordResetRepository passwordResetRepository) {
+    public UserController(UserService userService, EmailService emailService, PasswordEncoder passwordEncoder, PasswordResetService passwordResetService, PasswordResetRepository passwordResetRepository
+                            , LoginLogRepository loginLogRepository) {
         this.userService = userService;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetService = passwordResetService;
         this.passwordResetRepository = passwordResetRepository;
+        this.loginLogRepository = loginLogRepository;
     }
 
     @CrossOrigin
@@ -76,6 +81,7 @@ public class UserController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginDTO loginDTO) {
        try {
+           userService.performLogin(loginDTO.getEmail());
            return userService.login(loginDTO);
        }
        catch (Exception e){
@@ -285,5 +291,6 @@ public class UserController {
         userService.changeTheme(user, theme);
         return ResponseEntity.ok("Mode changed");
     }
+
 
 }
