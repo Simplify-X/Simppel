@@ -202,7 +202,7 @@ public class UserController {
         passwordResetService.savePasswordReset(passwordReset);
 
         // Generate token link
-        String resetLink = "https://simply-jf4q.vercel.app/password-reset/change-password/" + passwordReset.getToken();
+        String resetLink = "https://app.simppel.com/password-reset/change-password/" + passwordReset.getToken();
 
         // Send password reset email with token link
         this.emailService.sendPasswordResetEmail(user.getEmail(), resetLink, user.getUsername());

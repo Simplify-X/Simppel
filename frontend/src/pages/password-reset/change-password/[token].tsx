@@ -30,6 +30,8 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import * as Sentry from '@sentry/nextjs'
+import { Snackbar } from '@mui/material'
+import { Alert } from '@mui/material'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -77,6 +79,9 @@ const ChangePassword = () => {
   const router = useRouter()
   const [tokenValid, setTokenValid] = useState(true)
   const { response, error, post } = useCustomApiHook()
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success')
 
   const { token } = router.query
 
@@ -87,6 +92,10 @@ const ChangePassword = () => {
 
   const handleCheckToken = async () => {
     await post(`/users/checkToken?token=${token}`)
+  }
+
+  function handleSnackbarClose() {
+    setOpenSnackbar(false)
   }
 
   const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +142,13 @@ const ChangePassword = () => {
     const password = event.target[0].value
 
     await post(`/users/reset-password?token=${token}&password=${password}`)
+    setSnackbarMessage('Password Changed Successfully')
+    setSnackbarSeverity('success')
+    setOpenSnackbar(true)
+
+    setTimeout(() => {
+      returnToLogin();
+    }, 2000)
   }
 
   useEffect(() => {
@@ -355,6 +371,16 @@ const ChangePassword = () => {
           </Button>
         </Box>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <FooterIllustrationsV1 />
     </Box>
   )
