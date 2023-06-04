@@ -38,8 +38,9 @@ const AddNotifications = () => {
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const name = nameRef.current?.value
-    const description = descriptionRef.current?.value
+    
+    // const name = nameRef.current?.value
+    // const description = descriptionRef.current?.value
 
     console.log(editorContent)
 
