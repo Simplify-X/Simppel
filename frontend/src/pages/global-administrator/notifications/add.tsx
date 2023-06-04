@@ -43,10 +43,10 @@ const AddNotifications = () => {
 
     console.log(editorContent)
 
-    const data = {
-        title: name,
-        description: description,
-    }
+    // const data = {
+    //     title: name,
+    //     description: description,
+    // }
     // await post(`/posts/${userId}/${accountId}`, data)
   }
 

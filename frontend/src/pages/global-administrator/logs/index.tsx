@@ -45,6 +45,7 @@ const Logs = () => {
         sort: true,
         customBodyRender: (value) => {
             const formattedDateTime = new Date(value).toLocaleString();
+
             return formattedDateTime;
           }
       }
@@ -57,6 +58,7 @@ const Logs = () => {
         sort: false,
         customBodyRender: (value) => {
             const formattedDateTime = new Date(value).toLocaleString();
+
             return formattedDateTime;
           }
       }
@@ -69,6 +71,7 @@ const Logs = () => {
           sort: false,
           customBodyRender: (value) => {
               const formattedDateTime = new Date(value).toLocaleString();
+
               return formattedDateTime;
             }
         }
@@ -79,7 +82,7 @@ const Logs = () => {
     filterType: 'checkbox',
   }
 
-  async function getInvitedUsers() {
+  async function getLogs() {
     const getLogs = await get(`/login-logs`)
     setRole(getLogs?.data)
     setDataFetched(false)
@@ -93,7 +96,7 @@ const Logs = () => {
 
 
   useEffect(() => {
-    getInvitedUsers()
+    getLogs()
   }, [])
 
   console.log(role)

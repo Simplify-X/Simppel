@@ -26,6 +26,7 @@ const MyEditor = () => {
           { value: 'First.Name', title: 'First Name' },
           { value: 'Email', title: 'Email' },
         ],
+        
         // Add your custom settings and configurations here
       }}
       onEditorChange={handleEditorChange}
