@@ -19,6 +19,7 @@ import GroupsIcon from '@mui/icons-material/Groups'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import CategoryIcon from '@mui/icons-material/Category';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import LogoDevIcon from '@mui/icons-material/LogoDev';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -170,13 +171,19 @@ const Navigation = (): VerticalNavItemsType=> {
     userData.role && {
       title: 'Notifications',
       icon: NotificationAddIcon,
-      path: '/notifications'
+      path: '/global-administrator/notifications'
     },
 
     userData.role && {
       title: 'Send Email',
       icon: EmailIcon,
       path: '/email'
+    },
+
+    userData.role && {
+      title: 'Logs',
+      icon: LogoDevIcon,
+      path: '/global-administrator/logs'
     },
 
     userData.role && {
