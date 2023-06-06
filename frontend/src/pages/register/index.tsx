@@ -188,11 +188,16 @@ const RegisterPage = () => {
     const status = r?.data.status
 
     if (status === 'OK') {
-      setSnackbarMessage('Successfully Registered')
-      setSnackbarSeverity('success')
-      setOpenSnackbar(true)
-      router.push('/')
+      setSnackbarMessage('Successfully Registered');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+    
+      // Delay the redirection by 2 seconds
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
     }
+    
 
     status === 'FAILED' && r?.data.message === 'Error' &&
       setFormInfo({
