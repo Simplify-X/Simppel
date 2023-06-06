@@ -15,7 +15,7 @@ interface UseCustomApiHookProps<T> {
   loading: boolean
   error: Error | null
   get: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>
-  post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<void>
+  post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
   put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<void>
   del: (url: string, config?: AxiosRequestConfig) => Promise<void>
 }
