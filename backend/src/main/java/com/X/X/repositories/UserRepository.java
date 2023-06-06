@@ -14,9 +14,9 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     User findByUsername(String username);
     User findByUserId(UUID userId);
     User findByAccountId(UUID accountId);
-    List<User> findAllByAccountId(UUID accountId);
 
-
+    @Query("SELECT u FROM User u WHERE u.accountId = :accountId AND u.isLinkedToTeamGroup = true")
+    List<User> findAllByAccountIdAndAccountRoleNot(UUID accountId);
 
     @Query("SELECT u FROM User u WHERE u.userActive = false")
     List<User> findInactiveUser();
