@@ -47,14 +47,17 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
   }
 
   const post = async (url: string, data?: any, config?: AxiosRequestConfig) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axiosClient.post<T>(url, data, config)
-      handleResponse(res)
+      const res = await axiosClient.post<T>(url, data, config);
+      handleResponse(res);
+      
+      return res; // Return the response
     } catch (err) {
-      handleError(err)
+      handleError(err);
     }
-  }
+  };
+  
 
   const put = async (url: string, data?: any, config?: AxiosRequestConfig) => {
     setLoading(true)

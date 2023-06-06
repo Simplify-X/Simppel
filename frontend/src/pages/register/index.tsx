@@ -73,7 +73,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 const RegisterPage = () => {
   const steps = ['Account Data', 'Personal Data']
   const [activeStep, setActiveStep] = useState(0)
-  const { response, loading, error, post } = useCustomApiHook()
+  const { loading, error, post } = useCustomApiHook()
 
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
@@ -170,9 +170,6 @@ const RegisterPage = () => {
       return
     }
 
-    console.log(formInfo);
-    console.log(formInfo.country)
-
     const data = JSON.stringify({
       firstName: formInfo.firstName,
       lastName: formInfo.lastName,
@@ -186,11 +183,9 @@ const RegisterPage = () => {
       country: formInfo.country
     })
 
-    if (isCheck) await post('/users/register', data)
+    const r = await post('/users/register', data)
 
-    const status = response?.data.status
-
-    console.log(response)
+    const status = r?.data.status
 
     if (status === 'OK') {
       setSnackbarMessage('Successfully Registered')
@@ -199,7 +194,7 @@ const RegisterPage = () => {
       router.push('/')
     }
 
-    status === 'FAILED' && response?.data.message === 'Error' &&
+    status === 'FAILED' && r?.data.message === 'Error' &&
       setFormInfo({
         firstName: '',
         lastName: '',
@@ -212,9 +207,8 @@ const RegisterPage = () => {
         phoneNumber: '',
         password: ''
       })
-
     
-    if(response?.data.message === 'Exists'){
+    if(r?.data.message === 'Exists'){
       setSnackbarMessage('Username or Email already exists')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
@@ -222,7 +216,7 @@ const RegisterPage = () => {
       // setActiveStep(0)
     }
 
-    if(response?.data.message === 'Error'){
+    if(r?.data.message === 'Error'){
       setSnackbarMessage('Failed to register, please try again later')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
