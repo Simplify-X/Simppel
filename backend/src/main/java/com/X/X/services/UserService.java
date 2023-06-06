@@ -70,6 +70,7 @@ public record UserService(UserRepository userRepo,
                 .city(registerDTO.getCity())
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(true)
+                .isLinkedToTeamGroup(false)
                 .build();
         try {
             userRepo.save(newUser);
@@ -200,7 +201,7 @@ public record UserService(UserRepository userRepo,
     }
 
     public List<User> getAllUserForAccount(UUID accountId) {
-        return userRepo.findAllByAccountId(accountId);
+        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId);
     }
 
     public User getUserByUserId(UUID userId) {
@@ -241,7 +242,8 @@ public record UserService(UserRepository userRepo,
                 .postalCode(registerDTO.getPostalCode())
                 .city(registerDTO.getCity())
                 .phoneNumber(registerDTO.getPhoneNumber())
-                .accountRole(true)
+                .accountRole(registerDTO.isAccountRole())
+                .isLinkedToTeamGroup(true)
                 .build();
         try {
             userRepo.save(newUser);

@@ -78,5 +78,7 @@ public class User extends Auditable {
 
     private String defaultLanguage;
 
+    private Boolean isLinkedToTeamGroup;
+
 
 }

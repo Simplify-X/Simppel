@@ -169,7 +169,7 @@ const NewUser = () => {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Role</InputLabel>
-                  <Select label='Role' value={data.accountRole}>
+                  <Select label='Role' value={data.accountRole} onChange={event => setData({ ...data, accountRole: event.target.value })}>
                     <MenuItem value='true'>Account Admin</MenuItem>
                     <MenuItem value='false'>User</MenuItem>
                   </Select>
