@@ -7,15 +7,15 @@ const DynamicTinyMCE = dynamic(() => import('@tinymce/tinymce-react').then((modu
   ssr: false,
 });
 
-const MyEditor = () => {
-  const handleEditorChange = (content) => {
-    console.log(content);
+const MyEditor = ({ handleEditorChange, initialValue  }) => {
+  const handleEditorContentChange = (content) => {
+    handleEditorChange(content); // Pass the content to the parent component's handler
   };
 
   return (
     <DynamicTinyMCE
       apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY} // Add your TinyMCE API key
-      initialValue=""
+      value={initialValue}
       init={{
         selector: 'textarea',
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss',
@@ -29,7 +29,7 @@ const MyEditor = () => {
         
         // Add your custom settings and configurations here
       }}
-      onEditorChange={handleEditorChange}
+      onEditorChange={handleEditorContentChange} // Pass the content to the handler
     />
   );
 };
