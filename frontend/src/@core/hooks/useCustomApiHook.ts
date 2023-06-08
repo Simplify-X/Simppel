@@ -16,8 +16,8 @@ interface UseCustomApiHookProps<T> {
   error: Error | null
   get: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>
   post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
-  put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<void>
-  del: (url: string, config?: AxiosRequestConfig) => Promise<void>
+  put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
+  del: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
 }
 
 function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
@@ -64,6 +64,8 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     try {
       const res = await axiosClient.put<T>(url, data, config)
       handleResponse(res)
+
+      return res;
     } catch (err) {
       handleError(err)
     }
@@ -74,6 +76,8 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     try {
       const res = await axiosClient.delete<T>(url, config)
       handleResponse(res)
+
+      return res;
     } catch (err) {
       handleError(err)
     }

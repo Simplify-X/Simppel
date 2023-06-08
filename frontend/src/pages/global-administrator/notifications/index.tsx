@@ -3,34 +3,36 @@
 import { useEffect, useState } from 'react'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
-import * as Sentry from '@sentry/nextjs'
-import { API_BASE_URL } from 'src/config'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import CircularProgress from '@mui/material/CircularProgress'
 import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useRouter } from 'next/router'
+import { IconButton } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+
+import { Snackbar } from '@mui/material';
+import { Alert } from '@mui/material';
 
 
 const Notification = () => {
-  const [role, setRole] = useState([])
+  const [showNotifications, setNotification] = useState([])
   const router = useRouter()
-  const { get } = useCustomApiHook()
-  const [teamGroup, setTeamGroup] = useState({})
-  const [userExtension, setUserExtension] = useState({})
-  const [isUserExtensionLoading, setIsUserExtensionLoading] = useState(true)
-  const [isTeamGroupLoading, setIsTeamGroupLoading] = useState(false)
+  const { get, del } = useCustomApiHook()
+  const [loading, setLoading] = useState(false)
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  function handleSnackbarClose() {
+    setOpenSnackbar(false);
+  }
 
 
   const handleClick = rowData => {
-    fetch(`${API_BASE_URL}/users/getSingleUser/${rowData}`)
-      .then(response => response.json())
-      .then(data => {
-        router.push(`/global-administrator/users/view-user?id=${data.accountId}`)
-      })
-      .catch(error => {
-        Sentry.captureException(error)
-      })
+    console.log(rowData)
+    router.push(`/global-administrator/notifications/edit/${rowData}`)
   }
 
   const handleOpen = () => {
@@ -39,7 +41,7 @@ const Notification = () => {
 
   const columns = [
     {
-      name: 'accountId',
+      name: 'id',
       label: 'Id',
       options: {
         filter: true,
@@ -48,47 +50,68 @@ const Notification = () => {
       }
     },
     {
-      name: 'username',
-      label: 'Username',
+      name: 'title',
+      label: 'Title',
       options: {
         filter: true,
         sort: true
       }
     },
     {
-      name: 'userId',
-      label: 'Email',
+      name: 'description',
+      label: 'Description',
       options: {
         filter: true,
-        sort: true,
-        customBodyRender: value => {
-          return userExtension[value]?.email || '-'
-        }
+        sort: true
       }
     },
     {
-      name: 'teamGroupId',
-      label: 'Team Group Name',
+      name: 'actions',
+      label: 'Actions',
       options: {
-        filter: true,
-        sort: true,
-        customBodyRender: value => {
-          return teamGroup[value]?.groupName || '-'
-        }
-      }
-    },
-    {
-      name: 'accountRole',
-      label: 'Role',
-      options: {
-        filter: true,
-        sort: false,
-        customBodyRender: value => {
-          return value === 0 ? 'User' : 'Account Admin'
+        customBodyRender: (value, tableMeta) => {
+          const rowId = tableMeta.rowData[0]
+
+          return (
+            <>
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation()
+                  handleDelete(rowId)
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )
         }
       }
     }
   ]
+
+async function handleDelete(rowId) {
+  const updatedNotifications = showNotifications.filter(notification => notification.id !== rowId);
+  setNotification(updatedNotifications);
+
+  const r = await del(`/notifications/delete/${rowId}`);
+
+  const status = r?.data.status;
+
+  if (status === 'OK') {
+    setSnackbarMessage('Notification Deleted');
+    setSnackbarSeverity('success');
+    setOpenSnackbar(true);
+  } else {
+    setSnackbarMessage('Failed deleting Notification');
+    setSnackbarSeverity('error'); // Update the severity to 'error'
+    setOpenSnackbar(true);
+    
+    // If the deletion failed, revert the state back to the original notifications
+    setNotification(showNotifications);
+  }
+}
+
+
 
   const options = {
     filterType: 'checkbox',
@@ -97,50 +120,22 @@ const Notification = () => {
     }
   }
 
-  async function getInvitedUsers() {
-    const getInactiveUsers = await get(`/groups/members/getInvitedUsers`)
-    setRole(getInactiveUsers?.data)
+  async function getNotifications() {
+    const getAllNotifications = await get(`/notifications`)
+    setNotification(getAllNotifications?.data)
+    setLoading(true)
   }
 
-  async function fetchTeamGroup(teamGroupId) {
-    setIsTeamGroupLoading(true)
-    const response = await get(`/groups/list/${teamGroupId}`)
-    setTeamGroup(prev => ({ ...prev, [teamGroupId]: response?.data }))
-    setIsTeamGroupLoading(false)
-  }
-
-  async function fetchUserExtendedDetails(userId) {
-    setIsUserExtensionLoading(true)
-    const response = await get(`/users/getSingleUser/${userId}`)
-    setUserExtension(prev => ({ ...prev, [userId]: response?.data }))
-    setIsUserExtensionLoading(false)
-  }
-
-  const sortedArray = [...role].sort((a, b) => {
+  const sortedArray = [...showNotifications].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at)
   })
 
-  useEffect(() => {
-    role.forEach(user => {
-      if (user.teamGroupId) {
-        fetchTeamGroup(user.teamGroupId)
-      }
-    })
-  }, [role])
 
   useEffect(() => {
-    role.forEach(user => {
-      if (user.userId) {
-        fetchUserExtendedDetails(user.userId)
-      }
-    })
-  }, [role])
-
-  useEffect(() => {
-    getInvitedUsers()
+    getNotifications()
   }, [])
 
-  if (isUserExtensionLoading || isTeamGroupLoading) {
+  if (!loading) {
     return <CircularProgress />
   }
 
@@ -150,6 +145,16 @@ const Notification = () => {
         <AddIcon />
       </Fab>
       <MUIDataTable title={'Notifications'} data={sortedArray} columns={columns} options={options} />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   )
 }
