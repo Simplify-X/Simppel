@@ -24,6 +24,15 @@ import { CircularProgress } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import InputAdornment from '@mui/material/InputAdornment'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import Box from '@mui/material/Box'
+import AcUnitIcon from '@mui/icons-material/AcUnit'
+import { useTranslation } from 'react-i18next'
+import DropshippingCard from './DropshippingCard'; // Import the DropshippingCard component
+
 
 const useStyles = makeStyles({
   textField: {
@@ -58,6 +67,7 @@ const Search: React.FC = () => {
   const classes = useStyles()
   const { get } = useCustomApiHook()
   const apiKey = process.env.NEXT_PUBLIC_API_KEY
+  const { t } = useTranslation()
 
   const [filters, setFilters] = useState<any>({
     productCategory: '',
@@ -75,6 +85,11 @@ const Search: React.FC = () => {
   const [product, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
+  const [selectedValue, setSelectedValue] = useState('amazon')
+
+  const handleChangeForm = event => {
+    setSelectedValue(event.target.value)
+  }
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -221,127 +236,170 @@ const Search: React.FC = () => {
     <div>
       <Card style={{ padding: 0, marginTop: 50, height: 'auto' }}>
         <CardContent>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
-            <IconButton className={classes.filterButton} onClick={handleAddFieldsClick}>
-              <FilterListIcon />
-            </IconButton>
-          </div>
-          <Grid container spacing={2}>
-            <Grid item>
-              <Autocomplete
-                disablePortal
-                id='combo-box-demo'
-                options={marketPlaceData}
-                value={filters.productMarketPlace}
-                onInputChange={handleMarketPlaceChange}
-                sx={{ width: 300 }}
-                className={classes.textField }
-                renderInput={params => <TextField {...params} label='Marketplace' />}
-              />
-            </Grid>
-            <Grid item>
-              <Autocomplete
-                disablePortal
-                id='combo-box-demo'
-                options={categories}
-                value={filters.productCategory}
-                onChange={handleCategoryChange}
-                className={classes.textField }
-                sx={{ width: 280 }}
-                renderInput={params => <TextField {...params} label='Category' />}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                label='Price'
-                name='price'
-                value={filters.price}
-                onChange={handleFilterChange}
-                className={classes.textField}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                      <Tooltip title='Enter the price of the product'>
-                        <IconButton size='small'>
-                          <HelpOutlineIcon style={{ color: 'gray' }} />
-                        </IconButton>
-                      </Tooltip>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                label='Reviews'
-                name='reviews'
-                value={filters.reviews}
-                onChange={handleFilterChange}
-                className={classes.textField}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                      <Tooltip title='Enter the amount of reviews'>
-                        <IconButton size='small'>
-                          <HelpOutlineIcon style={{ color: 'gray' }} />
-                        </IconButton>
-                      </Tooltip>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                label='Est Sales'
-                name='sales'
-                value={filters.sales}
-                onChange={handleFilterChange}
-                className={classes.textField}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                      <Tooltip title='Enter the estimated sales value'>
-                        <IconButton size='small'>
-                          <HelpOutlineIcon style={{ color: 'gray' }} />
-                        </IconButton>
-                      </Tooltip>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-
-            <Grid item>
-              <Button variant='contained' color='primary' className={classes.button} onClick={handleFindProducts}>
-                Find Products
-              </Button>
-            </Grid>
-
-            <Grid item>
-              {selectedFields.map((field, index) => (
-                <TextField
-                  key={index}
-                  label={field.charAt(0).toUpperCase() + field?.slice(1)}
-                  name={field}
-                  value={filters[field]}
-                  onChange={handleFilterChange}
-                  className={classes.textField}
-                  style={{ marginRight: '10px' }}
+          <Box>
+            <FormControl component='fieldset'>
+              <FormLabel component='legend' style={{ marginTop: 20 }}>
+                <span style={{ marginRight: 8 }}>{t('search_type')}</span>
+                <IconButton>
+                  <AcUnitIcon />
+                </IconButton>
+              </FormLabel>
+              <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
+                <FormControlLabel
+                  value='amazon'
+                  control={<Radio checked={selectedValue === 'amazon'} />}
+                  label={t('amazon_product')}
                 />
-              ))}
-            </Grid>
-          </Grid>
+                <FormControlLabel
+                  value='dropship'
+                  control={<Radio checked={selectedValue === 'dropship'} />}
+                  label={t('dropship_product')}
+                />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+          {selectedValue === 'amazon' ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
+                <IconButton className={classes.filterButton} onClick={handleAddFieldsClick}>
+                  <FilterListIcon />
+                </IconButton>
+              </div>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Autocomplete
+                    disablePortal
+                    id='combo-box-demo'
+                    options={marketPlaceData}
+                    value={filters.productMarketPlace}
+                    onInputChange={handleMarketPlaceChange}
+                    sx={{ width: 300 }}
+                    className={classes.textField}
+                    renderInput={params => <TextField {...params} label={t('marketplace')} />}
+                  />
+                </Grid>
+                <Grid item>
+                  <Autocomplete
+                    disablePortal
+                    id='combo-box-demo'
+                    options={categories}
+                    value={filters.productCategory}
+                    onChange={handleCategoryChange}
+                    className={classes.textField}
+                    sx={{ width: 280 }}
+                    renderInput={params => <TextField {...params} label={t('category')} />}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label='Price'
+                    name='price'
+                    value={filters.price}
+                    onChange={handleFilterChange}
+                    className={classes.textField}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                          <Tooltip title={t('enter_price_of_product')}>
+                            <IconButton size='small'>
+                              <HelpOutlineIcon style={{ color: 'gray' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label='Reviews'
+                    name='reviews'
+                    value={filters.reviews}
+                    onChange={handleFilterChange}
+                    className={classes.textField}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                          <Tooltip title={t('enter_amount_of_reviews')}>
+                            <IconButton size='small'>
+                              <HelpOutlineIcon style={{ color: 'gray' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label='Est Sales'
+                    name='sales'
+                    value={filters.sales}
+                    onChange={handleFilterChange}
+                    className={classes.textField}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                          <Tooltip title={t('enter_estimated_sales_of_product')}>
+                            <IconButton size='small'>
+                              <HelpOutlineIcon style={{ color: 'gray' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
 
-          {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
-            </div>
+                <Grid item>
+                  <Button variant='contained' color='primary' className={classes.button} onClick={handleFindProducts}>
+                    Find Products
+                  </Button>
+                </Grid>
+
+                <Grid item>
+                  {selectedFields.map((field, index) => (
+                    <TextField
+                      key={index}
+                      label={field.charAt(0).toUpperCase() + field?.slice(1)}
+                      name={field}
+                      value={filters[field]}
+                      onChange={handleFilterChange}
+                      className={classes.textField}
+                      style={{ marginRight: '10px' }}
+                    />
+                  ))}
+                </Grid>
+              </Grid>
+
+              {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <CircularProgress />
+                </div>
+              ) : (
+                <div style={{ marginTop: 50 }}>
+                  <StickyHeadTable data={product} />
+                </div>
+              )}
+            </>
           ) : (
-            <div style={{ marginTop: 50 }}>
-              <StickyHeadTable data={product} />
+            <div>
+              <h1>Handpicked Dropshipping products</h1>
+              <Grid container spacing={2}>
+                <Grid item xs={3}>
+                  <DropshippingCard />
+                </Grid>
+                <Grid item xs={3}>
+                  {/* Add more DropshippingCard components here */}
+                </Grid>
+                <Grid item xs={3}>
+                  {/* Add more DropshippingCard components here */}
+                </Grid>
+              </Grid>
             </div>
+
+            
           )}
         </CardContent>
       </Card>
@@ -351,31 +409,31 @@ const Search: React.FC = () => {
         <DialogContent>
           <FormControlLabel
             control={<Checkbox checked={selectedFields.includes('rank')} onChange={handleCheckboxChange} name='rank' />}
-            label='Rank'
+            label={t('rank')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={selectedFields.includes('sales')} onChange={handleCheckboxChange} name='sales' />
             }
-            label='Sales'
+            label={t('sales')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={selectedFields.includes('weight')} onChange={handleCheckboxChange} name='weight' />
             }
-            label='Weight'
+            label={t('weight')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={selectedFields.includes('keywords')} onChange={handleCheckboxChange} name='keywords' />
             }
-            label='Keywords'
+            label={t('keywords_amazon')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={selectedFields.includes('revenue')} onChange={handleCheckboxChange} name='revenue' />
             }
-            label='Revenue'
+            label={t('revenue')}
           />
         </DialogContent>
         <DialogActions>
