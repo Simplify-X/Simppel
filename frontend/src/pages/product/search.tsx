@@ -32,7 +32,6 @@ import Box from '@mui/material/Box'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useTranslation } from 'react-i18next'
 import DropshippingCard from './DropshippingCard'; // Import the DropshippingCard component
-import Typography from '@mui/material/Typography'
 
 
 const useStyles = makeStyles({
