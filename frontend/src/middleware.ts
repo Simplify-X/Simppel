@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')
   const isAuth = !!token;
   const isAuthPage = req.nextUrl.pathname.startsWith("/login");
-  const userRoutes = ["/", "/content/", "/content/view-content/", "/writing/", "/view-writing/", "/automation/", "/automation/view-automation/", "/user-management/", "/invite-team/", "/account-settings/"]
+  const userRoutes = ["/", "/content/add/", "/content/view/", "/writing/add/", "/writing/view/", "/automation/add/", "/automation/view/", "/user-management/", "/invite-team/", "/account-settings/", "/product/search/", "/product/tracker/", "/content/product-details/"]
   const isOpenUserRoute = userRoutes.some((route) => pathname.startsWith(route));
 
   if(isOpenUserRoute){
@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
     }
   })).json()
 
-  const adminRoutes = ["/global-administrator/", "/global-administrator/users/", "/global-administrator/unactive-accounts/", "/global-administrator/invited-users/"];
+  const adminRoutes = ["/global-administrator/", "/global-administrator/users/", "/global-administrator/unactive-accounts/", "/global-administrator/invited-users/", "/global-administrator/logs/", "/global-administrator/dropshipping/", "/global-administrator/notifications/"];
   const isOpenAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
 
 
@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.rewrite(new URL(pathname, req.url))
     }else{
       if(token){
-        return NextResponse.redirect(new URL("/writing/add/", req.url))
+        return NextResponse.redirect(new URL("/", req.url))
       }else{
         return NextResponse.redirect(new URL("/login", req.url))
       }
@@ -70,6 +70,12 @@ export const config = {
     "/automation/view-automation/", 
     "/user-management/", 
     "/invite-team/", 
-    "/account-settings/"
+    "/account-settings/",
+    "/product/search/",
+    "/product/tracker/",
+    "/content/product-details/",
+    "/global-administrator/logs/",
+    "/global-administrator/dropshipping/",
+    "/global-administrator/notifications/"
   ],
 };
