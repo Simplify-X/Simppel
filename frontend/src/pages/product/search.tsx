@@ -100,11 +100,9 @@ const Search: React.FC = () => {
     userId && fetchSingleUser()
   }, [userId])
 
-  console.log(selectedValue)
 
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
-    console.log(response)
     if (response?.data) {
       setData(response.data)
     }
@@ -117,7 +115,6 @@ const Search: React.FC = () => {
     }
   }, [data])
 
-  console.log(data.productFormType)
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -241,7 +238,6 @@ const Search: React.FC = () => {
         ...prevFilters,
         ...filters
       }))
-      console.log(products)
       setProducts(products?.category_results)
 
       // Store filter information and search results in local storage
@@ -426,16 +422,8 @@ const Search: React.FC = () => {
           {selectedValue === 'dropshipping' && (
             <div>
               <h1>Handpicked Dropshipping products</h1>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <DropshippingCard />
-                </Grid>
-                <Grid item xs={3}>
-                  {/* Add more DropshippingCard components here */}
-                </Grid>
-                <Grid item xs={3}>
-                  {/* Add more DropshippingCard components here */}
-                </Grid>
+              <Grid item xs={3}>
+                <DropshippingCard />
               </Grid>
             </div>
           )}
