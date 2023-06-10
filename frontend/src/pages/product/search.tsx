@@ -31,8 +31,10 @@ import FormLabel from '@mui/material/FormLabel'
 import Box from '@mui/material/Box'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useTranslation } from 'react-i18next'
-import DropshippingCard from './DropshippingCard'; // Import the DropshippingCard component
-
+import DropshippingCard from './DropshippingCard' // Import the DropshippingCard component
+import { useUserData } from 'src/@core/hooks/useUserData'
+import Divider from '@mui/material/Divider'
+import { Helmet } from 'react-helmet'
 
 const useStyles = makeStyles({
   textField: {
@@ -68,6 +70,7 @@ const Search: React.FC = () => {
   const { get } = useCustomApiHook()
   const apiKey = process.env.NEXT_PUBLIC_API_KEY
   const { t } = useTranslation()
+  const [data, setData] = useState([])
 
   const [filters, setFilters] = useState<any>({
     productCategory: '',
@@ -82,14 +85,39 @@ const Search: React.FC = () => {
   const [showModal, setShowModal] = useState(false)
   const [selectedFields, setSelectedFields] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadings, setLoadings] = useState(true)
   const [product, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
   const [selectedValue, setSelectedValue] = useState('amazon')
+  const { userId } = useUserData()
 
   const handleChangeForm = event => {
     setSelectedValue(event.target.value)
   }
+
+  useEffect(() => {
+    userId && fetchSingleUser()
+  }, [userId])
+
+  console.log(selectedValue)
+
+  const fetchSingleUser = async () => {
+    const response = await get(`/users/getSingleUser/${userId}`)
+    console.log(response)
+    if (response?.data) {
+      setData(response.data)
+    }
+  }
+
+  useEffect(() => {
+    if (data && data.formType) {
+      setSelectedValue(data.productFormType)
+      setLoadings(false)
+    }
+  }, [data])
+
+  console.log(data.productFormType)
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -232,9 +260,16 @@ const Search: React.FC = () => {
     }
   }
 
+  if (!loadings) {
+    return <CircularProgress />
+  }
+
   return (
     <div>
-      <Card style={{ padding: 0, marginTop: 50, height: 'auto' }}>
+      <Helmet>
+        <title>Simppel - Search Winning Products</title>
+      </Helmet>
+      <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
         <CardContent>
           <Box>
             <FormControl component='fieldset'>
@@ -251,14 +286,17 @@ const Search: React.FC = () => {
                   label={t('amazon_product')}
                 />
                 <FormControlLabel
-                  value='dropship'
-                  control={<Radio checked={selectedValue === 'dropship'} />}
+                  value='dropshipping'
+                  control={<Radio checked={selectedValue === 'dropshipping'} />}
                   label={t('dropship_product')}
                 />
               </RadioGroup>
             </FormControl>
           </Box>
-          {selectedValue === 'amazon' ? (
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          {selectedValue === 'amazon' && (
             <>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
@@ -383,7 +421,9 @@ const Search: React.FC = () => {
                 </div>
               )}
             </>
-          ) : (
+          )}
+
+          {selectedValue === 'dropshipping' && (
             <div>
               <h1>Handpicked Dropshipping products</h1>
               <Grid container spacing={2}>
@@ -398,8 +438,6 @@ const Search: React.FC = () => {
                 </Grid>
               </Grid>
             </div>
-
-            
           )}
         </CardContent>
       </Card>

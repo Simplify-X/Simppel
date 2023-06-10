@@ -20,6 +20,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import CategoryIcon from '@mui/icons-material/Category';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -178,6 +179,12 @@ const Navigation = (): VerticalNavItemsType=> {
       title: 'Send Email',
       icon: EmailIcon,
       path: '/email'
+    },
+
+    userData.role && {
+      title: 'Add Product',
+      icon: PostAddIcon,
+      path: '/global-administrator/dropshipping'
     },
 
     userData.role && {

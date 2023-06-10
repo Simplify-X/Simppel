@@ -186,6 +186,7 @@ public record UserService(UserRepository userRepo,
         user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
+        user.setProductFormType(userDetails.getProductFormType());
 
         return userRepo.save(user);
     }

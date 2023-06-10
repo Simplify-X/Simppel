@@ -80,5 +80,6 @@ public class User extends Auditable {
 
     private Boolean isLinkedToTeamGroup;
 
+    private String productFormType;
 
 }
