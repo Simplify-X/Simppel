@@ -247,7 +247,7 @@ const Content = () => {
   return (
     <form onSubmit={submitForm}>
       <Helmet>
-        <title>Create Advertisement</title>
+        <title>Simppel - Create Advertisement</title>
       </Helmet>
       <Card style={{ padding: 15 }}>
         <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
