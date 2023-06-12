@@ -27,6 +27,12 @@ import UserIcon from 'src/layouts/components/UserIcon'
 // ** Utils
 import { handleURLQueries } from 'src/@core/layouts/utils'
 
+import { useState } from 'react'
+import List from '@mui/material/List'
+import ListItemText from '@mui/material/ListItemText'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+
 interface Props {
   item: NavLink
   settings: Settings
@@ -76,6 +82,62 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
     }
   }
 
+  const [open, setOpen] = useState(false)
+
+  const handleToggle = () => {
+    setOpen(!open)
+  }
+
+  const handleMenuNavLink = (item: any) => {
+    return (
+      <MenuNavLink
+        component={'a'}
+        className={isNavLinkActive() ? 'active' : ''}
+        {...(item.openInNewTab ? { target: '_blank' } : null)}
+        onClick={e => {
+          if (item.path === undefined) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
+          if (navVisible) {
+            toggleNavVisibility()
+          }
+        }}
+        sx={{
+          pl: 5.5,
+          ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' })
+        }}
+      >
+        <ListItemIcon
+          sx={{
+            mr: 2.5,
+            color: 'text.primary',
+            transition: 'margin .25s ease-in-out'
+          }}
+        >
+          <UserIcon icon={IconTag} />
+        </ListItemIcon>
+
+        <MenuItemTextMetaWrapper>
+          <Typography {...(themeConfig.menuTextTruncate && { noWrap: true })}>{item.title}</Typography>
+
+          {item.badgeContent ? (
+            <Chip
+              label={item.badgeContent}
+              color={item.badgeColor || 'primary'}
+              sx={{
+                height: 20,
+                fontWeight: 500,
+                marginLeft: 1.25,
+                '& .MuiChip-label': { px: 1.5, textTransform: 'capitalize' }
+              }}
+            />
+          ) : null}
+        </MenuItemTextMetaWrapper>
+      </MenuNavLink>
+    )
+  }
+
   return (
     <ListItem
       disablePadding
@@ -83,52 +145,45 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
       disabled={item.disabled || false}
       sx={{ mt: 1.5, px: '0 !important' }}
     >
-      <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
-        <MenuNavLink
-          component={'a'}
-          className={isNavLinkActive() ? 'active' : ''}
-          {...(item.openInNewTab ? { target: '_blank' } : null)}
-          onClick={e => {
-            if (item.path === undefined) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            if (navVisible) {
-              toggleNavVisibility()
-            }
-          }}
-          sx={{
-            pl: 5.5,
-            ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' })
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              mr: 2.5,
-              color: 'text.primary',
-              transition: 'margin .25s ease-in-out'
-            }}
-          >
-            <UserIcon icon={IconTag} />
-          </ListItemIcon>
 
-          <MenuItemTextMetaWrapper>
-            <Typography {...(themeConfig.menuTextTruncate && { noWrap: true })}>{item.title}</Typography>
-            {item.badgeContent ? (
-              <Chip
-                label={item.badgeContent}
-                color={item.badgeColor || 'primary'}
-                sx={{
-                  height: 20,
-                  fontWeight: 500,
-                  marginLeft: 1.25,
-                  '& .MuiChip-label': { px: 1.5, textTransform: 'capitalize' }
-                }}
-              />
-            ) : null}
-          </MenuItemTextMetaWrapper>
-        </MenuNavLink>
-      </Link>
+
+      {/* --------------- added sub menus ---------------- */}
+      {item.title === 'Product search' ? (
+        <List>
+          <ListItem sx={{ mt: 1.5, px: '0 !important' }} onClick={handleToggle}>
+            <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
+              {handleMenuNavLink(item)}
+            </Link>
+            {open ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          {open && (
+            <List component='div' disablePadding sx={{ display: 'grid', gap: 1 }}>
+              <ListItem sx={{ cursor: 'pointer' }}>
+                <Link href={item.path + '/1' ?? '/'}>
+                  {/* {handleMenuNavLink(item)} */}
+                  <ListItemText inset primary='🐱‍🏍 Product 1' />
+                </Link>
+              </ListItem>
+              <ListItem sx={{ cursor: 'pointer' }}>
+                <Link href={item.path + '/2' ?? '/'}>
+                  {/* {handleMenuNavLink(item)} */}
+                  <ListItemText inset primary='🐱‍🏍 Product 2' />
+                </Link>
+              </ListItem>
+              <ListItem sx={{ cursor: 'pointer' }}>
+                <Link href={item.path + '/3' ?? '/'}>
+                  {/* {handleMenuNavLink(item)} */}
+                  <ListItemText inset primary='🐱‍🏍 Product 3' />
+                </Link>
+              </ListItem>
+            </List>
+          )}
+        </List>
+      ) : (
+        <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
+          {handleMenuNavLink(item)}
+        </Link>
+      )}
     </ListItem>
   )
 }
