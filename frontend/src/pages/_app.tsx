@@ -36,6 +36,10 @@ type ExtendedAppProps = AppProps & {
   emotionCache: EmotionCache
 }
 
+// ** toast
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 const clientSideEmotionCache = createEmotionCache()
 
 // ** Pace Loader
@@ -56,7 +60,14 @@ const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+  const getLayout =
+    Component.getLayout ??
+    (page => (
+      <UserLayout>
+        {page}
+        <ToastContainer position={'top-center'} draggable={false} />
+      </UserLayout>
+    ))
 
   // @ts-ignore
   getLayout(<Component {...pageProps} />)
@@ -73,17 +84,16 @@ const App = (props: ExtendedAppProps) => {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
 
-          <SettingsProvider>
-            <SettingsConsumer>
-              {({ settings }) => {
-                // @ts-ignore
-                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-              }}
-            </SettingsConsumer>
-          </SettingsProvider>
-        </CacheProvider>
-    )
-
+      <SettingsProvider>
+        <SettingsConsumer>
+          {({ settings }) => {
+            // @ts-ignore
+            return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+          }}
+        </SettingsConsumer>
+      </SettingsProvider>
+    </CacheProvider>
+  )
 }
 
 export default App

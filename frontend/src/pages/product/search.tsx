@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { makeStyles } from '@mui/styles'
 import Cookies from 'js-cookie'
-import { Grid } from '@mui/material'
+import { Grid, Stack } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -73,7 +73,7 @@ const Search: React.FC = () => {
   const [data, setData] = useState([])
 
   const [filters, setFilters] = useState<any>({
-    productCategory: '',
+    productCategory: [],
     productKeywords: '',
     price: '',
     sales: '',
@@ -100,7 +100,6 @@ const Search: React.FC = () => {
     userId && fetchSingleUser()
   }, [userId])
 
-
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
     if (response?.data) {
@@ -115,7 +114,6 @@ const Search: React.FC = () => {
     }
   }, [data])
 
-
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
     if (savedFields) {
@@ -126,10 +124,8 @@ const Search: React.FC = () => {
     const savedFilterData = localStorage.getItem('filterData')
     const savedProductData = localStorage.getItem('productData')
 
-    if (savedFilterData && savedProductData) {
-      setFilters(JSON.parse(savedFilterData))
-      setProducts(JSON.parse(savedProductData))
-    }
+    savedFilterData && setFilters(JSON.parse(savedFilterData))
+    savedProductData && setProducts(JSON.parse(savedProductData))
   }, [])
 
   useEffect(() => {
@@ -238,11 +234,12 @@ const Search: React.FC = () => {
         ...prevFilters,
         ...filters
       }))
+
       setProducts(products?.category_results)
 
       // Store filter information and search results in local storage
-      localStorage.setItem('filterData', JSON.stringify(filters))
-      localStorage.setItem('productData', JSON.stringify(products?.category_results))
+      filters && localStorage.setItem('filterData', JSON.stringify(filters))
+      products?.category_results && localStorage.setItem('productData', JSON.stringify(products?.category_results))
 
       // Reset loading state
       setLoading(false)
@@ -265,6 +262,7 @@ const Search: React.FC = () => {
       <Helmet>
         <title>Simppel - Search Winning Products</title>
       </Helmet>
+
       <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
         <CardContent>
           <Box>
@@ -315,14 +313,14 @@ const Search: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <Autocomplete
-                    disablePortal
+                    multiple
                     id='combo-box-demo'
                     options={categories}
-                    value={filters.productCategory}
+                    value={filters?.productCategory}
                     onChange={handleCategoryChange}
                     className={classes.textField}
                     sx={{ width: 280 }}
-                    renderInput={params => <TextField {...params} label={t('category')} />}
+                    renderInput={params => <TextField {...params} label={t('category')} placeholder='Add category' />}
                   />
                 </Grid>
                 <Grid item>
@@ -408,7 +406,7 @@ const Search: React.FC = () => {
               </Grid>
 
               {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', margin: "50px 0px" }}>
                   <CircularProgress />
                 </div>
               ) : (
