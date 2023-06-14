@@ -50,8 +50,6 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
       return [] // Return an empty array if the category ID is not found
     }
 
-    console.log(categoryID);
-
     const apiUrl = 'https://api.rainforestapi.com/request'
     const params = {
       api_key: apiKey,

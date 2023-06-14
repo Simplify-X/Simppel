@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { makeStyles } from '@mui/styles'
 import Cookies from 'js-cookie'
-import { Grid, Stack } from '@mui/material'
+import { Grid, Input } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -75,7 +75,10 @@ const Search: React.FC = () => {
   const [filters, setFilters] = useState<any>({
     productCategory: [],
     productKeywords: '',
-    price: '',
+    price: {
+      low: '',
+      high: ''
+    },
     sales: '',
     reviews: '',
     productWeight: '',
@@ -169,10 +172,19 @@ const Search: React.FC = () => {
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [name]: value
-    }))
+
+    name === 'low' || name === 'high'
+      ? setFilters(prevFilters => ({
+          ...prevFilters,
+          price: {
+            ...filters.price,
+            [name]: value
+          }
+        }))
+      : setFilters(prevFilters => ({
+          ...prevFilters,
+          [name]: value
+        }))
   }
 
   const handleMarketPlaceChange = (event, value) => {
@@ -222,8 +234,8 @@ const Search: React.FC = () => {
       // Your existing code to fetch products
       const products = await getProductByCategory(
         filters.productCategory,
-        filters.price,
-        20,
+        filters.price?.low,
+        filters.price?.high,
         filters.reviews,
         filters.sales,
         marketplaceURL
@@ -323,25 +335,59 @@ const Search: React.FC = () => {
                     renderInput={params => <TextField {...params} label={t('category')} placeholder='Add category' />}
                   />
                 </Grid>
-                <Grid item>
-                  <TextField
-                    label='Price'
-                    name='price'
-                    value={filters.price}
-                    onChange={handleFilterChange}
-                    className={classes.textField}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                          <Tooltip title={t('enter_price_of_product')}>
-                            <IconButton size='small'>
-                              <HelpOutlineIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      )
+                <Grid
+                  item
+                  sx={{
+                    width: {
+                      sm: '100%',
+                      md: '30%'
+                    }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      border: '1px solid #d3d3d3',
+                      borderRadius: '7px',
+                      padding: '0px 4px 0px 12px',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 5
                     }}
-                  />
+                  >
+                    Price:
+                    <Box sx={{ marginTop: '3.7%' }}>
+                      <Input
+                        placeholder='Low'
+                        name='low'
+                        value={filters.price?.low}
+                        onChange={handleFilterChange}
+                        className={classes.textField}
+                        sx={{ width: '35%' }}
+                      />
+                      <span style={{ margin: '0px 10px' }}>-</span>
+                      <Input
+                        placeholder='High'
+                        name='high'
+                        value={filters.price?.high}
+                        onChange={handleFilterChange}
+                        className={classes.textField}
+                        sx={{
+                          width: '45%'
+                        }}
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <Tooltip title={t('enter_price_of_product')}>
+                              <IconButton size='small'>
+                                <HelpOutlineIcon style={{ color: 'gray' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        }
+                      />
+                    </Box>
+                  </Box>
                 </Grid>
                 <Grid item>
                   <TextField
@@ -406,7 +452,15 @@ const Search: React.FC = () => {
               </Grid>
 
               {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', margin: "50px 0px" }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
+                    margin: '50px 0px'
+                  }}
+                >
                   <CircularProgress />
                 </div>
               ) : (
