@@ -11,7 +11,7 @@ interface ICategory {
   path: string
 }
 
-export const getCategoryID = async (categoriesName, domain) => {
+export const getCategoryID = async (categoriesName) => {
   try {
     // const apiKey = process.env.NEXT_PUBLIC_API_KEY
     // const apiUrl = 'https://api.rainforestapi.com/categories'
@@ -24,10 +24,12 @@ export const getCategoryID = async (categoriesName, domain) => {
 
     // const categories = response.data.categories
     const category = categories.filter((c: ICategory) => {
+
       return categoriesName.includes(c.name)
     })
 
     if (category) {
+
       return category.map(item => item.id)
     } else {
       console.error(`Category '${categoryName}' not found.`)
@@ -47,6 +49,7 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
 
     if (!categoryID) {
       toast.error(`Category ${category} not found.`, { autoClose: 2000 })
+
       return [] // Return an empty array if the category ID is not found
     }
 

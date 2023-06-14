@@ -257,12 +257,15 @@ const Search: React.FC = () => {
 
       // console.log(filterProductData, "filterProductData");
 
-      setProducts(filterProductData ?? products.category_results)
+      setProducts(filterProductData.length > 0 ? filterProductData : products.category_results)
 
       // Store filter information and search results in local storage
       filters && localStorage.setItem('filterData', JSON.stringify(filters))
       products?.category_results &&
-        localStorage.setItem('productData', JSON.stringify(filterProductData ?? products.category_results))
+        localStorage.setItem(
+          'productData',
+          JSON.stringify(filterProductData.length > 0 ? filterProductData : products.category_results)
+        )
 
       // Reset loading state
       setLoading(false)

@@ -199,6 +199,7 @@ export default function StickyHeadTable({ data }) {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => (
+                    
                     // change table row value
                     <React.Fragment key={column.id}>
                       {renderTitleCell(
