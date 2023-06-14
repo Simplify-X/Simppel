@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { makeStyles } from '@mui/styles'
 import Cookies from 'js-cookie'
-import { Grid, Input } from '@mui/material'
+import { Grid, Input, useTheme } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -94,6 +94,7 @@ const Search: React.FC = () => {
   const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
   const [selectedValue, setSelectedValue] = useState('amazon')
   const { userId } = useUserData()
+  const theme = useTheme()
 
   const handleChangeForm = event => {
     setSelectedValue(event.target.value)
@@ -247,11 +248,21 @@ const Search: React.FC = () => {
         ...filters
       }))
 
-      setProducts(products?.category_results)
+      // console.log(products.category_results, "products.category_results");
+
+      // filters data by price
+      const filterProductData = await products.category_results?.filter(
+        data => data?.price?.value > filters?.price?.low && data?.price?.value < filters?.price?.high
+      )
+
+      // console.log(filterProductData, "filterProductData");
+
+      setProducts(filterProductData ?? products.category_results)
 
       // Store filter information and search results in local storage
       filters && localStorage.setItem('filterData', JSON.stringify(filters))
-      products?.category_results && localStorage.setItem('productData', JSON.stringify(products?.category_results))
+      products?.category_results &&
+        localStorage.setItem('productData', JSON.stringify(filterProductData ?? products.category_results))
 
       // Reset loading state
       setLoading(false)
@@ -339,14 +350,14 @@ const Search: React.FC = () => {
                   item
                   sx={{
                     width: {
-                      sm: '100%',
+                      xs: '88%',
                       md: '30%'
                     }
                   }}
                 >
                   <Box
                     sx={{
-                      border: '1px solid #d3d3d3',
+                      border: `1px solid ${theme?.palette?.mode === 'dark' ? '#5e5e5e' : '#d3d3d3'}`,
                       borderRadius: '7px',
                       padding: '0px 4px 0px 12px',
                       display: 'flex',

@@ -28,7 +28,7 @@ export const getCategoryID = async (categoriesName, domain) => {
     })
 
     if (category) {
-      return category.map(item => item.id);
+      return category.map(item => item.id)
     } else {
       console.error(`Category '${categoryName}' not found.`)
 
@@ -56,6 +56,9 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
       type: 'category',
       amazon_domain: domain,
       category_id: categoryID,
+      page: 2,
+      max_page: 5,
+      limit: 100,
       filters: {
         price: {
           min: minPrice,
@@ -79,6 +82,7 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
 
     return products
   } catch (error) {
+    toast.error(error?.response?.data?.request_info?.message)
     console.error('Error fetching products:', error)
     throw error
   }
