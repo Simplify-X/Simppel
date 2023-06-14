@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react'
 import useCustomApiHook from './useCustomApiHook'
 
 interface UserData {
- accoundId?: string
+  accountId?: string
 }
 
 type UserType = 'me' | 'my'

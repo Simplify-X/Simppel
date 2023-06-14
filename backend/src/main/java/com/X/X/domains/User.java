@@ -60,6 +60,8 @@ public class User extends Auditable {
 
     private boolean isAdvertisementImportEnabled;
 
+    private boolean isCustomTabEnabled;
+
     private Integer advertisementLimit;
 
     private String themeMode;
