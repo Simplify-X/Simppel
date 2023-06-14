@@ -1,6 +1,6 @@
 // ** React Imports
 // @ts-nocheck
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef, useEffect } from 'react'
+import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useRef } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -73,7 +73,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 const RegisterPage = () => {
   const steps = ['Account Data', 'Personal Data']
   const [activeStep, setActiveStep] = useState(0)
-  const { response, loading, error, post } = useCustomApiHook()
+  const { loading, error, post } = useCustomApiHook()
 
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
@@ -183,20 +183,23 @@ const RegisterPage = () => {
       country: formInfo.country
     })
 
-    if (isCheck) await post('/users/register', data)
-  }
+    const r = await post('/users/register', data)
 
-  useEffect(() => {
-    const status = response?.data.status
+    const status = r?.data.status
 
     if (status === 'OK') {
       setSnackbarMessage('Successfully Registered')
       setSnackbarSeverity('success')
       setOpenSnackbar(true)
-      router.push('/')
+
+      // Delay the redirection by 2 seconds
+      setTimeout(() => {
+        router.push('/')
+      }, 2000)
     }
 
     status === 'FAILED' &&
+      r?.data.message === 'Error' &&
       setFormInfo({
         firstName: '',
         lastName: '',
@@ -210,14 +213,29 @@ const RegisterPage = () => {
         password: ''
       })
 
-    if (error) {
-      console.log(error, "EEEEEEEEE")
+    if (r?.data.message === 'Exists') {
+      setSnackbarMessage('Username or Email already exists')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
+
+      // setActiveStep(0)
+    }
+
+    if (r?.data.message === 'Error') {
       setSnackbarMessage('Failed to register, please try again later')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
       Sentry.captureException(error)
     }
-  }, [response, error])
+
+    if (error) {
+      console.log(error, 'EEEEEEEEE')
+      setSnackbarMessage('Failed to register, please try again later')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
+      Sentry.captureException(error)
+    }
+  }
 
   return (
     <Box className='content-center'>
@@ -242,61 +260,17 @@ const RegisterPage = () => {
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg
               width={35}
-              height={29}
+              height={50}
               version='1.1'
               viewBox='0 0 30 23'
               xmlns='http://www.w3.org/2000/svg'
               xmlnsXlink='http://www.w3.org/1999/xlink'
             >
               <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
-                <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
-                  <g id='logo' transform='translate(95.000000, 50.000000)'>
-                    <path
-                      id='Combined-Shape'
-                      fill={theme.palette.primary.main}
-                      d='M30,21.3918362 C30,21.7535219 29.9019196,22.1084381 29.7162004,22.4188007 C29.1490236,23.366632 27.9208668,23.6752135 26.9730355,23.1080366 L26.9730355,23.1080366 L23.714971,21.1584295 C23.1114106,20.7972624 22.7419355,20.1455972 22.7419355,19.4422291 L22.7419355,19.4422291 L22.741,12.7425689 L15,17.1774194 L7.258,12.7425689 L7.25806452,19.4422291 C7.25806452,20.1455972 6.88858935,20.7972624 6.28502902,21.1584295 L3.0269645,23.1080366 C2.07913318,23.6752135 0.850976404,23.366632 0.283799571,22.4188007 C0.0980803893,22.1084381 2.0190442e-15,21.7535219 0,21.3918362 L0,3.58469444 L0.00548573643,3.43543209 L0.00548573643,3.43543209 L0,3.5715689 C3.0881846e-16,2.4669994 0.8954305,1.5715689 2,1.5715689 C2.36889529,1.5715689 2.73060353,1.67359571 3.04512412,1.86636639 L15,9.19354839 L26.9548759,1.86636639 C27.2693965,1.67359571 27.6311047,1.5715689 28,1.5715689 C29.1045695,1.5715689 30,2.4669994 30,3.5715689 L30,3.5715689 Z'
-                    />
-                    <polygon
-                      id='Rectangle'
-                      opacity='0.077704'
-                      fill={theme.palette.common.black}
-                      points='0 8.58870968 7.25806452 12.7505183 7.25806452 16.8305646'
-                    />
-                    <polygon
-                      id='Rectangle'
-                      opacity='0.077704'
-                      fill={theme.palette.common.black}
-                      points='0 8.58870968 7.25806452 12.6445567 7.25806452 15.1370162'
-                    />
-                    <polygon
-                      id='Rectangle'
-                      opacity='0.077704'
-                      fill={theme.palette.common.black}
-                      points='22.7419355 8.58870968 30 12.7417372 30 16.9537453'
-                      transform='translate(26.370968, 12.771227) scale(-1, 1) translate(-26.370968, -12.771227) '
-                    />
-                    <polygon
-                      id='Rectangle'
-                      opacity='0.077704'
-                      fill={theme.palette.common.black}
-                      points='22.7419355 8.58870968 30 12.6409734 30 15.2601969'
-                      transform='translate(26.370968, 11.924453) scale(-1, 1) translate(-26.370968, -11.924453) '
-                    />
-                    <path
-                      id='Rectangle'
-                      fillOpacity='0.15'
-                      fill={theme.palette.common.white}
-                      d='M3.04512412,1.86636639 L15,9.19354839 L15,9.19354839 L15,17.1774194 L0,8.58649679 L0,3.5715689 C3.0881846e-16,2.4669994 0.8954305,1.5715689 2,1.5715689 C2.36889529,1.5715689 2.73060353,1.67359571 3.04512412,1.86636639 Z'
-                    />
-                    <path
-                      id='Rectangle'
-                      fillOpacity='0.35'
-                      fill={theme.palette.common.white}
-                      transform='translate(22.500000, 8.588710) scale(-1, 1) translate(-22.500000, -8.588710) '
-                      d='M18.0451241,1.86636639 L30,9.19354839 L30,9.19354839 L30,17.1774194 L15,8.58649679 L15,3.5715689 C15,2.4669994 15.8954305,1.5715689 17,1.5715689 C17.3688953,1.5715689 17.7306035,1.67359571 18.0451241,1.86636639 Z'
-                    />
-                  </g>
-                </g>
+                <path
+                  d='M31.952 14.751a260.51 260.51 0 00-4.359-4.407C23.932 6.734 20.16 3.182 16.171 0c1.634.017 3.21.28 4.692.751 3.487 3.114 6.846 6.398 10.163 9.737.493 1.346.811 2.776.926 4.262zm-1.388 7.883c-2.496-2.597-5.051-5.12-7.737-7.471-3.706-3.246-10.693-9.81-15.736-7.418-4.552 2.158-4.717 10.543-4.96 16.238A15.926 15.926 0 010 16C0 9.799 3.528 4.421 8.686 1.766c1.82.593 3.593 1.675 5.038 2.587 6.569 4.14 12.29 9.71 17.792 15.57-.237.94-.557 1.846-.952 2.711zm-4.505 5.81a56.161 56.161 0 00-1.007-.823c-2.574-2.054-6.087-4.805-9.394-4.044-3.022.695-4.264 4.267-4.97 7.52a15.945 15.945 0 01-3.665-1.85c.366-3.242.89-6.675 2.405-9.364 2.315-4.107 6.287-3.072 9.613-1.132 3.36 1.96 6.417 4.572 9.313 7.417a16.097 16.097 0 01-2.295 2.275z'
+                  fill={theme.palette.primary.main} // Use the primary color from theme
+                />
               </g>
             </svg>
             <Typography
@@ -306,7 +280,8 @@ const RegisterPage = () => {
                 lineHeight: 1,
                 fontWeight: 600,
                 textTransform: 'uppercase',
-                fontSize: '1.5rem !important'
+                fontSize: '1.5rem !important',
+                marginTop: '10px'
               }}
             >
               {themeConfig.templateName}
@@ -314,7 +289,7 @@ const RegisterPage = () => {
           </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Adventure starts here 🚀
+              Start your Registration here
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
@@ -531,7 +506,7 @@ const RegisterPage = () => {
           </form>
 
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button variant='contained' color='inherit' disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
+            <Button variant='contained' disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
               Previous Step
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />

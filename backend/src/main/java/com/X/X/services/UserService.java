@@ -1,11 +1,14 @@
 package com.X.X.services;
 import com.X.X.config.ResourceNotFoundException;
+import com.X.X.domains.LoginLog;
 import com.X.X.domains.PasswordReset;
 import com.X.X.dto.*;
+import com.X.X.repositories.LoginLogRepository;
 import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.token.TokenServices;
 import com.X.X.domains.User;
 import com.X.X.help.Status;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +28,9 @@ import java.util.UUID;
 @Service
 public record UserService(UserRepository userRepo,
                           PasswordEncoder passwordEncoder,
-                          TokenServices tokenServices, EmailService emailService, PasswordResetRepository passwordResetRepository) {
+                          TokenServices tokenServices, EmailService emailService, PasswordResetRepository passwordResetRepository,
+                          LoginLogRepository loginLogRepository,  HttpServletRequest request) {
+
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
@@ -45,7 +51,7 @@ public record UserService(UserRepository userRepo,
     public RegisterResponse register(RegisterDTO registerDTO) {
         // Check if a user with the same username already exists
         if (userRepo.findByUsername(registerDTO.getUsername()) != null || userRepo.findByEmail(registerDTO.getEmail()) != null) {
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Exists");
         }
 
         // Register the new user
@@ -64,13 +70,14 @@ public record UserService(UserRepository userRepo,
                 .city(registerDTO.getCity())
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(true)
+                .isLinkedToTeamGroup(false)
                 .build();
         try {
             userRepo.save(newUser);
-            return new RegisterResponse(Status.OK);
+            return new RegisterResponse(Status.OK, "Saved");
         } catch (Exception e) {
             System.out.println(e);
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 
@@ -153,6 +160,7 @@ public record UserService(UserRepository userRepo,
         user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
+        user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
 
         return userRepo.save(user);
     }
@@ -179,6 +187,8 @@ public record UserService(UserRepository userRepo,
         user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
+        user.setProductFormType(userDetails.getProductFormType());
+        user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
 
         return userRepo.save(user);
     }
@@ -194,7 +204,7 @@ public record UserService(UserRepository userRepo,
     }
 
     public List<User> getAllUserForAccount(UUID accountId) {
-        return userRepo.findAllByAccountId(accountId);
+        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId);
     }
 
     public User getUserByUserId(UUID userId) {
@@ -217,7 +227,7 @@ public record UserService(UserRepository userRepo,
     public RegisterResponse registerOrganisationUser(RegisterDTO registerDTO, UUID accountId) {
         // Check if a user with the same username already exists
         if (userRepo.findByUsername(registerDTO.getUsername()) != null || userRepo.findByEmail(registerDTO.getEmail()) != null) {
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Exists");
         }
 
         // Register the new user
@@ -235,18 +245,46 @@ public record UserService(UserRepository userRepo,
                 .postalCode(registerDTO.getPostalCode())
                 .city(registerDTO.getCity())
                 .phoneNumber(registerDTO.getPhoneNumber())
-                .accountRole(true)
+                .accountRole(registerDTO.isAccountRole())
+                .isLinkedToTeamGroup(true)
                 .build();
         try {
             userRepo.save(newUser);
-            return new RegisterResponse(Status.OK);
+            return new RegisterResponse(Status.OK, "Ok");
         } catch (Exception e) {
             System.out.println(e);
-            return new RegisterResponse(Status.FAILED);
+            return new RegisterResponse(Status.FAILED, "Error");
         }
     }
 
+    public void performLogin(String username) {
+        String userIp = request.getHeader("X-Forwarded-For");
+        if (userIp == null || userIp.isEmpty() || "unknown".equalsIgnoreCase(userIp)) {
+            userIp = request.getRemoteAddr();
+        }
 
+        LocalDateTime loginTime = LocalDateTime.now();
+        String userAgent = request.getHeader("User-Agent");
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+
+        LoginLog loginLog = LoginLog.builder()
+                .userEmail(username)
+                .userIp(userIp)
+                .loginTime(loginTime)
+                .userAgent(userAgent)
+                .requestTimestamp(requestTimestamp)
+                .build();
+
+        try {
+            loginLog.setResultStatus("SUCCESS");
+
+        } catch (Exception e) {
+            loginLog.setResultStatus("FAILED");
+            loginLog.setErrorDetails(e.getMessage());
+        }
+
+        loginLogRepository.save(loginLog);
+    }
 
 
 }

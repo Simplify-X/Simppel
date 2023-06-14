@@ -1,4 +1,5 @@
 // ** React Imports
+// @ts-nocheck
 import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
 
 // ** Next Import
@@ -20,11 +21,12 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/nextjs'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
+import { useUserData } from 'src/@core/hooks/useUserData'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -41,7 +43,19 @@ const UserDropdown = () => {
 
   // ** Hooks
   const router = useRouter()
-  const { response, error, post } = useCustomApiHook()
+  const { response, error, post, get } = useCustomApiHook()
+  const { userId } = useUserData()
+  const [data, setData] = useState([])
+
+
+  useEffect(() => {
+    if (userId) fetchSingleUser()
+  }, [userId])
+
+  const fetchSingleUser = async () => {
+    const response = await get(`/users/getSingleUser/${userId}`)
+    response?.data && setData(response.data)
+  }
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -96,7 +110,7 @@ const UserDropdown = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Avatar
-          alt='John Doe'
+          alt={data?.firstName + ' ' + data?.lastName}
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
           src='/images/avatars/1.png'
@@ -117,10 +131,10 @@ const UserDropdown = () => {
               badgeContent={<BadgeContentSpan />}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+              <Avatar alt={data?.firstName + ' ' + data?.lastName} src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>John Doe</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{data?.firstName + ' ' + data?.lastName}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Admin
               </Typography>
@@ -140,14 +154,16 @@ const UserDropdown = () => {
             Inbox
           </Box>
         </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/product/tracker"); 
+                                                handleDropdownClose()}}>
           <Box sx={styles}>
-            <MessageOutline sx={{ marginRight: 2 }} />
-            Chat
+            <TroubleshootIcon sx={{ marginRight: 2 }} />
+            Product Tracker
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/account-settings/"); 
+                                                handleDropdownClose()}}>
           <Box sx={styles}>
             <CogOutline sx={{ marginRight: 2 }} />
             Settings

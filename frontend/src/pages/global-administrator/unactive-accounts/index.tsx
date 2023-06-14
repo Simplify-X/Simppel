@@ -14,12 +14,12 @@ const UnactiveAccounts = () => {
   const [accountLoading, setAccountLoading] = useState(true);
 
   const handleClick = rowData => {
-      router.push(`/global-administrator/users/view-user?id=${rowData}`)
+      router.push(`/global-administrator/users/view-user/${rowData}`)
   }
 
   const columns = [
     {
-      name: 'accountId',
+      name: 'userId',
       label: 'Id',
       options: {
         filter: true,

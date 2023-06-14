@@ -21,7 +21,8 @@ const Users = () => {
       label: 'Id',
       options: {
         filter: true,
-        sort: true
+        sort: true,
+        display: 'false'
       }
     },
     {
@@ -46,6 +47,14 @@ const Users = () => {
       options: {
         filter: true,
         sort: false
+      }
+    },
+    {
+      name: 'email',
+      label: 'Email',
+      options: {
+        filter: true,
+        sort: true
       }
     },
     {

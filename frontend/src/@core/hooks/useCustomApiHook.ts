@@ -15,9 +15,9 @@ interface UseCustomApiHookProps<T> {
   loading: boolean
   error: Error | null
   get: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>
-  post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<void>
-  put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<void>
-  del: (url: string, config?: AxiosRequestConfig) => Promise<void>
+  post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
+  put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
+  del: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
 }
 
 function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
@@ -47,20 +47,25 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
   }
 
   const post = async (url: string, data?: any, config?: AxiosRequestConfig) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axiosClient.post<T>(url, data, config)
-      handleResponse(res)
+      const res = await axiosClient.post<T>(url, data, config);
+      handleResponse(res);
+      
+      return res; // Return the response
     } catch (err) {
-      handleError(err)
+      handleError(err);
     }
-  }
+  };
+  
 
   const put = async (url: string, data?: any, config?: AxiosRequestConfig) => {
     setLoading(true)
     try {
       const res = await axiosClient.put<T>(url, data, config)
       handleResponse(res)
+
+      return res;
     } catch (err) {
       handleError(err)
     }
@@ -71,6 +76,8 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     try {
       const res = await axiosClient.delete<T>(url, config)
       handleResponse(res)
+
+      return res;
     } catch (err) {
       handleError(err)
     }
