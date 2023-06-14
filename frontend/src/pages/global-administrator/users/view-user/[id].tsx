@@ -224,6 +224,15 @@ const ViewUsers = () => {
                   }
                   label='Advertisement Import'
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.customTabEnabled}
+                      onChange={event => setData({ ...data, customTabEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Custom Tab'
+                />
               </Grid>
 
               <Grid item xs={12}>

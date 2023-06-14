@@ -160,6 +160,7 @@ public record UserService(UserRepository userRepo,
         user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
+        user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
 
         return userRepo.save(user);
     }
@@ -187,6 +188,7 @@ public record UserService(UserRepository userRepo,
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
         user.setProductFormType(userDetails.getProductFormType());
+        user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
 
         return userRepo.save(user);
     }
