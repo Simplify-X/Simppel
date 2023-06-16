@@ -251,21 +251,23 @@ const Search: React.FC = () => {
       // console.log(products.category_results, "products.category_results");
 
       // filters data by price
-      const filterProductData = await products.category_results?.filter(
-        data => data?.price?.value > filters?.price?.low && data?.price?.value < filters?.price?.high
-      )
+      let filterProductData
+
+      if (filters?.price?.low || filters?.price?.high) {
+        filterProductData = await products.category_results?.filter(
+          data => data?.price?.value > filters?.price?.low && data?.price?.value < filters?.price?.high
+        )
+      } else {
+        filterProductData = products.category_results
+      }
 
       // console.log(filterProductData, "filterProductData");
 
-      setProducts(filterProductData.length > 0 ? filterProductData : products.category_results)
+      setProducts(filterProductData)
 
       // Store filter information and search results in local storage
       filters && localStorage.setItem('filterData', JSON.stringify(filters))
-      products?.category_results &&
-        localStorage.setItem(
-          'productData',
-          JSON.stringify(filterProductData.length > 0 ? filterProductData : products.category_results)
-        )
+      products?.category_results && localStorage.setItem('productData', JSON.stringify(filterProductData))
 
       // Reset loading state
       setLoading(false)
@@ -337,10 +339,12 @@ const Search: React.FC = () => {
                     renderInput={params => <TextField {...params} label={t('marketplace')} />}
                   />
                 </Grid>
+
                 <Grid item>
                   <Autocomplete
                     multiple
-                    id='combo-box-demo'
+                    id='disable-close-on-select'
+                    disableCloseOnSelect
                     options={categories}
                     value={filters?.productCategory}
                     onChange={handleCategoryChange}
@@ -353,16 +357,18 @@ const Search: React.FC = () => {
                   item
                   sx={{
                     width: {
-                      xs: '88%',
-                      md: '30%'
+                      xs: '100%',
+                      sm: '88%',
+                      md: '30%',
+                      xl: '20%'
                     }
                   }}
                 >
                   <Box
                     sx={{
-                      border: `1px solid ${theme?.palette?.mode === 'dark' ? '#5e5e5e' : '#d3d3d3'}`,
+                      border: `1px solid ${theme?.palette?.mode === 'dark' ? '#54516d' : '#d3d3d3'}`,
                       borderRadius: '7px',
-                      padding: '0px 4px 0px 12px',
+                      padding: '0px 0px 0px 12px',
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'center',
@@ -370,8 +376,18 @@ const Search: React.FC = () => {
                       gap: 5
                     }}
                   >
-                    Price:
-                    <Box sx={{ marginTop: '3.7%' }}>
+                    <span
+                      style={{
+                        paddingBottom: {
+                          xs: '0px',
+                          md: '4px'
+                        },
+                        color: '#c6c6c6'
+                      }}
+                    >
+                      Price:
+                    </span>
+                    <Box sx={{ paddingTop: '3%' }}>
                       <Input
                         placeholder='Low'
                         name='low'
@@ -379,6 +395,7 @@ const Search: React.FC = () => {
                         onChange={handleFilterChange}
                         className={classes.textField}
                         sx={{ width: '35%' }}
+                        disableUnderline
                       />
                       <span style={{ margin: '0px 10px' }}>-</span>
                       <Input
@@ -390,6 +407,7 @@ const Search: React.FC = () => {
                         sx={{
                           width: '45%'
                         }}
+                        disableUnderline
                         endAdornment={
                           <InputAdornment position='end'>
                             <Tooltip title={t('enter_price_of_product')}>

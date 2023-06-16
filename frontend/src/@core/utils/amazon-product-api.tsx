@@ -11,7 +11,7 @@ interface ICategory {
   path: string
 }
 
-export const getCategoryID = async (categoriesName) => {
+export const getCategoryID = async categoriesName => {
   try {
     // const apiKey = process.env.NEXT_PUBLIC_API_KEY
     // const apiUrl = 'https://api.rainforestapi.com/categories'
@@ -24,12 +24,10 @@ export const getCategoryID = async (categoriesName) => {
 
     // const categories = response.data.categories
     const category = categories.filter((c: ICategory) => {
-
       return categoriesName.includes(c.name)
     })
 
     if (category) {
-
       return category.map(item => item.id)
     } else {
       console.error(`Category '${categoryName}' not found.`)
@@ -58,10 +56,11 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
       api_key: apiKey,
       type: 'category',
       amazon_domain: domain,
-      category_id: categoryID,
-      page: 2,
+      category_id: categoryID.join(','),
+      page: '1,2,3,4,5',
       max_page: 5,
-      limit: 100,
+    
+      // is_root: true,
       filters: {
         price: {
           min: minPrice,
@@ -82,6 +81,8 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
 
     // Handle the API response and extract the product data
     const products = response.data
+
+    // console.log(products)
 
     return products
   } catch (error) {
