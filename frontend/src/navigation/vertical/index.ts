@@ -1,5 +1,5 @@
 // ** Icon imports
-// @ts-nocheck// @ts-nocheck
+// @ts-nocheck
 import HomeOutline from 'mdi-material-ui/HomeOutline'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
 import AddIcon from '@mui/icons-material/Add'
@@ -21,6 +21,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -31,6 +32,7 @@ interface UserData {
   role?: string
   advertisementEnabled?: boolean
   accountId?: string
+  customTabEnabled?: boolean
 }
 
 const Navigation = (): VerticalNavItemsType=> {
@@ -39,8 +41,11 @@ const Navigation = (): VerticalNavItemsType=> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [userData, setUserData] = useState<UserData>({
     role: '',
-    advertisementEnabled: false
+    advertisementEnabled: false,
+    customTabEnabled: false
   })
+
+  const [customForms, setCustomForms] = useState<any[]>([]);
 
   const { error, get } = useCustomApiHook()
   const { token } = useUserData()
@@ -60,6 +65,7 @@ const Navigation = (): VerticalNavItemsType=> {
     // if (!userData?.data) throw new Error('Invalid token')
 
     userData?.data && setUserData(userData?.data as UserData)
+
   }
 
   useEffect(() => {
@@ -69,7 +75,44 @@ const Navigation = (): VerticalNavItemsType=> {
     }
   }, [error])
 
+
+  useEffect(() => {
+    userData?.accountId && fetchCustomForm()
+  }, [userData?.accountId])
+
+  const fetchCustomForm = async () => {
+    const res = await get(`/customForm/${userData?.accountId}`)
+    setCustomForms(res?.data);
+  }
+
+
   if(!userData.accountId) return null;
+
+
+  const generateCustomTabs = () => {
+    const activeCustomForms = customForms?.filter((form) => form.isActive);
+    const customTabs = [];
+  
+    if (userData.customTabEnabled) {
+      customTabs.push(
+        ...activeCustomForms.map((form) => ({
+          title: form.formName,
+          icon: HomeOutline,
+          path: `/dynamic-form/${form.id}`,
+        }))
+      );
+  
+      if (!userData.role && activeCustomForms.length > 0) {
+        customTabs.unshift({
+          sectionTitle: 'Custom',
+        });
+      }
+    }
+  
+    return customTabs;
+  };
+  
+  
 
   return [
     !userData.role && {
@@ -158,6 +201,15 @@ const Navigation = (): VerticalNavItemsType=> {
       icon: AccountCogOutline,
       path: '/account-settings'
     },
+
+    userData.customTabEnabled &&
+    !userData.role && {
+      title: 'Custom Form',
+      icon: DashboardCustomizeIcon,
+      path: '/custom-form'
+    },
+
+    ...generateCustomTabs(),
 
     userData.role && {
       sectionTitle: ' Management'
