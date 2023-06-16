@@ -275,6 +275,26 @@ const LoginPage = () => {
             </Snackbar>
           </form>
         </CardContent>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 2,
+            marginRight: 10,
+            marginBottom: 2
+          }}
+        >
+          <Button href='/terms-and-conditions' variant='text' size='small' sx={{ marginRight: 1 }}>
+            Terms and Conditions
+          </Button>
+          <Typography variant='body2' sx={{ marginRight: 1 }}>
+            |
+          </Typography>
+          <Button href='/privacy-policy' variant='text' size='small'>
+            Privacy Policy
+          </Button>
+        </Box>
       </Card>
       <FooterIllustrationsV1 />
     </Box>
