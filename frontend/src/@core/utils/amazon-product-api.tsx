@@ -1,7 +1,6 @@
 // @ts-nocheck
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import categories from './amazon-categories-data'
 
 interface ICategory {
   id: string
@@ -11,18 +10,29 @@ interface ICategory {
   path: string
 }
 
-export const getCategoryID = async categoriesName => {
+export const getCategoryID = async (categoriesName, domain) => {
   try {
-    // const apiKey = process.env.NEXT_PUBLIC_API_KEY
-    // const apiUrl = 'https://api.rainforestapi.com/categories'
-    // const response = await axios.get(apiUrl, {
-    //   params: {
-    //     api_key: apiKey,
-    //     domain: domain
-    //   }
-    // })
+    let categories
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY
 
-    // const categories = response.data.categories
+    const getCategoriesId = localStorage.getItem('categoriesId')
+    if (getCategoriesId) {
+      categories = JSON.parse(getCategoriesId)
+      // console.log(categories, 'from cookies')
+    } else {
+      const apiUrl = 'https://api.rainforestapi.com/categories'
+      const response = await axios.get(apiUrl, {
+        params: {
+          api_key: apiKey,
+          domain: domain
+        }
+      })
+
+      localStorage.setItem('categoriesId', JSON.stringify(response.data.categories))
+      categories = response.data.categories
+      // console.log(categories, 'from api')
+    }
+
     const category = categories.filter((c: ICategory) => {
       return categoriesName.includes(c.name)
     })
@@ -51,13 +61,13 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
       return [] // Return an empty array if the category ID is not found
     }
 
-    // console.log(categoryID.join(',') , "categoryID");
+    // console.log(categoryID.join(','), 'categoryID')
 
     const apiUrl = 'https://api.rainforestapi.com/request'
     const params = {
       api_key: apiKey,
       type: 'search',
-      search_term: "memory cards",
+      search_term: 'memory cards',
       amazon_domain: domain,
       category_id: categoryID,
       page: '1,2,3,4,5',
