@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { makeStyles } from '@mui/styles'
 import Cookies from 'js-cookie'
-import { Grid } from '@mui/material'
+import { Grid, Input, useTheme } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -73,9 +73,12 @@ const Search: React.FC = () => {
   const [data, setData] = useState([])
 
   const [filters, setFilters] = useState<any>({
-    productCategory: '',
+    productCategory: [],
     productKeywords: '',
-    price: '',
+    price: {
+      low: '',
+      high: ''
+    },
     sales: '',
     reviews: '',
     productWeight: '',
@@ -91,6 +94,7 @@ const Search: React.FC = () => {
   const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
   const [selectedValue, setSelectedValue] = useState('amazon')
   const { userId } = useUserData()
+  const theme = useTheme()
 
   const handleChangeForm = event => {
     setSelectedValue(event.target.value)
@@ -99,7 +103,6 @@ const Search: React.FC = () => {
   useEffect(() => {
     userId && fetchSingleUser()
   }, [userId])
-
 
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
@@ -115,7 +118,6 @@ const Search: React.FC = () => {
     }
   }, [data])
 
-
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
     if (savedFields) {
@@ -126,10 +128,8 @@ const Search: React.FC = () => {
     const savedFilterData = localStorage.getItem('filterData')
     const savedProductData = localStorage.getItem('productData')
 
-    if (savedFilterData && savedProductData) {
-      setFilters(JSON.parse(savedFilterData))
-      setProducts(JSON.parse(savedProductData))
-    }
+    savedFilterData && setFilters(JSON.parse(savedFilterData))
+    savedProductData && setProducts(JSON.parse(savedProductData))
   }, [])
 
   useEffect(() => {
@@ -173,10 +173,19 @@ const Search: React.FC = () => {
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [name]: value
-    }))
+
+    name === 'low' || name === 'high'
+      ? setFilters(prevFilters => ({
+          ...prevFilters,
+          price: {
+            ...filters.price,
+            [name]: value
+          }
+        }))
+      : setFilters(prevFilters => ({
+          ...prevFilters,
+          [name]: value
+        }))
   }
 
   const handleMarketPlaceChange = (event, value) => {
@@ -226,8 +235,8 @@ const Search: React.FC = () => {
       // Your existing code to fetch products
       const products = await getProductByCategory(
         filters.productCategory,
-        filters.price,
-        20,
+        filters.price?.low,
+        filters.price?.high,
         filters.reviews,
         filters.sales,
         marketplaceURL
@@ -238,11 +247,27 @@ const Search: React.FC = () => {
         ...prevFilters,
         ...filters
       }))
-      setProducts(products?.category_results)
+
+      // console.log(products.search_results, "products.search_results");
+
+      // filters data by price
+      let filterProductData
+
+      if (filters?.price?.low || filters?.price?.high) {
+        filterProductData = await products.search_results?.filter(
+          data => data?.price?.value > filters?.price?.low && data?.price?.value < filters?.price?.high
+        )
+      } else {
+        filterProductData = products.search_results
+      }
+
+      // console.log(filterProductData, "filterProductData");
+
+      setProducts(filterProductData)
 
       // Store filter information and search results in local storage
-      localStorage.setItem('filterData', JSON.stringify(filters))
-      localStorage.setItem('productData', JSON.stringify(products?.category_results))
+      filters && localStorage.setItem('filterData', JSON.stringify(filters))
+      products?.search_results && localStorage.setItem('productData', JSON.stringify(filterProductData))
 
       // Reset loading state
       setLoading(false)
@@ -265,6 +290,7 @@ const Search: React.FC = () => {
       <Helmet>
         <title>Simppel - Search Winning Products</title>
       </Helmet>
+
       <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
         <CardContent>
           <Box>
@@ -313,37 +339,87 @@ const Search: React.FC = () => {
                     renderInput={params => <TextField {...params} label={t('marketplace')} />}
                   />
                 </Grid>
+
                 <Grid item>
                   <Autocomplete
-                    disablePortal
-                    id='combo-box-demo'
+                    multiple
+                    id='disable-close-on-select'
+                    disableCloseOnSelect
                     options={categories}
-                    value={filters.productCategory}
+                    value={filters?.productCategory}
                     onChange={handleCategoryChange}
                     className={classes.textField}
                     sx={{ width: 280 }}
-                    renderInput={params => <TextField {...params} label={t('category')} />}
+                    renderInput={params => <TextField {...params} label={t('category')} placeholder='Add category' />}
                   />
                 </Grid>
-                <Grid item>
-                  <TextField
-                    label='Price'
-                    name='price'
-                    value={filters.price}
-                    onChange={handleFilterChange}
-                    className={classes.textField}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                          <Tooltip title={t('enter_price_of_product')}>
-                            <IconButton size='small'>
-                              <HelpOutlineIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      )
+                <Grid
+                  item
+                  sx={{
+                    width: {
+                      xs: '100%',
+                      sm: '88%',
+                      md: '30%',
+                      xl: '20%'
+                    }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      border: `1px solid ${theme?.palette?.mode === 'dark' ? '#54516d' : '#d3d3d3'}`,
+                      borderRadius: '7px',
+                      padding: '0px 0px 0px 12px',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 5
                     }}
-                  />
+                  >
+                    <span
+                      style={{
+                        paddingBottom: {
+                          xs: '0px',
+                          md: '4px'
+                        },
+                        color: '#c6c6c6'
+                      }}
+                    >
+                      Price:
+                    </span>
+                    <Box sx={{ paddingTop: '3%' }}>
+                      <Input
+                        placeholder='Low'
+                        name='low'
+                        value={filters.price?.low}
+                        onChange={handleFilterChange}
+                        className={classes.textField}
+                        sx={{ width: '35%' }}
+                        disableUnderline
+                      />
+                      <span style={{ margin: '0px 10px' }}>-</span>
+                      <Input
+                        placeholder='High'
+                        name='high'
+                        value={filters.price?.high}
+                        onChange={handleFilterChange}
+                        className={classes.textField}
+                        sx={{
+                          width: '45%'
+                        }}
+                        disableUnderline
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <Tooltip title={t('enter_price_of_product')}>
+                              <IconButton size='small'>
+                                <HelpOutlineIcon style={{ color: 'gray' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        }
+                      />
+                    </Box>
+                  </Box>
                 </Grid>
                 <Grid item>
                   <TextField
@@ -408,7 +484,15 @@ const Search: React.FC = () => {
               </Grid>
 
               {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
+                    margin: '50px 0px'
+                  }}
+                >
                   <CircularProgress />
                 </div>
               ) : (

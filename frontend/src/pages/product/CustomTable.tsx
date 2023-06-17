@@ -17,6 +17,7 @@ import { useUserData } from 'src/@core/hooks/useUserData'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { Snackbar } from '@mui/material'
 import { Alert } from '@mui/material'
+import { toast } from 'react-toastify'
 
 interface Column {
   id: 'image' | 'ratings_total' | 'rating' | 'unit_price'
@@ -114,6 +115,7 @@ export default function StickyHeadTable({ data }) {
     navigator.clipboard
       .writeText(text)
       .then(() => {
+        toast.success('Text copied to clipboard')
         console.log('Text copied to clipboard:', text)
 
         // You can show a success message or perform any other action here
@@ -197,8 +199,15 @@ export default function StickyHeadTable({ data }) {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => (
+                    
+                    // change table row value
                     <React.Fragment key={column.id}>
-                      {renderTitleCell(row[column.id], column.id, rowId, row)}
+                      {renderTitleCell(
+                        column.id === 'unit_price' ? `$${row?.price?.value ?? ""}` : row[column.id],
+                        column.id,
+                        rowId,
+                        row
+                      )}
                     </React.Fragment>
                   ))}
                 </TableRow>
@@ -210,7 +219,7 @@ export default function StickyHeadTable({ data }) {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'
-        count={productData?.length}
+        count={data?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
