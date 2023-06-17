@@ -248,17 +248,17 @@ const Search: React.FC = () => {
         ...filters
       }))
 
-      // console.log(products.category_results, "products.category_results");
+      // console.log(products.search_results, "products.search_results");
 
       // filters data by price
       let filterProductData
 
       if (filters?.price?.low || filters?.price?.high) {
-        filterProductData = await products.category_results?.filter(
+        filterProductData = await products.search_results?.filter(
           data => data?.price?.value > filters?.price?.low && data?.price?.value < filters?.price?.high
         )
       } else {
-        filterProductData = products.category_results
+        filterProductData = products.search_results
       }
 
       // console.log(filterProductData, "filterProductData");
@@ -267,7 +267,7 @@ const Search: React.FC = () => {
 
       // Store filter information and search results in local storage
       filters && localStorage.setItem('filterData', JSON.stringify(filters))
-      products?.category_results && localStorage.setItem('productData', JSON.stringify(filterProductData))
+      products?.search_results && localStorage.setItem('productData', JSON.stringify(filterProductData))
 
       // Reset loading state
       setLoading(false)

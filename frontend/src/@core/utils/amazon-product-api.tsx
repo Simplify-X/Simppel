@@ -45,22 +45,25 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
     const apiKey = process.env.NEXT_PUBLIC_API_KEY
     const categoryID = await getCategoryID(category, domain)
 
-    if (!categoryID) {
+    if (!categoryID?.length) {
       toast.error(`Category ${category} not found.`, { autoClose: 2000 })
 
       return [] // Return an empty array if the category ID is not found
     }
 
+    // console.log(categoryID.join(',') , "categoryID");
+
     const apiUrl = 'https://api.rainforestapi.com/request'
     const params = {
       api_key: apiKey,
-      type: 'category',
+      type: 'search',
+      search_term: "memory cards",
       amazon_domain: domain,
-      category_id: categoryID.join(','),
+      category_id: categoryID,
       page: '1,2,3,4,5',
       max_page: 5,
-    
-      // is_root: true,
+      include_html: true,
+      is_root: true,
       filters: {
         price: {
           min: minPrice,
@@ -82,7 +85,7 @@ export const getProductByCategory = async (category, minPrice, maxPrice, minRevi
     // Handle the API response and extract the product data
     const products = response.data
 
-    // console.log(products)
+    // console.log(products, "products")
 
     return products
   } catch (error) {
