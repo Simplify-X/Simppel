@@ -18,7 +18,6 @@ export const getCategoryID = async (categoriesName, domain) => {
     const getCategoriesId = localStorage.getItem('categoriesId')
     if (getCategoriesId) {
       categories = JSON.parse(getCategoriesId)
-      // console.log(categories, 'from cookies')
     } else {
       const apiUrl = 'https://api.rainforestapi.com/categories'
       const response = await axios.get(apiUrl, {
@@ -30,7 +29,6 @@ export const getCategoryID = async (categoriesName, domain) => {
 
       localStorage.setItem('categoriesId', JSON.stringify(response.data.categories))
       categories = response.data.categories
-      // console.log(categories, 'from api')
     }
 
     const category = categories.filter((c: ICategory) => {
