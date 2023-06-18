@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { CircularProgress } from '@mui/material'
 
 // import Cookies from 'js-cookie'
 import { IconButton } from '@mui/material'
@@ -38,6 +39,7 @@ const CustomFormTable = () => {
   const { response, error, del, get, post, put } = useCustomApiHook()
   const { accountId } = useUserData()
   const [isActive, setIsActive] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const handleOpen = () => {
     setOpen(true)
@@ -183,6 +185,7 @@ const CustomFormTable = () => {
   const fetchCustomForm = async () => {
     const res = await get(`/customForm/${accountId}`)
     setRole(res?.data)
+    setLoading(false)
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -237,6 +240,10 @@ const CustomFormTable = () => {
       setRole(updatedRole)
     }
   }, [response])
+
+  if (loading) {
+    return <CircularProgress />
+  }
 
   return (
     <>

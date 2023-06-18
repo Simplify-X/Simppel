@@ -22,6 +22,9 @@ import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import PagesIcon from '@mui/icons-material/Pages';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -115,98 +118,125 @@ const Navigation = (): VerticalNavItemsType=> {
   
 
   return [
-    !userData.role && {
-      title: t('dashboard'),
-      icon: HomeOutline,
-      path: '/'
-    },
+    // !userData.role && {
+    //   title: t('dashboard'),
+    //   icon: HomeOutline,
+    //   path: '/1'
+    // },
 
     !userData.role && {
       title: t('product_search'),
       icon: LocationSearchingIcon,
-      path: '/product/search'
+      path: '/',
     },
+
+
     
     userData.advertisementEnabled &&
       !userData.role && {
-        sectionTitle: 'Content'
+        sectionTitle: t('content')
       },
-    userData.advertisementEnabled &&
+
+      userData.advertisementEnabled &&
       !userData.role && {
-        title: t('add_advertisement'),
-        icon: AddIcon,
-        path: '/content/add'
+        title: t('advertisement'),
+        icon: PagesIcon,
+        path: '',
+        children: [ // The submenu items
+        {
+          title: t('add_advertisement'),
+          icon: AddIcon,
+          path: '/content/add'
+        },
+        {
+          title: t('view_advertisement'),
+          icon: VisibilityIcon,
+          path: '/content/view'
+        },      {
+          title: "Product Information",
+          icon: CategoryIcon,
+          path: '/content/product-details'
+        },
+      ]
       },
-    userData.advertisementEnabled &&
-      !userData.role && {
-        title: t('view_advertisement'),
+
+
+    !userData.role && {
+      sectionTitle: t('copy_writing')
+    },
+
+    !userData.role && {
+      title: t('copy_writing'),
+      icon: ArticleIcon,
+      path: '',
+      children: [ // The submenu items
+      {
+        title: t('create_copy'),
+        icon: NotesIcon,
+        path: '/writing/add'
+      },
+      {
+        title: t('view_copy'),
         icon: VisibilityIcon,
-        path: '/content/view'
+        path: '/writing/view'
       },
-    
-    userData.advertisementEnabled &&
-    !userData.role && {
-      title: "Product Information",
-      icon: CategoryIcon,
-      path: '/content/product-details'
+    ]
     },
 
     !userData.role && {
-      sectionTitle: 'Copy Writing'
+      sectionTitle: t('automation')
     },
 
     !userData.role && {
-      title: t('create_copy'),
-      icon: NotesIcon,
-      path: '/writing/add'
+      title: t('post_automation'),
+      icon: AutoModeIcon,
+      path: '',
+      children: [ // The submenu items
+      {
+        title: 'Create Post Automation',
+        icon: AlarmAddIcon,
+        path: '/automation/add'
+      },
+      {
+        title: 'View Automation',
+        icon: VisibilityIcon,
+        path: '/automation/view'
+      },
+    ]
     },
+
+
     !userData.role && {
-      title: t('view_copy'),
-      icon: VisibilityIcon,
-      path: '/writing/view'
+      sectionTitle: t('management')
     },
 
     !userData.role && {
-      sectionTitle: 'Automation'
-    },
-    !userData.role && {
-      title: 'Create Post Automation',
-      icon: AlarmAddIcon,
-      path: '/automation/add'
-    },
-    !userData.role && {
-      title: 'View Automation',
-      icon: VisibilityIcon,
-      path: '/automation/view'
-    },
-
-    !userData.role && {
-      sectionTitle: 'Management'
-    },
-
-    !userData.role && {
-      title: 'User Management',
-      icon: PersonAddAltIcon,
-      path: '/user-management'
-    },
-
-    !userData.role && {
-      title: 'Invite Team Members',
-      icon: GroupsIcon,
-      path: '/invite-team'
-    },
-
-    !userData.role && {
-      title: t('account_settings'),
-      icon: AccountCogOutline,
-      path: '/account-settings'
-    },
-
-    userData.customTabEnabled &&
-    !userData.role && {
-      title: 'Custom Form',
-      icon: DashboardCustomizeIcon,
-      path: '/custom-form'
+      title: t('management'),
+      icon: WorkspacesIcon,
+      openByDefault: true,
+      path: '',
+      children: [ // The submenu items
+      {
+        title: t('user_management'),
+        icon: PersonAddAltIcon,
+        path: '/user-management'
+      },
+      {
+        title: t('invite_team_members'),
+        icon: GroupsIcon,
+        path: '/invite-team'
+      },
+      {
+        title: t('account_settings'),
+        icon: AccountCogOutline,
+        path: '/account-settings'
+      },
+      {
+        title: t('custom_form'),
+        icon: DashboardCustomizeIcon,
+        path: '/custom-form'
+      },
+    ]
     },
 
     ...generateCustomTabs(),

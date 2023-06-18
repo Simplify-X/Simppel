@@ -8,12 +8,14 @@ import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import { CircularProgress } from '@mui/material'
 
 const UserManagement = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
   const { get } = useCustomApiHook()
   const { accountId } = useUserData()
+  const [loading, setLoading] = useState(true)
 
   const handleClick = ( rowData ) => {
     router.push(`/user-management/edit/${rowData}`)
@@ -91,6 +93,11 @@ const UserManagement = () => {
   const fetchUserForAccount = async () => {
     const getUsersForAccount = await get(`/users/getUserForAccount/${accountId}`)
     setRole(getUsersForAccount?.data)
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <CircularProgress />
   }
 
   return (

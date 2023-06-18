@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { toast } from 'react-toastify'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import { CircularProgress } from '@mui/material'
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -37,6 +38,7 @@ const InviteTeam = () => {
   const [recordId, setRecordId] = useState('')
   const { response, error, del, get, post, put } = useCustomApiHook()
   const { accountId } = useUserData()
+  const [loading, setLoading] = useState(true)
 
 
   const handleOpen = () => {
@@ -160,6 +162,7 @@ const InviteTeam = () => {
   const fecthGroupData = async () => {
     const res = await get(`/groups/${accountId}`)
     setRole(res?.data)
+    setLoading(false)
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -214,6 +217,10 @@ const InviteTeam = () => {
       setRole(updatedRole)
     }
   }, [response])
+
+  if (loading) {
+    return <CircularProgress />
+  }
 
   return (
     <>

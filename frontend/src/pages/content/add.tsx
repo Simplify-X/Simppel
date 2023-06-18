@@ -43,6 +43,7 @@ import Tooltip from '@mui/material/Tooltip'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import { Helmet } from 'react-helmet'
+import { CircularProgress } from '@mui/material'
 
 
 const ITEM_HEIGHT = 48
@@ -100,7 +101,7 @@ const Content = () => {
   const [limit, setLimit] = useState(10)
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const { t } = useTranslation()
-
+  const [loading, setLoading] = useState(true)
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
   const [selectedLanguage, setSelectedLanguage] = useState('')
@@ -173,6 +174,7 @@ const Content = () => {
       setData(response.data)
       const advertisementLimit = response.data?.advertisementLimit
       advertisementLimit && setLimit(advertisementLimit)
+      setLoading(false)
     }
   }
 
@@ -243,6 +245,10 @@ const Content = () => {
       toast.error('An error occurred. Please try again later', { autoClose: 3000 })
     }
   }, [response, error])
+
+  if (loading) {
+    return <CircularProgress />
+  }
 
   return (
     <form onSubmit={submitForm}>

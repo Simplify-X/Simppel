@@ -161,7 +161,7 @@ const TabAccount = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={12}>
             <InputLabel>Default Option</InputLabel>
               <RadioGroup
                 disabled={!editable}
@@ -172,6 +172,20 @@ const TabAccount = () => {
               >
                 <FormControlLabel disabled={!editable} value='amazon' control={<Radio />} label='Amazon' />
                 <FormControlLabel disabled={!editable} value='dropshipping' control={<Radio />} label='Dropshipping' />
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+            <InputLabel>Tab Settings</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultTabOpen'
+                value={selectedValue}
+                onChange={e => setUserData({ ...userData, status: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='true' control={<Radio />} label='Tabs Open By Default' />
+                <FormControlLabel disabled={!editable} value='false' control={<Radio />} label='Tab Closed By Default' />
               </RadioGroup>
             </Grid>
 

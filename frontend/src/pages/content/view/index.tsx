@@ -10,10 +10,12 @@ import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import * as Sentry from '@sentry/nextjs'
 import { API_BASE_URL } from 'src/config'
+import { CircularProgress } from '@mui/material'
 
 const ViewContent = () => {
   const [content, setContent] = useState([])
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
 
   const columns = [
     {
@@ -106,6 +108,7 @@ const ViewContent = () => {
           .then(response => response.json())
           .then(data => {
             setContent(data)
+            setLoading(false)
           })
       })
       .catch(error => {
@@ -117,6 +120,10 @@ const ViewContent = () => {
   const sortedArray = [...content].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
+
+  if (loading) {
+    return <CircularProgress />
+  }
 
   return (
     <Box sx={{ width: '100%' }}>

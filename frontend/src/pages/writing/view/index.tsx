@@ -6,6 +6,7 @@ import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import { CircularProgress } from '@mui/material'
 
 //import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
@@ -13,7 +14,7 @@ const Copy = () => {
   const [copy, setCopy] = useState([])
   const router = useRouter()
   const {  get } = useCustomApiHook()
-
+  const [loading, setLoading] = useState(true)
   const { accountId } = useUserData()
 
 
@@ -84,12 +85,16 @@ const Copy = () => {
     const copyWritingData = await get(`/copyWriting/${accountId}`);
     console.log(copyWritingData)
     setCopy(copyWritingData.data)
+    setLoading(false)
   }
 
   const sortedArray = [...copy].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 
+  if (loading) {
+    return <CircularProgress />
+  }
 
   return <MUIDataTable title={'Copy List'} data={sortedArray} columns={columns} options={options} />
 }
