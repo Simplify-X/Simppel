@@ -111,7 +111,6 @@ const Search: React.FC = () => {
   useEffect(() => {
     if (data && data.formType) {
       setSelectedValue(data.productFormType)
-      setLoadings(false)
     }
   }, [data])
 
@@ -129,6 +128,10 @@ const Search: React.FC = () => {
     if (savedFilterData && savedProductData) {
       setFilters(JSON.parse(savedFilterData))
       setProducts(JSON.parse(savedProductData))
+      setLoadings(false)
+    }
+    else{
+      setLoadings(false)
     }
   }, [])
 
@@ -256,7 +259,7 @@ const Search: React.FC = () => {
     }
   }
 
-  if (!loadings) {
+  if (loadings) {
     return <CircularProgress />
   }
 
