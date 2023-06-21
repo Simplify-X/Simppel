@@ -35,13 +35,19 @@ async function refreshEbayToken() {
   tokenExpiration = Date.now() + data.expires_in * 1000;
 }
 
-app.get('/api/search', async (req, res) => {
+// Middleware to verify the API key
+function verifyAPIKey(req, res, next) {
   const apiKey = req.headers.authorization;
 
   if (!apiKey || apiKey !== process.env.API_KEY) {
     return res.status(401).send('Unauthorized');
   }
 
+  next();
+}
+
+// API route
+app.get('/api/search', verifyAPIKey, async (req, res) => {
   const { q, limit = 10, freeShipping, minPrice, maxPrice, sort, location } = req.query;
   let url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${q}&limit=${limit}`;
 
@@ -75,5 +81,9 @@ app.get('/api/search', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data from eBay API.' });
   }
 });
+
+// Refresh eBay access token initially
+refreshEbayToken();
+
 
 module.exports = app;
