@@ -1,7 +1,7 @@
-
 const express = require('express');
 const axios = require('axios');
 const fetch = require('node-fetch');
+
 const app = express();
 
 // Token variables
@@ -19,9 +19,9 @@ async function refreshEbayToken() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Basic ${auth}`
+      Authorization: `Basic ${auth}`,
     },
-    body: `grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope`
+    body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope',
   });
 
   const data = await response.json();
@@ -35,7 +35,7 @@ async function refreshEbayToken() {
   tokenExpiration = Date.now() + data.expires_in * 1000;
 }
 
-app.get('/search', async (req, res) => {
+app.get('/api/search', async (req, res) => {
   // Check if there's a valid access token, if not, refresh it
   if (!accessToken || Date.now() > tokenExpiration) {
     try {
@@ -70,7 +70,7 @@ app.get('/search', async (req, res) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
-      }
+      },
     });
 
     res.json(response.data);
@@ -80,8 +80,4 @@ app.get('/search', async (req, res) => {
   }
 });
 
-
-
-
 module.exports = app;
-
