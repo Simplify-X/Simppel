@@ -36,14 +36,10 @@ async function refreshEbayToken() {
 }
 
 app.get('/api/search', async (req, res) => {
-  // Check if there's a valid access token, if not, refresh it
-  if (!accessToken || Date.now() > tokenExpiration) {
-    try {
-      await refreshEbayToken();
-    } catch (err) {
-      console.error(err);
-      return res.status(500).send('Failed to refresh eBay token.');
-    }
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey || apiKey !== process.env.API_KEY) {
+    return res.status(401).send('Unauthorized');
   }
 
   const { q, limit = 10, freeShipping, minPrice, maxPrice, sort, location } = req.query;
