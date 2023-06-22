@@ -90,6 +90,25 @@ app.get('/api/search', verifyAPIKey, async (req, res) => {
   }
 });
 
+app.get('/api/item/:itemId', verifyAPIKey, async (req, res) => {
+  const { itemId } = req.params;
+
+  try {
+    const response = await axios.get(`https://api.ebay.com/buy/browse/v1/item/${itemId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).json({ error: 'An error occurred while fetching item data from eBay API.' });
+  }
+});
+
+
 // Refresh eBay access token initially
 refreshEbayToken();
 
