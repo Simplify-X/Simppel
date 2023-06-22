@@ -46,6 +46,17 @@ function verifyAPIKey(req, res, next) {
   next();
 }
 
+// Middleware to set CORS headers
+function setCORSHeaders(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  next();
+}
+
+// Apply the CORS headers middleware to all routes
+app.use(setCORSHeaders);
+
 // API route
 app.get('/api/search', verifyAPIKey, async (req, res) => {
   const { q, limit = 10, freeShipping, minPrice, maxPrice, sort, location } = req.query;
@@ -84,6 +95,5 @@ app.get('/api/search', verifyAPIKey, async (req, res) => {
 
 // Refresh eBay access token initially
 refreshEbayToken();
-
 
 module.exports = app;
