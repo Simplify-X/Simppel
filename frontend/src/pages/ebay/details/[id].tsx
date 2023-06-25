@@ -12,6 +12,7 @@ import {
   Divider,
   CardContent,
   CircularProgress,
+  IconButton
 } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useUserData } from 'src/@core/hooks/useUserData'
@@ -22,6 +23,8 @@ import { Helmet } from 'react-helmet'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import moment from 'moment'
+import { SaveAlt } from '@mui/icons-material'
+import JSZip from 'jszip'
 
 interface ResponseData {
   id?: string
@@ -34,6 +37,7 @@ const ProductDetail: React.FC = () => {
   const { post } = useCustomApiHook()
   const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   const handleGoBack = () => {
     router.push('/ebay/search/')
@@ -45,6 +49,26 @@ const ProductDetail: React.FC = () => {
     } else {
       alert('No product selected')
     }
+  }
+
+  const handleDownloadImages = async () => {
+    const zip = new JSZip()
+
+    const folder = zip.folder('images')
+
+    product?.additionalImages.forEach((image, index) => {
+      folder.file(
+        `image_${index + 1}.jpg`,
+        fetch(image.imageUrl).then(response => response.blob())
+      )
+    })
+
+    const content = await zip.generateAsync({ type: 'blob' })
+
+    const downloadLink = document.createElement('a')
+    downloadLink.href = URL.createObjectURL(content)
+    downloadLink.download = 'images.zip'
+    downloadLink.click()
   }
 
   async function handleGenerateAdvert(event: React.FormEvent<HTMLFormElement>) {
@@ -102,31 +126,54 @@ const ProductDetail: React.FC = () => {
         <title>View Ebay Product</title>
       </Helmet>
       <Grid container spacing={10}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={4} sm={4}>
           <Card>
-            <CardHeader title='Product Images' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader
+              title='Product Images'
+              titleTypographyProps={{ variant: 'h6' }}
+              action={
+                <Tooltip title={'Download all images for this product'}>
+                  <IconButton onClick={handleDownloadImages}>{<SaveAlt />}</IconButton>
+                </Tooltip>
+              }
+            />
             <Divider />
             <CardContent>
-              {product?.length > 0 ? (
-                <CircularProgress />
-              ) : (
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Carousel showArrows={true} showThumbs={false}>
-                      {product?.additionalImages.map((image, index) => (
-                        <div key={index}>
-                          <img
-                            src={image.imageUrl}
-                            alt={`Additional Image ${index + 1}`}
-                            style={{ maxWidth: '400px', height: '500px' }}
-                          />
-                        </div>
-                      ))}
-                    </Carousel>
-                  </Grid>
-                </Grid>
-              )}
-            </CardContent>
+  {product?.length > 0 ? (
+    <CircularProgress />
+  ) : (
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Carousel showArrows={true} showThumbs={false} selectedItem={selectedImageIndex}>
+          {product?.additionalImages.map((image, index) => (
+            <div key={index}>
+              <img
+                src={image.imageUrl}
+                alt={`Additional Image ${index + 1}`}
+                style={{ maxWidth: '400px', maxHeight: '500px', width: 'auto', height: 'auto' }}
+              />
+            </div>
+          ))}
+        </Carousel>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={2} justifyContent="center">
+          {product?.additionalImages.map((image, index) => (
+            <Grid item key={index}>
+              <img
+                src={image.imageUrl}
+                alt={`Additional Image ${index + 1}`}
+                style={{ width: '80px', height: '80px', cursor: 'pointer' }}
+                onClick={() => setSelectedImageIndex(index)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
+    </Grid>
+  )}
+</CardContent>
+
           </Card>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -185,25 +232,20 @@ const ProductDetail: React.FC = () => {
                   <Grid item xs={6}>
                     <Typography variant='caption'>Cost Type</Typography>
                     <Typography variant='body1'>
-                      {product.shippingOptions
-                        .map((shippingOption: { shippingOption: any }) => shippingOption.shippingCostType)
-                        .join(', ')
-                        ? product.shippingOptions
-                            .map((shippingOption: { shippingOption: any }) => shippingOption.shippingCostType)
-                            .join(', ')
-                        : '-'}
+                      {product?.shippingOptions
+                        ?.map((shippingOption: { shippingOption: any }) => shippingOption.shippingCostType)
+                        .join(', ') ?? '-'}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant='caption'>Shipping price</Typography>
                     <Typography variant='body1'>
-                      {product.shippingOptions
-                        .map((shippingOption: { shippingOption: any }) => shippingOption.shippingCost)
-                        .join(', ')
-                        ? product.shippingOptions
-                            .map((shippingOption: { shippingOption: any }) => shippingOption.shippingCost?.value)
-                            .join(', ')
-                        : '-'}
+                      {product?.shippingOptions
+                        ?.map(
+                          (shippingOption: { shippingOption: any }) =>
+                            shippingOption.shippingCost.currency + ' ' + shippingOption.shippingCost.value
+                        )
+                        .join(', ') ?? '-'}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>

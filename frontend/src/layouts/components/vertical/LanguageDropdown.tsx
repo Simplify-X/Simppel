@@ -8,6 +8,10 @@ import Select from '@mui/material/Select';
 import en from '../../../locales/en/common';
 import de from '../../../locales/de/common';
 import bg from '../../../locales/bg/common';
+import ar from '../../../locales/ar/common';
+import es from '../../../locales/es/common';
+import fr from '../../../locales/fr/common';
+import ru from '../../../locales/ru/common';
 import i18n from '../../../i18n'; //@ts-ignore
 import * as Sentry from '@sentry/nextjs';
 import { useUserData } from 'src/@core/hooks/useUserData';
@@ -57,10 +61,16 @@ function LanguageDropdown() {
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <FormControl variant='standard' sx={{ minWidth: 80 }}>
         <Select value={i18n.language} onChange={handleChange} displayEmpty inputProps={{ 'aria-label': 'Language' }}>
-          <MenuItem value='en'>
+        <MenuItem value='ar'>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Flag code='us' height={16} />
-              <span style={{ marginLeft: 10 }}>{en.languageName}</span>
+              <Flag code='sa' height={16} />
+              <span style={{ marginLeft: 10 }}>{ar.languageName}</span>
+            </div>
+          </MenuItem>
+          <MenuItem value='bg'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Flag code='bg' height={16} />
+              <span style={{ marginLeft: 10 }}>{bg.languageName}</span>
             </div>
           </MenuItem>
           <MenuItem value='de'>
@@ -69,10 +79,28 @@ function LanguageDropdown() {
               <span style={{ marginLeft: 10 }}>{de.languageName}</span>
             </div>
           </MenuItem>
-          <MenuItem value='bg'>
+          <MenuItem value='en'>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Flag code='bg' height={16} />
-              <span style={{ marginLeft: 10 }}>{bg.languageName}</span>
+              <Flag code='us' height={16} />
+              <span style={{ marginLeft: 10 }}>{en.languageName}</span>
+            </div>
+          </MenuItem>
+          <MenuItem value='fr'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Flag code='fr' height={16} />
+              <span style={{ marginLeft: 10 }}>{fr.languageName}</span>
+            </div>
+          </MenuItem>
+          <MenuItem value='ru'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Flag code='ru' height={16} />
+              <span style={{ marginLeft: 10 }}>{ru.languageName}</span>
+            </div>
+          </MenuItem>
+          <MenuItem value='es'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Flag code='es' height={16} />
+              <span style={{ marginLeft: 10 }}>{es.languageName}</span>
             </div>
           </MenuItem>
         </Select>
