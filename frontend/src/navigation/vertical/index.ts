@@ -25,6 +25,7 @@ import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import PagesIcon from '@mui/icons-material/Pages';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
+import SearchIcon from '@mui/icons-material/Search';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -130,6 +131,24 @@ const Navigation = (): VerticalNavItemsType=> {
       path: '/',
     },
 
+
+    !userData.role && {
+        sectionTitle: 'Product Spy Hunter'
+    },
+
+    !userData.role && {
+      title: 'Spy Tools',
+      icon: ArticleIcon,
+      openByDefault: true,
+      path: '',
+      children: [
+      {
+        title: 'Ebay Spy Tool',
+        icon: SearchIcon,
+        path: '/ebay/search'
+      },
+    ],
+    },
 
     
     userData.advertisementEnabled &&

@@ -100,6 +100,7 @@ const ViewContent = () => {
           return response.json()
         } else {
           // Token not valid, redirect to login page
+          window.location.replace('/login')
           throw new Error('Invalid token')
         }
       })
