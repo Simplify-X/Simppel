@@ -25,7 +25,7 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/nextjs'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot'
 import { useUserData } from 'src/@core/hooks/useUserData'
 
 // ** Styled Components
@@ -46,7 +46,6 @@ const UserDropdown = () => {
   const { response, error, post, get } = useCustomApiHook()
   const { userId } = useUserData()
   const [data, setData] = useState([])
-
 
   useEffect(() => {
     if (userId) fetchSingleUser()
@@ -86,6 +85,19 @@ const UserDropdown = () => {
     error && Sentry.captureException(error)
   }, [response, error])
 
+  const getInitials = (firstName, lastName) => {
+    const firstInitial = firstName ? firstName.charAt(0) : ''
+    const lastInitial = lastName ? lastName.charAt(0) : ''
+
+    return firstInitial + lastInitial
+  }
+
+  const getRandomColor = () => {
+    const colors = ['#804BDF']
+
+    return colors[Math.floor(Math.random() * colors.length)]
+  }
+
   const styles = {
     py: 2,
     px: 4,
@@ -112,9 +124,16 @@ const UserDropdown = () => {
         <Avatar
           alt={data?.firstName + ' ' + data?.lastName}
           onClick={handleDropdownOpen}
-          sx={{ width: 40, height: 40 }}
-          src='/images/avatars/1.png'
-        />
+          sx={{
+            width: 40,
+            height: 40,
+            backgroundColor: getRandomColor(),
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }}
+        >
+          {getInitials(data?.firstName, data?.lastName)}
+        </Avatar>
       </Badge>
       <Menu
         anchorEl={anchorEl}
@@ -131,7 +150,18 @@ const UserDropdown = () => {
               badgeContent={<BadgeContentSpan />}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <Avatar alt={data?.firstName + ' ' + data?.lastName} src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+              <Avatar
+                alt={data?.firstName + ' ' + data?.lastName}
+                sx={{
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  backgroundColor: getRandomColor(),
+                  fontSize: '1rem',
+                  fontWeight: 'bold'
+                }}
+              >
+                {getInitials(data?.firstName, data?.lastName)}
+              </Avatar>
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>{data?.firstName + ' ' + data?.lastName}</Typography>
@@ -154,16 +184,26 @@ const UserDropdown = () => {
             Inbox
           </Box>
         </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/product/tracker"); 
-                                                handleDropdownClose()}}>
+        <MenuItem
+          sx={{ p: 0 }}
+          onClick={() => {
+            router.push('/product/tracker')
+            handleDropdownClose()
+          }}
+        >
           <Box sx={styles}>
             <TroubleshootIcon sx={{ marginRight: 2 }} />
             Product Tracker
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => {router.push("/account-settings/"); 
-                                                handleDropdownClose()}}>
+        <MenuItem
+          sx={{ p: 0 }}
+          onClick={() => {
+            router.push('/account-settings/')
+            handleDropdownClose()
+          }}
+        >
           <Box sx={styles}>
             <CogOutline sx={{ marginRight: 2 }} />
             Settings

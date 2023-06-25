@@ -133,17 +133,17 @@ const Navigation = (): VerticalNavItemsType=> {
 
 
     !userData.role && {
-        sectionTitle: 'Product Spy Hunter'
+        sectionTitle: t('product_spy')
     },
 
     !userData.role && {
-      title: 'Spy Tools',
+      title: t('spy_tools'),
       icon: ArticleIcon,
       openByDefault: true,
       path: '',
       children: [
       {
-        title: 'Ebay Spy Tool',
+        title: t('ebay_spy_tools'),
         icon: SearchIcon,
         path: '/ebay/search'
       },
