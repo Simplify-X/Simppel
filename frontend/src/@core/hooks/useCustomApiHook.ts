@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import axiosClient from 'src/config'
+import axiosClientEbay from 'src/configEbay'
 
 interface Response<T> {
   data: T
@@ -14,6 +15,7 @@ interface UseCustomApiHookProps<T> {
   response: Response<T> | null
   loading: boolean
   error: Error | null
+  getMiranda: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>
   get: (url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>
   post: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
   put: (url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T, any> | undefined>;
@@ -39,6 +41,17 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     setLoading(true)
     try {
       const res = await axiosClient.get<T>(url, config)
+      
+      return res
+    } catch (err) {
+      handleError(err)
+    }
+  }
+
+  const getMiranda = async (url: string, config?: AxiosRequestConfig) => {
+    setLoading(true)
+    try {
+      const res = await axiosClientEbay.get<T>(url, config)
       
       return res
     } catch (err) {
@@ -88,6 +101,7 @@ function useCustomApiHook<T>(): UseCustomApiHookProps<T> {
     loading,
     error,
     get,
+    getMiranda,
     post,
     put,
     del

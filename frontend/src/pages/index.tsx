@@ -35,6 +35,9 @@ import DropshippingCard from './product/DropshippingCard' // Import the Dropship
 import { useUserData } from 'src/@core/hooks/useUserData'
 import Divider from '@mui/material/Divider'
 import { Helmet } from 'react-helmet'
+import Loader from 'src/@core/components/ui/Loader'
+import authRoute from 'src/@core/utils/auth-route'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles({
   textField: {
@@ -66,6 +69,7 @@ const marketPlaceData = [
 ]
 
 const Search: React.FC = () => {
+  const router = useRouter()
   const classes = useStyles()
   const { get } = useCustomApiHook()
   const apiKey = process.env.NEXT_PUBLIC_API_KEY
@@ -100,7 +104,6 @@ const Search: React.FC = () => {
     userId && fetchSingleUser()
   }, [userId])
 
-
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
     if (response?.data) {
@@ -113,7 +116,6 @@ const Search: React.FC = () => {
       setSelectedValue(data.productFormType)
     }
   }, [data])
-
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -129,8 +131,7 @@ const Search: React.FC = () => {
       setFilters(JSON.parse(savedFilterData))
       setProducts(JSON.parse(savedProductData))
       setLoadings(false)
-    }
-    else{
+    } else {
       setLoadings(false)
     }
   }, [])
@@ -263,215 +264,229 @@ const Search: React.FC = () => {
     return <CircularProgress />
   }
 
-  return (
-    <div>
-      <Helmet>
-        <title>Simppel - Search Winning Products</title>
-      </Helmet>
-      <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
-        <CardContent>
-          <Box>
-            <FormControl component='fieldset'>
-              <FormLabel component='legend' style={{ marginTop: 20 }}>
-                <span style={{ marginRight: 8 }}>{t('search_type')}</span>
-                <IconButton>
-                  <AcUnitIcon />
-                </IconButton>
-              </FormLabel>
-              <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
-                <FormControlLabel
-                  value='amazon'
-                  control={<Radio checked={selectedValue === 'amazon'} />}
-                  label={t('amazon_product')}
-                />
-                <FormControlLabel
-                  value='dropshipping'
-                  control={<Radio checked={selectedValue === 'dropshipping'} />}
-                  label={t('dropship_product')}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Box>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
-          {selectedValue === 'amazon' && (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
-                <IconButton className={classes.filterButton} onClick={handleAddFieldsClick}>
-                  <FilterListIcon />
-                </IconButton>
-              </div>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Autocomplete
-                    disablePortal
-                    id='combo-box-demo'
-                    options={marketPlaceData}
-                    value={filters.productMarketPlace}
-                    onInputChange={handleMarketPlaceChange}
-                    sx={{ width: 300 }}
-                    className={classes.textField}
-                    renderInput={params => <TextField {...params} label={t('marketplace')} />}
-                  />
-                </Grid>
-                <Grid item>
-                  <Autocomplete
-                    disablePortal
-                    id='combo-box-demo'
-                    options={categories}
-                    value={filters.productCategory}
-                    onChange={handleCategoryChange}
-                    className={classes.textField}
-                    sx={{ width: 280 }}
-                    renderInput={params => <TextField {...params} label={t('category')} />}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                    label='Price'
-                    name='price'
-                    value={filters.price}
-                    onChange={handleFilterChange}
-                    className={classes.textField}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                          <Tooltip title={t('enter_price_of_product')}>
-                            <IconButton size='small'>
-                              <HelpOutlineIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                    label='Reviews'
-                    name='reviews'
-                    value={filters.reviews}
-                    onChange={handleFilterChange}
-                    className={classes.textField}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                          <Tooltip title={t('enter_amount_of_reviews')}>
-                            <IconButton size='small'>
-                              <HelpOutlineIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                    label='Est Sales'
-                    name='sales'
-                    value={filters.sales}
-                    onChange={handleFilterChange}
-                    className={classes.textField}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                          <Tooltip title={t('enter_estimated_sales_of_product')}>
-                            <IconButton size='small'>
-                              <HelpOutlineIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
+  if (!data?.accountId) return <Loader />
 
-                <Grid item>
-                  <Button variant='contained' color='primary' className={classes.button} onClick={handleFindProducts}>
-                    Find Products
-                  </Button>
-                </Grid>
+  if (data?.role) {
+    router.push('/global-administrator/users')
 
-                <Grid item>
-                  {selectedFields.map((field, index) => (
+    return <Loader />
+  } else {
+    return (
+      <div>
+        <Helmet>
+          <title>Simppel - Search Winning Products</title>
+        </Helmet>
+        <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
+          <CardContent>
+            <Box>
+              <FormControl component='fieldset'>
+                <FormLabel component='legend' style={{ marginTop: 20 }}>
+                  <span style={{ marginRight: 8 }}>{t('search_type')}</span>
+                  <IconButton>
+                    <AcUnitIcon />
+                  </IconButton>
+                </FormLabel>
+                <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
+                  <FormControlLabel
+                    value='amazon'
+                    control={<Radio checked={selectedValue === 'amazon'} />}
+                    label={t('amazon_product')}
+                  />
+                  <FormControlLabel
+                    value='dropshipping'
+                    control={<Radio checked={selectedValue === 'dropshipping'} />}
+                    label={t('dropship_product')}
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+            {selectedValue === 'amazon' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
+                  <IconButton className={classes.filterButton} onClick={handleAddFieldsClick}>
+                    <FilterListIcon />
+                  </IconButton>
+                </div>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Autocomplete
+                      disablePortal
+                      id='combo-box-demo'
+                      options={marketPlaceData}
+                      value={filters.productMarketPlace}
+                      onInputChange={handleMarketPlaceChange}
+                      sx={{ width: 300 }}
+                      className={classes.textField}
+                      renderInput={params => <TextField {...params} label={t('marketplace')} />}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Autocomplete
+                      disablePortal
+                      id='combo-box-demo'
+                      options={categories}
+                      value={filters.productCategory}
+                      onChange={handleCategoryChange}
+                      className={classes.textField}
+                      sx={{ width: 280 }}
+                      renderInput={params => <TextField {...params} label={t('category')} />}
+                    />
+                  </Grid>
+                  <Grid item>
                     <TextField
-                      key={index}
-                      label={field.charAt(0).toUpperCase() + field?.slice(1)}
-                      name={field}
-                      value={filters[field]}
+                      label='Price'
+                      name='price'
+                      value={filters.price}
                       onChange={handleFilterChange}
                       className={classes.textField}
-                      style={{ marginRight: '10px' }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                            <Tooltip title={t('enter_price_of_product')}>
+                              <IconButton size='small'>
+                                <HelpOutlineIcon style={{ color: 'gray' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        )
+                      }}
                     />
-                  ))}
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                      label='Reviews'
+                      name='reviews'
+                      value={filters.reviews}
+                      onChange={handleFilterChange}
+                      className={classes.textField}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                            <Tooltip title={t('enter_amount_of_reviews')}>
+                              <IconButton size='small'>
+                                <HelpOutlineIcon style={{ color: 'gray' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                      label='Est Sales'
+                      name='sales'
+                      value={filters.sales}
+                      onChange={handleFilterChange}
+                      className={classes.textField}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                            <Tooltip title={t('enter_estimated_sales_of_product')}>
+                              <IconButton size='small'>
+                                <HelpOutlineIcon style={{ color: 'gray' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item>
+                    <Button variant='contained' color='primary' className={classes.button} onClick={handleFindProducts}>
+                      Find Products
+                    </Button>
+                  </Grid>
+
+                  <Grid item>
+                    {selectedFields.map((field, index) => (
+                      <TextField
+                        key={index}
+                        label={field.charAt(0).toUpperCase() + field?.slice(1)}
+                        name={field}
+                        value={filters[field]}
+                        onChange={handleFilterChange}
+                        className={classes.textField}
+                        style={{ marginRight: '10px' }}
+                      />
+                    ))}
+                  </Grid>
                 </Grid>
-              </Grid>
 
-              {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                  <CircularProgress />
-                </div>
-              ) : (
-                <div style={{ marginTop: 50 }}>
-                  <StickyHeadTable data={product} />
-                </div>
-              )}
-            </>
-          )}
+                {loading ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 50 }}>
+                    <StickyHeadTable data={product} />
+                  </div>
+                )}
+              </>
+            )}
 
-          {selectedValue === 'dropshipping' && (
-            <div>
-              <h1>Handpicked Dropshipping products</h1>
-              <Grid item xs={3}>
-                <DropshippingCard />
-              </Grid>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            {selectedValue === 'dropshipping' && (
+              <div>
+                <h1>Handpicked Dropshipping products</h1>
+                <Grid item xs={3}>
+                  <DropshippingCard />
+                </Grid>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-      <Dialog open={showModal} onClose={handleModalClose}>
-        <DialogTitle>Select Additional Fields</DialogTitle>
-        <DialogContent>
-          <FormControlLabel
-            control={<Checkbox checked={selectedFields.includes('rank')} onChange={handleCheckboxChange} name='rank' />}
-            label={t('rank')}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox checked={selectedFields.includes('sales')} onChange={handleCheckboxChange} name='sales' />
-            }
-            label={t('sales')}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox checked={selectedFields.includes('weight')} onChange={handleCheckboxChange} name='weight' />
-            }
-            label={t('weight')}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox checked={selectedFields.includes('keywords')} onChange={handleCheckboxChange} name='keywords' />
-            }
-            label={t('keywords_amazon')}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox checked={selectedFields.includes('revenue')} onChange={handleCheckboxChange} name='revenue' />
-            }
-            label={t('revenue')}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleModalClose}>Cancel</Button>
-          <Button onClick={handleSaveFields}>Save</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  )
+        <Dialog open={showModal} onClose={handleModalClose}>
+          <DialogTitle>Select Additional Fields</DialogTitle>
+          <DialogContent>
+            <FormControlLabel
+              control={
+                <Checkbox checked={selectedFields.includes('rank')} onChange={handleCheckboxChange} name='rank' />
+              }
+              label={t('rank')}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox checked={selectedFields.includes('sales')} onChange={handleCheckboxChange} name='sales' />
+              }
+              label={t('sales')}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox checked={selectedFields.includes('weight')} onChange={handleCheckboxChange} name='weight' />
+              }
+              label={t('weight')}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedFields.includes('keywords')}
+                  onChange={handleCheckboxChange}
+                  name='keywords'
+                />
+              }
+              label={t('keywords_amazon')}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox checked={selectedFields.includes('revenue')} onChange={handleCheckboxChange} name='revenue' />
+              }
+              label={t('revenue')}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleModalClose}>Cancel</Button>
+            <Button onClick={handleSaveFields}>Save</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  }
 }
 
-export default Search
+export default authRoute(Search)

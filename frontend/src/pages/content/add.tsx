@@ -44,6 +44,7 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import { Helmet } from 'react-helmet'
 import { CircularProgress } from '@mui/material'
+import { useStore } from 'src/store';
 
 
 const ITEM_HEIGHT = 48
@@ -103,13 +104,11 @@ const Content = () => {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-
+  const { product } = useStore();
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
   const { userId } = useUserData()
-
-  // console.log(userId)
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -162,6 +161,9 @@ const Content = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
+
+  
+
   useEffect(() => {
     userId && fetchSingleUser()
     userId && fetchAdvertisements()
@@ -169,7 +171,6 @@ const Content = () => {
 
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
-    console.log(response)
     if (response?.data) {
       setData(response.data)
       const advertisementLimit = response.data?.advertisementLimit
@@ -188,6 +189,28 @@ const Content = () => {
   const targetAudienceRef = useRef<HTMLInputElement>(null)
   const brandNameRef = useRef<HTMLInputElement>(null)
   const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if(product) {
+        const categoriesString = product.categories.map(category => category.categoryName).join(', ');
+        setScrapedData({
+          title: product.title,
+          description: product.description || product.title, 
+          targetAudience: categoriesString,
+        });
+        setSelectedLanguage('us')
+        setSelectedLocation('facebook');
+        setSelectedTypeAd(product.typeAd);
+        setSelectedMood('sell');
+        setSelectedTextLength('long');
+
+        if (product.image.imageUrl) {
+            setImgSrc(product.image.imageUrl);
+        }
+    }
+}, [product]); 
+
+
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -229,7 +252,7 @@ const Content = () => {
       toast.success('Advertisement Added', { autoClose: 2000 })
       nameRef.current.value = ''
       descriptionRef.current.value = ''
-      router.push('/content/view-content')
+      router.push('/content/view')
     }
 
     if (status === 'FAILED') {
@@ -301,11 +324,18 @@ const Content = () => {
               <TextField
                 fullWidth
                 type='text'
-                label={t('target_audience')}
+                label={scrapedData.targetAudience ? '' : t('target_audience')}
                 placeholder='Gym Rats, Soccer Moms, etc.'
                 helperText={t('target_audience_helper_text')}
                 inputRef={targetAudienceRef}
                 required
+                value={scrapedData.targetAudience}
+                onChange={event => {
+                  setScrapedData({
+                    ...scrapedData,
+                    title: event.target.value
+                  })
+                }}
               />
             </Grid>
             <Grid item xs={12}>
