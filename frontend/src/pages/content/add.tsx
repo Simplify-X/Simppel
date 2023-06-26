@@ -276,6 +276,8 @@ const Content = () => {
     return <CircularProgress />
   }
 
+  console.log(data)
+
   return (
     <form onSubmit={submitForm}>
       <Helmet>
@@ -367,7 +369,8 @@ const Content = () => {
                 <TextField
                   fullWidth
                   label={t('branding_name')}
-                  inputRef={brandNameRef}
+                  inputRef={brandNameRef || data?.defaultBrandName}
+                  value={data?.defaultBrandName}
                   helperText={t('branding_name_helper_text')}
                 />
               </Grid>
@@ -380,7 +383,8 @@ const Content = () => {
                   label={t('branding_description')}
                   placeholder='A flying bottle'
                   helperText={t('branding_description_helper_text')}
-                  inputRef={brandNameDescriptionRef}
+                  inputRef={brandNameDescriptionRef || data?.defaultBrandDescription}
+                  value={data?.defaultBrandDescription}
                 />
               </Grid>
             </AccordionDetails>

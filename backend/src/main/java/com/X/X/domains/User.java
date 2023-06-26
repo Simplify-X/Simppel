@@ -92,4 +92,16 @@ public class User extends Auditable {
 
     private String defaultAdvertisementMood;
 
+    private String defaultCopyTone;
+
+    private String defaultCopyLength;
+
+    private String defaultCopyLanguage;
+
+    private String defaultCopyType;
+
+    private String defaultBrandName;
+
+    private String defaultBrandDescription;
+
 }

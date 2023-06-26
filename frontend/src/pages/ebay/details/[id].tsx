@@ -70,6 +70,14 @@ const ProductDetail: React.FC = () => {
     }
   }
 
+  const handleImportCopy = () => {
+    if (product) {
+      router.push('/writing/add')
+    } else {
+      alert('No product selected')
+    }
+  }
+
   console.log(data)
 
   const handleDownloadImages = async () => {
@@ -122,6 +130,39 @@ const ProductDetail: React.FC = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleGenerateCopy(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const categoriesString = product.categories
+    .map((category: { categoryName: any }) => category.categoryName)
+    .join(', ')
+    
+    const formSupplyType = 'Copy Form';
+    const customCommands = ''
+
+    const copyData = {
+      title: product?.title,
+      keyWords: categoriesString,
+      description: product?.title || product.description,
+      formType:formSupplyType,
+      targetAudience: categoriesString,
+      toneOfCopy: data?.defaultCopyTone,
+      copyLength: data?.defaultCopyLength,
+      languageText: data?.defaultCopyLanguage,
+      brandName: '',
+      brandDescription: '',
+      customCommands: customCommands,
+      copyWritingType: data?.defaultCopyType,
+      copyWritingContext: null,
+    }
+
+    console.log(copyData)
+
+    const response = await post(`/copyWriting/${userId}`, copyData)
+    const newAdvertisementId = (response?.data as ResponseData)?.id
+    router.push(`/writing/view/${newAdvertisementId}`)
   }
 
   if (loading) {
@@ -226,10 +267,23 @@ const ProductDetail: React.FC = () => {
                     </Button>
                   </Tooltip>
                   <Tooltip title='Click to create an advertisement based on the product data'>
-                    <Button component='a' variant='contained' sx={{ px: 5.5 }} onClick={handleImportAdvert}>
+                    <Button component='a' variant='contained' sx={{ px: 5.5, marginRight: '10px' }} onClick={handleImportAdvert}>
                       Import Ad
                     </Button>
                   </Tooltip>
+
+                  <Tooltip title='Click to generate an instant copy'>
+                    <Button component='a' variant='contained' sx={{ px: 5.5, marginRight: '10px' }} onClick={handleGenerateCopy}>
+                      Generate Copy
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip title='Click to create a copy based on the product data'>
+                    <Button component='a' variant='contained' sx={{ px: 5.5 }} onClick={handleImportCopy}>
+                      Import Copy
+                    </Button>
+                  </Tooltip>
+                  
                 </>
               }
             />

@@ -142,6 +142,7 @@ const AdditionalFeatures = ({
                 label={t('branding_name')}
                 inputRef={brandName}
                 required
+                value={data?.defaultBrandName}
                 helperText={t('branding_name_helper_text')}
               />
             </Grid>
@@ -152,6 +153,7 @@ const AdditionalFeatures = ({
                 label={t('branding_description')}
                 inputRef={brandDescription}
                 required
+                value={data?.defaultBrandName}
                 helperText={t('enter_product_name')}
               />
             </Grid>
