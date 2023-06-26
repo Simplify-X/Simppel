@@ -84,4 +84,12 @@ public class User extends Auditable {
 
     private String productFormType;
 
+    private String defaultAdvertisementLocation;
+
+    private String defaultAdvertisementLanguage;
+
+    private String defaultAdvertisementLength;
+
+    private String defaultAdvertisementMood;
+
 }

@@ -32,7 +32,7 @@ async function refreshEbayToken() {
 
   // Save the access token and its expiration time
   accessToken = data.access_token;
-  tokenExpiration = Date.now() + data.expires_in * 1000;
+  tokenExpiration = Date.now() + 24 * 60 * 60 * 1000; // 1 day in milliseconds
 }
 
 // Middleware to verify the API key

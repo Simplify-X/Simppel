@@ -26,6 +26,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { saveAs } from 'file-saver'
 import * as XLSX from 'xlsx'
+import moment from 'moment'
 
 const useStyles = makeStyles({
   textField: {
@@ -81,6 +82,15 @@ const SearchEbay: React.FC = () => {
       sortedData.sort((a, b) => b.price.value - a.price.value)
     } else if (option === 'lowestToHighest') {
       sortedData.sort((a, b) => a.price.value - b.price.value)
+    } else if (option === 'latest') {
+      console.log('here')
+      sortedData.sort((a, b) => {
+        console.log(a);
+        const dateA = moment(a.itemCreationDate);
+        const dateB = moment(b.itemCreationDate);
+        
+        return dateB.diff(dateA);
+      });
     }
 
     setEbayData(sortedData)
@@ -219,16 +229,22 @@ const SearchEbay: React.FC = () => {
             onClose={handleFilterMenuClose}
           >
             <MenuItem
+              onClick={() => handleSortOptionChange('latest')}
+              selected={sortOption === 'latest'}
+            >
+              Latest Listings 
+            </MenuItem>
+            <MenuItem
               onClick={() => handleSortOptionChange('highestToLowest')}
               selected={sortOption === 'highestToLowest'}
             >
-              Highest to Lowest Price
+              Price - High to Low 
             </MenuItem>
             <MenuItem
               onClick={() => handleSortOptionChange('lowestToHighest')}
               selected={sortOption === 'lowestToHighest'}
             >
-              Lowest to Highest Price
+              Price - Low to High 
             </MenuItem>
           </Menu>
         </Box>
