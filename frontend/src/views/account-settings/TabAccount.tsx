@@ -39,37 +39,53 @@ const TabAccount = () => {
   const [errorOpen, setErrorOpen] = useState(false)
 
   const [productFormType, setProductFormType] = useState('')
-  const [defaultTabOpen, setDefaultTabOpen] = useState('');
-  const [defaultAdvertisementLocation, setDefaultAdvertisementLocation] = useState('');
-  const [defaultAdvertisementLanguage, setDefaultAdvertisementLanguage] = useState('');
-  const [defaultAdvertisementLength, setDefaultAdvertisementLength] = useState('');
-  const [defaultAdvertisementMood, setDefaultAdvertisementMood] = useState('');
+  const [defaultTabOpen, setDefaultTabOpen] = useState('')
+  const [defaultAdvertisementLocation, setDefaultAdvertisementLocation] = useState('')
+  const [defaultAdvertisementLanguage, setDefaultAdvertisementLanguage] = useState('')
+  const [defaultAdvertisementLength, setDefaultAdvertisementLength] = useState('')
+  const [defaultAdvertisementMood, setDefaultAdvertisementMood] = useState('')
+  const [defaultCopyTone, setDefaultCopyTone] = useState('')
+  const [defaultCopyLength, setDefaultCopyLength] = useState('')
+  const [defaultCopyLanguage, setDefaultCopyLanguage] = useState('')
+  const [defaultCopyType, setDefaultCopyType] = useState('')
 
   useEffect(() => {
     // Update the selected values when the userData is fetched
-    setProductFormType(userData.productFormType || '');
-    setDefaultTabOpen(userData.defaultTabOpen || '');
-    setDefaultAdvertisementLocation(userData.defaultAdvertisementLocation || '');
+    setProductFormType(userData.productFormType || '')
+    setDefaultTabOpen(userData.defaultTabOpen || '')
+    setDefaultAdvertisementLocation(userData.defaultAdvertisementLocation || '')
     setDefaultAdvertisementLanguage(userData.defaultAdvertisementLanguage || '')
     setDefaultAdvertisementLength(userData.defaultAdvertisementLength || '')
     setDefaultAdvertisementMood(userData.defaultAdvertisementMood || '')
-  }, [userData]);
+    setDefaultCopyTone(userData.defaultCopyTone || '')
+    setDefaultCopyLength(userData.defaultCopyLength || '')
+    setDefaultCopyLanguage(userData.defaultCopyLanguage || '')
+    setDefaultCopyType(userData.defaultCopyType || '')
+  }, [userData])
 
   const handleRadioChange = (section, value) => {
     if (section === 'productFormType') {
-      setProductFormType(value);
+      setProductFormType(value)
     } else if (section === 'defaultTabOpen') {
-      setDefaultTabOpen(value);
+      setDefaultTabOpen(value)
     } else if (section === 'defaultAdvertisementLocation') {
-      setDefaultAdvertisementLocation(value);
-    } else if (section === 'defaultAdvertisementLanguage'){
+      setDefaultAdvertisementLocation(value)
+    } else if (section === 'defaultAdvertisementLanguage') {
       setDefaultAdvertisementLanguage(value)
-    } else if (section === 'defaultAdvertisementLength'){
+    } else if (section === 'defaultAdvertisementLength') {
       setDefaultAdvertisementLength(value)
-    } else if (section === 'defaultAdvertisementMood'){
+    } else if (section === 'defaultAdvertisementMood') {
       setDefaultAdvertisementMood(value)
+    } else if (section === 'defaultCopyTone'){
+      setDefaultCopyTone(value)
+    } else if (section === 'defaultCopyLength'){
+      setDefaultCopyLength(value)
+    } else if (section === 'defaultCopyLanguage'){
+      setDefaultCopyLanguage(value)
+    } else if (section === 'defaultCopyType'){
+      setDefaultCopyType(value)
     }
-  };
+  }
 
   const handleClose = () => {
     setOpen(false)
@@ -97,10 +113,10 @@ const TabAccount = () => {
       ...userData,
       productFormType,
       defaultAdvertisementLocation
-    };
+    }
 
     console.log(data)
-    
+
     try {
       await put(`/users/users/management/${userId}`, data)
       setOpen(true)
@@ -187,7 +203,7 @@ const TabAccount = () => {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-            <InputLabel>Default Option</InputLabel>
+              <InputLabel>Default Option</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='productFormType'
@@ -201,7 +217,7 @@ const TabAccount = () => {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-            <InputLabel>Tab Settings</InputLabel>
+              <InputLabel>Tab Settings</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='defaultTabOpen'
@@ -210,16 +226,21 @@ const TabAccount = () => {
                 style={{ display: 'block' }}
               >
                 <FormControlLabel disabled={!editable} value='true' control={<Radio />} label='Tabs Open By Default' />
-                <FormControlLabel disabled={!editable} value='false' control={<Radio />} label='Tab Closed By Default' />
+                <FormControlLabel
+                  disabled={!editable}
+                  value='false'
+                  control={<Radio />}
+                  label='Tab Closed By Default'
+                />
               </RadioGroup>
             </Grid>
 
-            <Grid item xs={12} sm={12}>
-            <InputLabel>Default advertisement location when generating</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Default advertisement location when generating</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='defaultAdvertisementLocation'
-                value={defaultAdvertisementLocation }
+                value={defaultAdvertisementLocation}
                 onChange={e => setUserData({ ...userData, defaultAdvertisementLocation: e.target.value })}
                 style={{ display: 'block' }}
               >
@@ -228,14 +249,30 @@ const TabAccount = () => {
                 <FormControlLabel disabled={!editable} value='tiktok' control={<Radio />} label='Tiktok' />
                 <FormControlLabel disabled={!editable} value='other' control={<Radio />} label='Other' />
               </RadioGroup>
-              </Grid>
+            </Grid>
 
-              <Grid item xs={12} sm={12}>
-              <InputLabel style={{marginTop: 2}}>Default advertisement language when generating</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Default copy tone when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultCopyTone'
+                value={defaultCopyTone}
+                onChange={e => setUserData({ ...userData, defaultCopyTone: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='formal' control={<Radio />} label='Formal' />
+                <FormControlLabel disabled={!editable} value='informal' control={<Radio />} label='Informal' />
+                <FormControlLabel disabled={!editable} value='humorous' control={<Radio />} label='Humorous' />
+                <FormControlLabel disabled={!editable} value='serious' control={<Radio />} label='Serious' />
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <InputLabel style={{ marginTop: 2 }}>Default advertisement language when generating</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='defaultAdvertisementLanguage'
-                value={defaultAdvertisementLanguage }
+                value={defaultAdvertisementLanguage}
                 onChange={e => setUserData({ ...userData, defaultAdvertisementLanguage: e.target.value })}
                 style={{ display: 'block' }}
               >
@@ -246,14 +283,30 @@ const TabAccount = () => {
                 <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
                 <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
               </RadioGroup>
-              </Grid>
+            </Grid>
 
-              <Grid item xs={12} sm={12}>
-              <InputLabel style={{marginTop: 2}}>Default advertisement length when generating</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Default copy length when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultCopyLength'
+                value={defaultCopyLength}
+                onChange={e => setUserData({ ...userData, defaultCopyLength: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
+                <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
+                <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
+                <FormControlLabel disabled={!editable} value='random' control={<Radio />} label='Random' />
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <InputLabel style={{ marginTop: 2 }}>Default advertisement length when generating</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='defaultAdvertisementLength'
-                value={defaultAdvertisementLength }
+                value={defaultAdvertisementLength}
                 onChange={e => setUserData({ ...userData, defaultAdvertisementLength: e.target.value })}
                 style={{ display: 'block' }}
               >
@@ -261,14 +314,32 @@ const TabAccount = () => {
                 <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
                 <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
               </RadioGroup>
-              </Grid>
+            </Grid>
 
-              <Grid item xs={12} sm={12}>
-              <InputLabel style={{marginTop: 2}}>Default advertisement mood when generating</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Default copy language when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultCopyLanguage'
+                value={defaultCopyLanguage}
+                onChange={e => setUserData({ ...userData, defaultCopyLanguage: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
+                <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
+                <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
+                <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
+                <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
+                <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <InputLabel style={{ marginTop: 2 }}>Default advertisement mood when generating</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='defaultAdvertisementMood'
-                value={defaultAdvertisementMood }
+                value={defaultAdvertisementMood}
                 onChange={e => setUserData({ ...userData, defaultAdvertisementMood: e.target.value })}
                 style={{ display: 'block' }}
               >
@@ -277,7 +348,44 @@ const TabAccount = () => {
                 <FormControlLabel disabled={!editable} value='engage' control={<Radio />} label='Engage' />
                 <FormControlLabel disabled={!editable} value='traffic' control={<Radio />} label='Traffic' />
               </RadioGroup>
+            </Grid>
 
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Default copy type when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultCopyType'
+                value={defaultCopyType}
+                onChange={e => setUserData({ ...userData, defaultCopyType: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='WEBSITE_COPY' control={<Radio />} label='Website' />
+                <FormControlLabel disabled={!editable} value='SEO_COPY' control={<Radio />} label='SEO' />
+                <FormControlLabel disabled={!editable} value='B2B_COPY' control={<Radio />} label='B2B' />
+                <FormControlLabel disabled={!editable} value='B2C_COPY' control={<Radio />} label='B2C' />
+                <FormControlLabel disabled={!editable} value='DIRECT_COPY' control={<Radio />} label='Direct' />
+                <FormControlLabel disabled={!editable} value='AD_COPY' control={<Radio />} label='Ad' />
+                <FormControlLabel disabled={!editable} value='SOCIAL_MEDIA_COPY' control={<Radio />} label='Social Media' />
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Default Brand Name'
+                defaultValue={userData.defaultBrandName}
+                disabled={!editable}
+                onChange={e => setUserData({ ...userData, defaultBrandName: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Default Brand Description'
+                disabled={!editable}
+                defaultValue={userData.defaultBrandDescription}
+                onChange={e => setUserData({ ...userData, defaultBrandDescription: e.target.value })}
+              />
             </Grid>
 
             {openAlert ? (

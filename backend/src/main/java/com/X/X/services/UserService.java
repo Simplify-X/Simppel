@@ -193,6 +193,12 @@ public record UserService(UserRepository userRepo,
         user.setDefaultAdvertisementLanguage(userDetails.getDefaultAdvertisementLanguage());
         user.setDefaultAdvertisementLength(userDetails.getDefaultAdvertisementLength());
         user.setDefaultAdvertisementMood(userDetails.getDefaultAdvertisementMood());
+        user.setDefaultCopyLanguage(userDetails.getDefaultCopyLanguage());
+        user.setDefaultCopyLength(userDetails.getDefaultCopyLength());
+        user.setDefaultCopyTone(userDetails.getDefaultCopyTone());
+        user.setDefaultCopyType(userDetails.getDefaultCopyType());
+        user.setDefaultBrandDescription(userDetails.getDefaultBrandDescription());
+        user.setDefaultBrandName(userDetails.getDefaultBrandName());
 
         return userRepo.save(user);
     }

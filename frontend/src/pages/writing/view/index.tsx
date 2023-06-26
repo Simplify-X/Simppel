@@ -15,7 +15,7 @@ const Copy = () => {
   const router = useRouter()
   const {  get } = useCustomApiHook()
   const [loading, setLoading] = useState(true)
-  const { accountId } = useUserData()
+  const { userId } = useUserData()
 
 
 
@@ -77,12 +77,12 @@ const Copy = () => {
   }
 
   useEffect(() => {
-    accountId && getAllUsers();
-  }, [accountId])
+    userId && getAllUsers();
+  }, [userId])
 
 
   const getAllUsers = async () => {
-    const copyWritingData = await get(`/copyWriting/${accountId}`);
+    const copyWritingData = await get(`/copyWriting/${userId}`);
     console.log(copyWritingData)
     setCopy(copyWritingData.data)
     setLoading(false)

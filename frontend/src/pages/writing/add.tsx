@@ -31,13 +31,14 @@ import SummarizeForm from './view/SummarizeForm'
 import EmailForm from './view/EmailForm'
 import AdditionalFeatures from './view/AdditionalFeatures'
 import AcUnitIcon from '@mui/icons-material/AcUnit';
+import { useStore } from 'src/store';
 
 const Writing = () => {
   // ** States
   const router = useRouter()
   const { t } = useTranslation()
-
-  const { accountId } = useUserData()
+  const { product } = useStore();
+  const { userId } = useUserData()
   const [data, setData] = useState([])
   const [selectedMood, setSelectedMood] = useState('')
   const [selectedCopyType, setSelectedCopyType] = useState('')
@@ -88,16 +89,43 @@ const Writing = () => {
 
   useEffect(() => {
     const fetchSingleUser = async () => {
-      const res = await get(`/users/getSingleUser/${accountId}`)
+      const res = await get(`/users/getSingleUser/${userId}`)
       res?.data && setData(res.data)
     }
 
-    accountId && fetchSingleUser()
-  }, [accountId])
+    userId && fetchSingleUser()
+  }, [userId])
 
   useEffect(() => {
     error && Sentry.captureException(error)
   }, [error])
+
+
+  useEffect(() => {
+    if(product && userId && data) {
+      const categoriesString = product.categories.map(category => category.categoryName).join(', ');
+
+      if (nameRef.current) {
+        nameRef.current.value = product?.title || '';
+      }
+      
+      if (descriptionRef.current) {
+        descriptionRef.current.value = product.description || product.title || '';
+      }
+      
+      if (targetAudienceRef.current) {
+        targetAudienceRef.current.value = categoriesString || '';
+      }
+      
+      if (keywordInput.current) {
+        keywordInput.current.value = categoriesString || ''; 
+      }
+      setSelectedLanguage(data?.defaultCopyLanguage)
+      setSelectedLocation('formal');
+      setSelectedCopyType('SEO')
+      setSelectedTextLength(data?.defaultCopyLength)
+    }
+}, [product, userId, data]); 
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -153,7 +181,7 @@ const Writing = () => {
       copyWritingContext: null,
     }
 
-    await post(`/copyWriting/${accountId}`, data)
+    await post(`/copyWriting/${userId}`, data)
   }
 
   useEffect(() => {
