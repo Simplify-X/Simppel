@@ -338,7 +338,7 @@ const Content = () => {
                 onChange={event => {
                   setScrapedData({
                     ...scrapedData,
-                    title: event.target.value
+                    targetAudience: event.target.value
                   })
                 }}
               />
