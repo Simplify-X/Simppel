@@ -189,6 +189,10 @@ public record UserService(UserRepository userRepo,
         user.setAccountRole(userDetails.getAccountRole());
         user.setProductFormType(userDetails.getProductFormType());
         user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
+        user.setDefaultAdvertisementLocation(userDetails.getDefaultAdvertisementLocation());
+        user.setDefaultAdvertisementLanguage(userDetails.getDefaultAdvertisementLanguage());
+        user.setDefaultAdvertisementLength(userDetails.getDefaultAdvertisementLength());
+        user.setDefaultAdvertisementMood(userDetails.getDefaultAdvertisementMood());
 
         return userRepo.save(user);
     }

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useStore } from 'src/store'
 import {
   Box,
@@ -12,7 +12,8 @@ import {
   Divider,
   CardContent,
   CircularProgress,
-  IconButton
+  IconButton,
+  Alert
 } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useUserData } from 'src/@core/hooks/useUserData'
@@ -25,6 +26,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import moment from 'moment'
 import { SaveAlt } from '@mui/icons-material'
 import JSZip from 'jszip'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface ResponseData {
   id?: string
@@ -34,10 +36,27 @@ const ProductDetail: React.FC = () => {
   const { product } = useStore()
   const router = useRouter()
   const { userId } = useUserData()
-  const { post } = useCustomApiHook()
+  const { post, get } = useCustomApiHook()
   const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [data, setData] = useState([])
+  const [infoAlertOpen, setInfoAlertOpen] = useState(true)
+
+  const handleInfoAlertClose = () => {
+    setInfoAlertOpen(false)
+  }
+
+  useEffect(() => {
+    userId && fetchSingleUser()
+  }, [userId])
+
+  const fetchSingleUser = async () => {
+    const response = await get(`/users/getSingleUser/${userId}`)
+    if (response?.data) {
+      setData(response.data)
+    }
+  }
 
   const handleGoBack = () => {
     router.push('/ebay/search/')
@@ -50,6 +69,8 @@ const ProductDetail: React.FC = () => {
       alert('No product selected')
     }
   }
+
+  console.log(data)
 
   const handleDownloadImages = async () => {
     const zip = new JSZip()
@@ -79,21 +100,21 @@ const ProductDetail: React.FC = () => {
       .map((category: { categoryName: any }) => category.categoryName)
       .join(', ')
 
-    const data = {
+    const formattedData = {
       name: product.title,
       description: product.description || product?.title,
       targetAudience: categoriesString,
-      advertisementLocation: 'facebook',
+      advertisementLocation: data?.defaultAdvertisementLocation,
       advertisementType: '',
-      advertisementMood: 'sell',
-      advertisementLength: 'long',
-      languageText: 'us',
+      advertisementMood: data?.defaultAdvertisementMood,
+      advertisementLength: data?.defaultAdvertisementLength,
+      languageText: data?.defaultAdvertisementLanguage,
       brandName: '',
       brandDescription: ''
     }
 
     try {
-      const response = await post(`/advertisements/${userId}`, data)
+      const response = await post(`/advertisements/${userId}`, formattedData)
       const newAdvertisementId = (response?.data as ResponseData)?.id
       router.push(`/content/view/${newAdvertisementId}`)
     } catch (error) {
@@ -139,45 +160,56 @@ const ProductDetail: React.FC = () => {
             />
             <Divider />
             <CardContent>
-  {product?.length > 0 ? (
-    <CircularProgress />
-  ) : (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Carousel showArrows={true} showThumbs={false} selectedItem={selectedImageIndex}>
-          {product?.additionalImages.map((image, index) => (
-            <div key={index}>
-              <img
-                src={image.imageUrl}
-                alt={`Additional Image ${index + 1}`}
-                style={{ maxWidth: '400px', maxHeight: '500px', width: 'auto', height: 'auto' }}
-              />
-            </div>
-          ))}
-        </Carousel>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={2} justifyContent="center">
-          {product?.additionalImages.map((image, index) => (
-            <Grid item key={index}>
-              <img
-                src={image.imageUrl}
-                alt={`Additional Image ${index + 1}`}
-                style={{ width: '80px', height: '80px', cursor: 'pointer' }}
-                onClick={() => setSelectedImageIndex(index)}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Grid>
-    </Grid>
-  )}
-</CardContent>
-
+              {product?.length > 0 ? (
+                <CircularProgress />
+              ) : (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Carousel showArrows={true} showThumbs={false} selectedItem={selectedImageIndex}>
+                      {product?.additionalImages.map((image, index) => (
+                        <div key={index}>
+                          <img
+                            src={image.imageUrl}
+                            alt={`Additional Image ${index + 1}`}
+                            style={{ maxWidth: '400px', maxHeight: '500px', width: 'auto', height: 'auto' }}
+                          />
+                        </div>
+                      ))}
+                    </Carousel>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2} justifyContent='center'>
+                      {product?.additionalImages.map((image, index) => (
+                        <Grid item key={index}>
+                          <img
+                            src={image.imageUrl}
+                            alt={`Additional Image ${index + 1}`}
+                            style={{ width: '80px', height: '80px', cursor: 'pointer' }}
+                            onClick={() => setSelectedImageIndex(index)}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+            </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={8}>
           <Card>
+            {infoAlertOpen && (
+              <Alert
+                severity='info'
+                action={
+                  <IconButton color='inherit' size='small' onClick={handleInfoAlertClose}>
+                    <CloseIcon fontSize='inherit' />
+                  </IconButton>
+                }
+              >
+                Please adjust the advertisement and copy writing settings from the account settings when generating
+              </Alert>
+            )}
             <CardHeader
               title='Product Details'
               titleTypographyProps={{ variant: 'h6' }}

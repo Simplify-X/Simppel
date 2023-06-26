@@ -110,6 +110,8 @@ const Content = () => {
   const { response, error, get, post } = useCustomApiHook()
   const { userId } = useUserData()
 
+  console.log(userId)
+
   const handleScrapedData = data => {
     setScrapedData(data)
   }
@@ -191,24 +193,25 @@ const Content = () => {
   const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if(product) {
+    if(product && userId && data) {
         const categoriesString = product.categories.map(category => category.categoryName).join(', ');
         setScrapedData({
           title: product.title,
           description: product.description || product.title, 
           targetAudience: categoriesString,
         });
-        setSelectedLanguage('us')
-        setSelectedLocation('facebook');
+        setSelectedLanguage(data?.defaultAdvertisementLanguage)
+        console.log(data)
+        setSelectedLocation(data?.defaultAdvertisementLocation);
         setSelectedTypeAd(product.typeAd);
-        setSelectedMood('sell');
-        setSelectedTextLength('long');
+        setSelectedMood(data?.defaultAdvertisementMood);
+        setSelectedTextLength(data?.defaultAdvertisementLength);
 
         if (product.image.imageUrl) {
             setImgSrc(product.image.imageUrl);
         }
     }
-}, [product]); 
+}, [product, userId, data]); 
 
 
 

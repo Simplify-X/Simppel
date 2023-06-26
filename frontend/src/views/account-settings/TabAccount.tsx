@@ -37,21 +37,39 @@ const TabAccount = () => {
   const [editable, setEditable] = useState(false)
   const [open, setOpen] = useState(false)
   const [errorOpen, setErrorOpen] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('')
 
-  const handleRadioChange = (event) => {
-    const value = event.target.value;
-    setSelectedValue(value);
-    setUserData((prevUserData) => ({
-      ...prevUserData,
-      productFormType: value,
-    }));
-  };
+  const [productFormType, setProductFormType] = useState('')
+  const [defaultTabOpen, setDefaultTabOpen] = useState('');
+  const [defaultAdvertisementLocation, setDefaultAdvertisementLocation] = useState('');
+  const [defaultAdvertisementLanguage, setDefaultAdvertisementLanguage] = useState('');
+  const [defaultAdvertisementLength, setDefaultAdvertisementLength] = useState('');
+  const [defaultAdvertisementMood, setDefaultAdvertisementMood] = useState('');
 
   useEffect(() => {
-    // Update the selectedValue when the userData is fetched
-    setSelectedValue(userData.productFormType || '');
+    // Update the selected values when the userData is fetched
+    setProductFormType(userData.productFormType || '');
+    setDefaultTabOpen(userData.defaultTabOpen || '');
+    setDefaultAdvertisementLocation(userData.defaultAdvertisementLocation || '');
+    setDefaultAdvertisementLanguage(userData.defaultAdvertisementLanguage || '')
+    setDefaultAdvertisementLength(userData.defaultAdvertisementLength || '')
+    setDefaultAdvertisementMood(userData.defaultAdvertisementMood || '')
   }, [userData]);
+
+  const handleRadioChange = (section, value) => {
+    if (section === 'productFormType') {
+      setProductFormType(value);
+    } else if (section === 'defaultTabOpen') {
+      setDefaultTabOpen(value);
+    } else if (section === 'defaultAdvertisementLocation') {
+      setDefaultAdvertisementLocation(value);
+    } else if (section === 'defaultAdvertisementLanguage'){
+      setDefaultAdvertisementLanguage(value)
+    } else if (section === 'defaultAdvertisementLength'){
+      setDefaultAdvertisementLength(value)
+    } else if (section === 'defaultAdvertisementMood'){
+      setDefaultAdvertisementMood(value)
+    }
+  };
 
   const handleClose = () => {
     setOpen(false)
@@ -75,7 +93,14 @@ const TabAccount = () => {
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const data = JSON.stringify(userData)
+    const data = {
+      ...userData,
+      productFormType,
+      defaultAdvertisementLocation
+    };
+
+    console.log(data)
+    
     try {
       await put(`/users/users/management/${userId}`, data)
       setOpen(true)
@@ -161,12 +186,12 @@ const TabAccount = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={12}>
+            <Grid item xs={12} sm={6}>
             <InputLabel>Default Option</InputLabel>
               <RadioGroup
                 disabled={!editable}
                 name='productFormType'
-                value={selectedValue}
+                value={productFormType}
                 onChange={handleRadioChange}
                 style={{ display: 'block' }}
               >
@@ -180,13 +205,79 @@ const TabAccount = () => {
               <RadioGroup
                 disabled={!editable}
                 name='defaultTabOpen'
-                value={selectedValue}
-                onChange={e => setUserData({ ...userData, status: e.target.value })}
+                value={defaultTabOpen}
+                onChange={handleRadioChange}
                 style={{ display: 'block' }}
               >
                 <FormControlLabel disabled={!editable} value='true' control={<Radio />} label='Tabs Open By Default' />
                 <FormControlLabel disabled={!editable} value='false' control={<Radio />} label='Tab Closed By Default' />
               </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} sm={12}>
+            <InputLabel>Default advertisement location when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultAdvertisementLocation'
+                value={defaultAdvertisementLocation }
+                onChange={e => setUserData({ ...userData, defaultAdvertisementLocation: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='facebook' control={<Radio />} label='Facebook' />
+                <FormControlLabel disabled={!editable} value='instagram' control={<Radio />} label='Instagram' />
+                <FormControlLabel disabled={!editable} value='tiktok' control={<Radio />} label='Tiktok' />
+                <FormControlLabel disabled={!editable} value='other' control={<Radio />} label='Other' />
+              </RadioGroup>
+              </Grid>
+
+              <Grid item xs={12} sm={12}>
+              <InputLabel style={{marginTop: 2}}>Default advertisement language when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultAdvertisementLanguage'
+                value={defaultAdvertisementLanguage }
+                onChange={e => setUserData({ ...userData, defaultAdvertisementLanguage: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
+                <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
+                <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
+                <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
+                <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
+                <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
+              </RadioGroup>
+              </Grid>
+
+              <Grid item xs={12} sm={12}>
+              <InputLabel style={{marginTop: 2}}>Default advertisement length when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultAdvertisementLength'
+                value={defaultAdvertisementLength }
+                onChange={e => setUserData({ ...userData, defaultAdvertisementLength: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
+                <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
+                <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
+              </RadioGroup>
+              </Grid>
+
+              <Grid item xs={12} sm={12}>
+              <InputLabel style={{marginTop: 2}}>Default advertisement mood when generating</InputLabel>
+              <RadioGroup
+                disabled={!editable}
+                name='defaultAdvertisementMood'
+                value={defaultAdvertisementMood }
+                onChange={e => setUserData({ ...userData, defaultAdvertisementMood: e.target.value })}
+                style={{ display: 'block' }}
+              >
+                <FormControlLabel disabled={!editable} value='sell' control={<Radio />} label='Sell' />
+                <FormControlLabel disabled={!editable} value='promote' control={<Radio />} label='Promote' />
+                <FormControlLabel disabled={!editable} value='engage' control={<Radio />} label='Engage' />
+                <FormControlLabel disabled={!editable} value='traffic' control={<Radio />} label='Traffic' />
+              </RadioGroup>
+
             </Grid>
 
             {openAlert ? (
