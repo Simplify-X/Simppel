@@ -32,6 +32,7 @@ const InviteTeam = () => {
   const [description, setDescription] = useState('')
   const [advertisement, setAdvertisement] = useState('')
   const [copyWriting, setCopyWriting] = useState('')
+  const [spyTools, setSpyTools] = useState('')
   const [role, setRole] = useState([])
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(true)
@@ -57,6 +58,7 @@ const InviteTeam = () => {
     setDescription('')
     setAdvertisement('')
     setCopyWriting('')
+    setSpyTools('')
   }
 
   const handleClick = rowData => {
@@ -144,6 +146,7 @@ const InviteTeam = () => {
     setDescription(selectedData.description)
     setAdvertisement(selectedData.advertisementAccess)
     setCopyWriting(selectedData.copyWritingAccess)
+    setSpyTools(selectedData.spyToolAccess)
     setIsCreating(true)
     setRecordId(rowData[0])
   }
@@ -172,7 +175,8 @@ const InviteTeam = () => {
       groupName: title,
       description: description,
       advertisementAccess: advertisement,
-      copyWritingAccess: copyWriting
+      copyWritingAccess: copyWriting,
+      spyToolAccess: spyTools,
     }
 
     await post(`/groups/create/${accountId}`, data)
@@ -198,11 +202,13 @@ const InviteTeam = () => {
       groupName: title,
       description: description,
       advertisementAccess: advertisement,
-      copyWritingAccess: copyWriting
+      copyWritingAccess: copyWriting,
+      spyToolAccess: spyTools,
     }
 
     await put(`/groups/update/${recordId}/${accountId}`, data)
   }
+
 
   useEffect(() => {
     if (response?.data?.status !== 'FAILED') {
@@ -272,6 +278,20 @@ const InviteTeam = () => {
             >
               <MenuItem value='VIEW'>Can Only View</MenuItem>
               <MenuItem value='ADD'>Can Only Read</MenuItem>
+              <MenuItem value='BOTH'>Full Access</MenuItem>
+            </TextField>
+          </Box>
+          <Box marginTop={2}>
+            <InputLabel>Spy Tools</InputLabel>
+            <TextField
+              select
+              label='Select'
+              value={spyTools}
+              onChange={e => setSpyTools(e.target.value)}
+              fullWidth
+              margin='normal'
+            >
+              <MenuItem value='VIEW'>Can Only View</MenuItem>
               <MenuItem value='BOTH'>Full Access</MenuItem>
             </TextField>
           </Box>

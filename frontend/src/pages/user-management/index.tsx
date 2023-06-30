@@ -14,7 +14,7 @@ const UserManagement = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
   const { get } = useCustomApiHook()
-  const { accountId } = useUserData()
+  const { accountId, userId } = useUserData()
   const [loading, setLoading] = useState(true)
 
   const handleClick = ( rowData ) => {
@@ -85,13 +85,13 @@ const UserManagement = () => {
   }
 
   useEffect(() => {
-    if (accountId) {
+    if (accountId && userId) {
       fetchUserForAccount()
     }
-  }, [accountId])
+  }, [accountId, userId])
 
   const fetchUserForAccount = async () => {
-    const getUsersForAccount = await get(`/users/getUserForAccount/${accountId}`)
+    const getUsersForAccount = await get(`/users/getUsersTeam/${accountId}/${userId}`)
     setRole(getUsersForAccount?.data)
     setLoading(false)
   }

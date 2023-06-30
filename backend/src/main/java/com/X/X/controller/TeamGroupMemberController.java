@@ -43,6 +43,19 @@ public class TeamGroupMemberController {
         return teamGroupMemberService.getAllTeamMember();
     }
 
+    @CrossOrigin
+    @GetMapping("/list/{userId}")
+    @Operation(summary = "Get Team Groups", description = "Get all team groups for the specified user account.")
+    public TeamGroupMember getSingleTeamGroupMember(@PathVariable UUID userId) {
+        return teamGroupMemberService.getSingleTeamGroupMember(userId);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/delete/{userId}/{userDetailId}")
+    @Operation(summary = "Delete Team Group Member", description = "Delete a Team Group Member by user ID.")
+    public void deleteTeamGroupMember(@PathVariable UUID userId, @PathVariable UUID userDetailId) {
+        teamGroupMemberService.deleteTeamMember(userId, userDetailId);
+    }
 
 
 }

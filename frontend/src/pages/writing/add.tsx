@@ -18,6 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 
 // import SelectChangeEvent from '@mui/material/Select'
 
@@ -30,14 +31,15 @@ import CopyForm from './view/CopyForm'
 import SummarizeForm from './view/SummarizeForm'
 import EmailForm from './view/EmailForm'
 import AdditionalFeatures from './view/AdditionalFeatures'
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import { useStore } from 'src/store';
+import AcUnitIcon from '@mui/icons-material/AcUnit'
+import { useStore } from 'src/store'
+import Loader from 'src/@core/components/ui/Loader'
 
 const Writing = () => {
   // ** States
   const router = useRouter()
   const { t } = useTranslation()
-  const { product } = useStore();
+  const { product } = useStore()
   const { userId } = useUserData()
   const [data, setData] = useState([])
   const [selectedMood, setSelectedMood] = useState('')
@@ -47,6 +49,9 @@ const Writing = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [selectedValue, setSelectedValue] = useState('create')
   const { response, error, get, post } = useCustomApiHook()
+  const [teamGroupMember, setTeamGroupMember] = useState([])
+  const [teamData, setTeamData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -74,18 +79,18 @@ const Writing = () => {
     setSelectedTextLength(event.target.value)
   }
 
-  const [selectedChecbox, setSelectedChecbox] = useState([]); 
+  const [selectedChecbox, setSelectedChecbox] = useState([])
 
-  const handleCheckboxChange = (event) => {
-    const { value, checked } = event.target;
+  const handleCheckboxChange = event => {
+    const { value, checked } = event.target
     if (checked) {
       // Add the value to the selectedLocation array
-      setSelectedChecbox([...selectedChecbox, value]);
+      setSelectedChecbox([...selectedChecbox, value])
     } else {
       // Remove the value from the selectedLocation array
-      setSelectedChecbox(selectedChecbox.filter(item => item !== value));
+      setSelectedChecbox(selectedChecbox.filter(item => item !== value))
     }
-  };
+  }
 
   useEffect(() => {
     const fetchSingleUser = async () => {
@@ -100,32 +105,59 @@ const Writing = () => {
     error && Sentry.captureException(error)
   }, [error])
 
+  useEffect(() => {
+    userId && fetchTeamGroupMember()
+  }, [userId])
 
   useEffect(() => {
-    if(product && userId && data) {
-      const categoriesString = product.categories.map(category => category.categoryName).join(', ');
+    teamGroupMember?.teamGroupId && fetchTeamData()
+  }, [teamGroupMember?.teamGroupId])
+
+  const fetchTeamGroupMember = async () => {
+    const response = await get(`/groups/members/list/${userId}`)
+    if (response?.data) {
+      setTeamGroupMember(response.data)
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const fetchTeamData = async () => {
+    const getTeamData = await get(`/groups/list/${teamGroupMember?.teamGroupId}`)
+    if (getTeamData?.data) {
+      setTeamData(getTeamData.data)
+      setLoading(false)
+    } else {
+      setLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    if (product && userId && data) {
+      const categoriesString = product.categories.map(category => category.categoryName).join(', ')
 
       if (nameRef.current) {
-        nameRef.current.value = product?.title || '';
+        nameRef.current.value = product?.title || ''
       }
-      
+
       if (descriptionRef.current) {
-        descriptionRef.current.value = product.description || product.title || '';
+        descriptionRef.current.value = product.description || product.title || ''
       }
-      
+
       if (targetAudienceRef.current) {
-        targetAudienceRef.current.value = categoriesString || '';
+        targetAudienceRef.current.value = categoriesString || ''
       }
-      
+
       if (keywordInput.current) {
-        keywordInput.current.value = categoriesString || ''; 
+        keywordInput.current.value = categoriesString || ''
       }
       setSelectedLanguage(data?.defaultCopyLanguage)
-      setSelectedLocation('formal');
+      setSelectedLocation('formal')
       setSelectedCopyType('SEO')
       setSelectedTextLength(data?.defaultCopyLength)
     }
-}, [product, userId, data]); 
+  }, [product, userId, data])
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)
@@ -145,8 +177,6 @@ const Writing = () => {
     const customCommands = customCommandRef.current?.value
     const keyWords = keywordInput.current?.value
 
-    console.log(selectedChecbox)
-    
     const formSupplyType = selectedValue
     let formattedSupplyType
 
@@ -161,15 +191,15 @@ const Writing = () => {
         formattedSupplyType = 'Email Form'
         break
       default:
-        formattedSupplyType = ""
+        formattedSupplyType = ''
         break
     }
 
     const data = {
-      title:name,
+      title: name,
       keyWords,
       description,
-      formType:formattedSupplyType,
+      formType: formattedSupplyType,
       targetAudience: targetAudience,
       toneOfCopy: selectedLocation,
       copyLength: selectedTextLength,
@@ -177,8 +207,8 @@ const Writing = () => {
       brandName: brandNames,
       brandDescription: brandDescriptions,
       customCommands,
-      copyWritingType: selectedCopyType !== "" ? selectedCopyType : null,
-      copyWritingContext: null,
+      copyWritingType: selectedCopyType !== '' ? selectedCopyType : null,
+      copyWritingContext: null
     }
 
     await post(`/copyWriting/${userId}`, data)
@@ -208,60 +238,77 @@ const Writing = () => {
     }
   }, [response, error])
 
+  if (loading) {
+    return <Loader />
+  }
+
+
   return (
     <form onSubmit={submitForm}>
-      <Card style={{ padding: 15 }}>
-        <CardContent>
-          <ToastContainer position={'top-center'} draggable={false} />
-          <Box>
-            <FormControl component='fieldset'>
-            <FormLabel component='legend' style={{ marginTop: 20 }}>
-            <span style={{ marginRight: 8 }}>Form Type</span>
-            <IconButton>
-              <AcUnitIcon /> {/* Replace 'IconName' with the desired icon from '@material-ui/icons' */}
-            </IconButton>
-          </FormLabel>
-              <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
-                <FormControlLabel
-                  value='create'
-                  control={<Radio checked={selectedValue === 'create'} />}
-                  label='Create Copy'
-                />
-                {/* <FormControlLabel
+      {teamData?.copyWritingAccess === 'VIEW' ? (
+        <Card style={{ padding: 15, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CardContent>
+            <Typography variant='h6' component='div' align='center'>
+              You do not have the rights to create a copy.
+              <br />
+              Please contact your Organization admin to enable it.
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <Card style={{ padding: 15 }}>
+            <CardContent>
+              <ToastContainer position={'top-center'} draggable={false} />
+              <Box>
+                <FormControl component='fieldset'>
+                  <FormLabel component='legend' style={{ marginTop: 20 }}>
+                    <span style={{ marginRight: 8 }}>Form Type</span>
+                    <IconButton>
+                      <AcUnitIcon /> {/* Replace 'IconName' with the desired icon from '@material-ui/icons' */}
+                    </IconButton>
+                  </FormLabel>
+                  <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
+                    <FormControlLabel
+                      value='create'
+                      control={<Radio checked={selectedValue === 'create'} />}
+                      label='Create Copy'
+                    />
+                    {/* <FormControlLabel
                   value='edit'
                   control={<Radio checked={selectedValue === 'edit'} />}
                   label='Alter Copy'
                 /> */}
-                <FormControlLabel
-                  value='summarize'
-                  control={<Radio checked={selectedValue === 'summarize'} />}
-                  label='Summarize'
+                    <FormControlLabel
+                      value='summarize'
+                      control={<Radio checked={selectedValue === 'summarize'} />}
+                      label='Summarize'
+                    />
+                    <FormControlLabel
+                      value='email'
+                      control={<Radio checked={selectedValue === 'email'} />}
+                      label='Email Form'
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Box>
+
+              <Divider style={{ marginBottom: 20 }} />
+
+              {selectedValue === 'create' && (
+                <CopyForm
+                  handleLocationChange={handleLocationChange}
+                  selectedLocation={selectedLocation}
+                  selectedTextLength={selectedTextLength}
+                  handleTextLength={handleTextLength}
+                  nameRef={nameRef}
+                  targetAudienceRef={targetAudienceRef}
+                  descriptionRef={descriptionRef}
+                  keywordInput={keywordInput}
                 />
-                <FormControlLabel
-                  value='email'
-                  control={<Radio checked={selectedValue === 'email'} />}
-                  label='Email Form'
-                />
-              </RadioGroup>
-            </FormControl>
-          </Box>
+              )}
 
-          <Divider style={{ marginBottom: 20 }} />
-
-          {selectedValue === 'create' && (
-            <CopyForm
-              handleLocationChange={handleLocationChange}
-              selectedLocation={selectedLocation}
-              selectedTextLength={selectedTextLength}
-              handleTextLength={handleTextLength}
-              nameRef={nameRef}
-              targetAudienceRef={targetAudienceRef}
-              descriptionRef={descriptionRef}
-              keywordInput={keywordInput}
-            />
-          )}
-
-          {/* {selectedValue === 'edit' && (
+              {/* {selectedValue === 'edit' && (
             <AlterCopyForm
               handleLocationChange={handleLocationChange}
               selectedLocation={selectedLocation}
@@ -273,51 +320,53 @@ const Writing = () => {
             />
           )} */}
 
-          {selectedValue === 'summarize' && (
-            <SummarizeForm
-              handleLocationChange={handleLocationChange}
-              selectedLocation={selectedLocation}
-              selectedTextLength={selectedTextLength}
-              handleTextLength={handleTextLength}
-              nameRef={nameRef}
-              targetAudienceRef={targetAudienceRef}
-              descriptionRef={descriptionRef}
-              selectedChecbox={selectedChecbox}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          )}
+              {selectedValue === 'summarize' && (
+                <SummarizeForm
+                  handleLocationChange={handleLocationChange}
+                  selectedLocation={selectedLocation}
+                  selectedTextLength={selectedTextLength}
+                  handleTextLength={handleTextLength}
+                  nameRef={nameRef}
+                  targetAudienceRef={targetAudienceRef}
+                  descriptionRef={descriptionRef}
+                  selectedChecbox={selectedChecbox}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
+              )}
 
-          {selectedValue === 'email' && (
-            <EmailForm
-              handleLocationChange={handleLocationChange}
-              selectedLocation={selectedLocation}
-              selectedTextLength={selectedTextLength}
-              handleTextLength={handleTextLength}
-              nameRef={nameRef}
-              targetAudienceRef={targetAudienceRef}
-              descriptionRef={descriptionRef}
-            />
-          )}
-        </CardContent>
-      </Card>
+              {selectedValue === 'email' && (
+                <EmailForm
+                  handleLocationChange={handleLocationChange}
+                  selectedLocation={selectedLocation}
+                  selectedTextLength={selectedTextLength}
+                  handleTextLength={handleTextLength}
+                  nameRef={nameRef}
+                  targetAudienceRef={targetAudienceRef}
+                  descriptionRef={descriptionRef}
+                />
+              )}
+            </CardContent>
+          </Card>
 
-      <AdditionalFeatures
-        selectedLanguage={selectedLanguage}
-        handleLanguageChange={handleLanguageChange}
-        brandName={brandName}
-        brandDescription={brandDescription}
-        customCommandRef={customCommandRef}
-        selectedMood={selectedMood}
-        handleMood={handleMood}
-        data={data}
-        selectedValue={selectedValue}
-        selectedCopyType={selectedCopyType}
-        handleCopyType={handleCopyType}
-      />
+          <AdditionalFeatures
+            selectedLanguage={selectedLanguage}
+            handleLanguageChange={handleLanguageChange}
+            brandName={brandName}
+            brandDescription={brandDescription}
+            customCommandRef={customCommandRef}
+            selectedMood={selectedMood}
+            handleMood={handleMood}
+            data={data}
+            selectedValue={selectedValue}
+            selectedCopyType={selectedCopyType}
+            handleCopyType={handleCopyType}
+          />
 
-      <Button type='submit' variant='contained' size='large' style={{ marginTop: '20px' }}>
-        {t('create')}
-      </Button>
+          <Button type='submit' variant='contained' size='large' style={{ marginTop: '20px' }}>
+            {t('create')}
+          </Button>
+        </>
+      )}
     </form>
   )
 }

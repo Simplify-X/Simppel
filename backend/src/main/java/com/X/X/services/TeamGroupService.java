@@ -1,10 +1,7 @@
 package com.X.X.services;
 
 import com.X.X.config.ResourceNotFoundException;
-import com.X.X.domains.AdvertisementAccess;
-import com.X.X.domains.CopyWritingAccess;
-import com.X.X.domains.TeamGroup;
-import com.X.X.domains.TeamGroupMember;
+import com.X.X.domains.*;
 import com.X.X.repositories.TeamGroupMemberRepository;
 import com.X.X.repositories.TeamGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,7 @@ public class TeamGroupService {
         }
         team.setAdvertisementAccess(AdvertisementAccess.fromString(String.valueOf(teamGroup.getAdvertisementAccess())));
         team.setCopyWritingAccess(CopyWritingAccess.fromString(String.valueOf(teamGroup.getCopyWritingAccess())));
+        team.setSpyToolAccess(SpyToolAccess.fromString(String.valueOf(teamGroup.getSpyToolAccess())));
         team.setGroupName(teamGroup.getGroupName());
         team.setDescription(teamGroup.getDescription());
         team.setAccountId(team.getAccountId());
