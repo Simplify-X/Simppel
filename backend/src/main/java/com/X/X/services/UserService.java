@@ -213,8 +213,12 @@ public record UserService(UserRepository userRepo,
         return userRepo.findByUserId(id);
     }
 
-    public List<User> getAllUserForAccount(UUID accountId) {
-        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId);
+    public List<User> getAllUserForAccount(UUID accountId, UUID userId) {
+        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId, userId);
+    }
+
+    public List<User> getAllUserForAccountTeam(UUID accountId, UUID userId) {
+        return userRepo.findAllByAccountIdExceptCurrent(accountId, userId);
     }
 
     public User getUserByUserId(UUID userId) {

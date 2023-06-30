@@ -47,5 +47,7 @@ public class TeamGroup extends Auditable {
 
     private CopyWritingAccess copyWritingAccess;
 
+    private SpyToolAccess spyToolAccess;
+
 
 }

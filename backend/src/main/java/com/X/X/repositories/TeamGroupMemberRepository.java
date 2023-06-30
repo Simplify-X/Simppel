@@ -15,6 +15,17 @@ public interface TeamGroupMemberRepository extends CrudRepository<TeamGroupMembe
     @Query("SELECT tg FROM TeamGroupMember tg WHERE tg.teamGroupId = :id")
     List<TeamGroupMember> findByUserId(@Param("id") UUID id);
 
+    @Query("SELECT tg FROM TeamGroupMember tg WHERE tg.userId = :id")
+    TeamGroupMember findByUserIds(@Param("id") UUID id);
+
+    @Query("SELECT tg FROM TeamGroupMember tg WHERE tg.id = :id")
+    TeamGroupMember findByIds(@Param("id") UUID id);
+
+
+
+
+
+
 }
 
 

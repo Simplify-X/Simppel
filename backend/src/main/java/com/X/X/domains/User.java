@@ -80,7 +80,7 @@ public class User extends Auditable {
 
     private String defaultLanguage;
 
-    private Boolean isLinkedToTeamGroup;
+    private Boolean isLinkedToTeamGroup = false;
 
     private String productFormType;
 

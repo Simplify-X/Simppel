@@ -33,6 +33,7 @@ public class TeamGroupController {
 
         teamGroup.setAdvertisementAccess(AdvertisementAccess.fromString(String.valueOf(teamGroup.getAdvertisementAccess())));
         teamGroup.setCopyWritingAccess(CopyWritingAccess.fromString(String.valueOf(teamGroup.getCopyWritingAccess())));
+        teamGroup.setSpyToolAccess(SpyToolAccess.fromString(String.valueOf(teamGroup.getSpyToolAccess())));
 
         return teamGroupService.saveTeam(teamGroup);
     }

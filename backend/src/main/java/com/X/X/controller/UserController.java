@@ -177,9 +177,15 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping("/getUserForAccount/{accountId}")
-    public List <User> getUsersForAccount(@PathVariable UUID accountId) {
-        return userService.getAllUserForAccount(accountId);
+    @GetMapping("/getUserForAccount/{accountId}/{userId}")
+    public List <User> getUsersForAccount(@PathVariable UUID accountId, @PathVariable UUID userId) {
+        return userService.getAllUserForAccount(accountId, userId);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getUsersTeam/{accountId}/{userId}")
+    public List <User> getUsersForAccountTeamManagement(@PathVariable UUID accountId, @PathVariable UUID userId) {
+        return userService.getAllUserForAccountTeam(accountId, userId);
     }
 
 
