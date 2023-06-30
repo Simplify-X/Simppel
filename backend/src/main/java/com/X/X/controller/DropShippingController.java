@@ -43,7 +43,7 @@ public class DropShippingController {
     }
 
     @CrossOrigin
-    @Operation(summary = "Update a Dropshipping product", description = "Update a dropshipping product based on ID")
+    @Operation(summary = "Duplicate a Dropshipping product", description = "Duplicate a new dropshipping product")
     @PostMapping("/duplicate/{id}")
     public ResponseStatus duplicate(@PathVariable UUID id) {
         return dropShippingService.duplicateProduct(id);
