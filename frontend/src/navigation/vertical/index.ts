@@ -225,11 +225,11 @@ const Navigation = (): VerticalNavItemsType=> {
     },
 
 
-    !userData.role && {
+    !userData.role && !userData.isLinkedToTeamGroup && {
       sectionTitle: t('management')
     },
 
-    !userData.role && userData.isLinkedToTeamGroup && {
+    !userData.role && !userData.isLinkedToTeamGroup && {
       title: t('management'),
       icon: WorkspacesIcon,
       openByDefault: true,
