@@ -65,7 +65,6 @@ const ProductDetail: React.FC = () => {
     }
   }
 
-
   const fetchTeamGroupMember = async () => {
     const response = await get(`/groups/members/list/${userId}`)
     if (response?.data) {
@@ -80,7 +79,7 @@ const ProductDetail: React.FC = () => {
     if (getTeamData?.data) {
       setTeamData(getTeamData.data)
       setLoading(false)
-    } else{
+    } else {
       setLoading(false)
     }
   }
@@ -228,29 +227,31 @@ const ProductDetail: React.FC = () => {
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <Carousel showArrows={true} showThumbs={false} selectedItem={selectedImageIndex}>
-                      {product?.additionalImages.map((image, index) => (
-                        <div key={index}>
-                          <img
-                            src={image.imageUrl}
-                            alt={`Additional Image ${index + 1}`}
-                            style={{ maxWidth: '400px', maxHeight: '500px', width: 'auto', height: 'auto' }}
-                          />
-                        </div>
-                      ))}
+                      {product?.additionalImages &&
+                        product.additionalImages.map((image, index) => (
+                          <div key={index}>
+                            <img
+                              src={image.imageUrl}
+                              alt={`Additional Image ${index + 1}`}
+                              style={{ maxWidth: '400px', maxHeight: '500px', width: 'auto', height: 'auto' }}
+                            />
+                          </div>
+                        ))}
                     </Carousel>
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2} justifyContent='center'>
-                      {product?.additionalImages.map((image, index) => (
-                        <Grid item key={index}>
-                          <img
-                            src={image.imageUrl}
-                            alt={`Additional Image ${index + 1}`}
-                            style={{ width: '80px', height: '80px', cursor: 'pointer' }}
-                            onClick={() => setSelectedImageIndex(index)}
-                          />
-                        </Grid>
-                      ))}
+                      {product?.additionalImages &&
+                        product.additionalImages.map((image, index) => (
+                          <Grid item key={index}>
+                            <img
+                              src={image.imageUrl}
+                              alt={`Additional Image ${index + 1}`}
+                              style={{ width: '80px', height: '80px', cursor: 'pointer' }}
+                              onClick={() => setSelectedImageIndex(index)}
+                            />
+                          </Grid>
+                        ))}
                     </Grid>
                   </Grid>
                 </Grid>
