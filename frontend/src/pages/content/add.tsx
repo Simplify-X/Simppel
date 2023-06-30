@@ -44,8 +44,7 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import { Helmet } from 'react-helmet'
 import { CircularProgress } from '@mui/material'
-import { useStore } from 'src/store';
-
+import { useStore } from 'src/store'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -104,13 +103,14 @@ const Content = () => {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-  const { product } = useStore();
+  const { product } = useStore()
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
   const { userId } = useUserData()
+  const [teamGroupMember, setTeamGroupMember] = useState([])
+  const [teamData, setTeamData] = useState([])
 
-  console.log(userId)
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -163,8 +163,33 @@ const Content = () => {
     setPersonName(typeof value === 'string' ? value.split(',') : value)
   }
 
+  useEffect(() => {
+    userId && fetchTeamGroupMember()
+  }, [userId])
 
-  
+  useEffect(() => {
+    teamGroupMember?.teamGroupId && fetchTeamData()
+  }, [teamGroupMember?.teamGroupId])
+
+  const fetchTeamGroupMember = async () => {
+    const response = await get(`/groups/members/list/${userId}`)
+    if (response?.data) {
+      setTeamGroupMember(response.data)
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const fetchTeamData = async () => {
+    const getTeamData = await get(`/groups/list/${teamGroupMember?.teamGroupId}`)
+    if (getTeamData?.data) {
+      setTeamData(getTeamData.data)
+      setLoading(false)
+    } else {
+      setLoading(false)
+    }
+  }
+
 
   useEffect(() => {
     userId && fetchSingleUser()
@@ -177,7 +202,6 @@ const Content = () => {
       setData(response.data)
       const advertisementLimit = response.data?.advertisementLimit
       advertisementLimit && setLimit(advertisementLimit)
-      setLoading(false)
     }
   }
 
@@ -193,27 +217,24 @@ const Content = () => {
   const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if(product && userId && data) {
-        const categoriesString = product.categories.map(category => category.categoryName).join(', ');
-        setScrapedData({
-          title: product.title,
-          description: product.description || product.title, 
-          targetAudience: categoriesString,
-        });
-        setSelectedLanguage(data?.defaultAdvertisementLanguage)
-        console.log(data)
-        setSelectedLocation(data?.defaultAdvertisementLocation);
-        setSelectedTypeAd(product.typeAd);
-        setSelectedMood(data?.defaultAdvertisementMood);
-        setSelectedTextLength(data?.defaultAdvertisementLength);
+    if (product && userId && data) {
+      const categoriesString = product.categories.map(category => category.categoryName).join(', ')
+      setScrapedData({
+        title: product.title,
+        description: product.description || product.title,
+        targetAudience: categoriesString
+      })
+      setSelectedLanguage(data?.defaultAdvertisementLanguage)
+      setSelectedLocation(data?.defaultAdvertisementLocation)
+      setSelectedTypeAd(product.typeAd)
+      setSelectedMood(data?.defaultAdvertisementMood)
+      setSelectedTextLength(data?.defaultAdvertisementLength)
 
-        if (product.image.imageUrl) {
-            setImgSrc(product.image.imageUrl);
-        }
+      if (product.image.imageUrl) {
+        setImgSrc(product.image.imageUrl)
+      }
     }
-}, [product, userId, data]); 
-
-
+  }, [product, userId, data])
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -276,272 +297,289 @@ const Content = () => {
     return <CircularProgress />
   }
 
-  console.log(data)
 
   return (
     <form onSubmit={submitForm}>
       <Helmet>
         <title>Simppel - Create Advertisement</title>
       </Helmet>
-      <Card style={{ padding: 15 }}>
-        <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
-        <CardContent>
-          <ToastContainer position={'top-center'} draggable={false} />
-          <Grid container spacing={5}>
-            {data.advertisementImportEnabled && <WebScraper onScrapedData={handleScrapedData} />}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label={scrapedData.title ? '' : t('product_name')}
-                inputRef={nameRef}
-                required
-                helperText={t('enter_product_name')}
-                value={scrapedData.title}
-                onChange={event => {
-                  setScrapedData({
-                    ...scrapedData,
-                    title: event.target.value
-                  })
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                type='text'
-                label={scrapedData.description ? '' : t('product_description')}
-                placeholder='A flying bottle'
-                helperText={t('product_description_helper_text')}
-                inputRef={descriptionRef}
-                value={scrapedData.description}
-                required
-                onChange={event => {
-                  setScrapedData({
-                    ...scrapedData,
-                    description: event.target.value
-                  })
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                type='text'
-                label={scrapedData.targetAudience ? '' : t('target_audience')}
-                placeholder='Gym Rats, Soccer Moms, etc.'
-                helperText={t('target_audience_helper_text')}
-                inputRef={targetAudienceRef}
-                required
-                value={scrapedData.targetAudience}
-                onChange={event => {
-                  setScrapedData({
-                    ...scrapedData,
-                    targetAudience: event.target.value
-                  })
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Box
-                sx={{
-                  gap: 5,
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              ></Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      <Grid container spacing={5} style={{ marginTop: '20px' }}>
-        <Grid item xs={12}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-              <Typography>{t('branding_information')}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label={t('branding_name')}
-                  inputRef={brandNameRef || data?.defaultBrandName}
-                  value={data?.defaultBrandName}
-                  helperText={t('branding_name_helper_text')}
-                />
+      {teamData.advertisementAccess === 'VIEW' ? (
+        <Card style={{ padding: 15, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CardContent>
+            <Typography variant='h6' component='div' align='center'>
+              You do not have the rights to create an advertisement.
+              <br />
+              Please contact your Organization admin to enable it.
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <Card style={{ padding: 15 }}>
+            <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
+              <ToastContainer position={'top-center'} draggable={false} />
+              <Grid container spacing={5}>
+                {data.advertisementImportEnabled && <WebScraper onScrapedData={handleScrapedData} />}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label={scrapedData.title ? '' : t('product_name')}
+                    inputRef={nameRef}
+                    required
+                    helperText={t('enter_product_name')}
+                    value={scrapedData.title}
+                    onChange={event => {
+                      setScrapedData({
+                        ...scrapedData,
+                        title: event.target.value
+                      })
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    type='text'
+                    label={scrapedData.description ? '' : t('product_description')}
+                    placeholder='A flying bottle'
+                    helperText={t('product_description_helper_text')}
+                    inputRef={descriptionRef}
+                    value={scrapedData.description}
+                    required
+                    onChange={event => {
+                      setScrapedData({
+                        ...scrapedData,
+                        description: event.target.value
+                      })
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    type='text'
+                    label={scrapedData.targetAudience ? '' : t('target_audience')}
+                    placeholder='Gym Rats, Soccer Moms, etc.'
+                    helperText={t('target_audience_helper_text')}
+                    inputRef={targetAudienceRef}
+                    required
+                    value={scrapedData.targetAudience}
+                    onChange={event => {
+                      setScrapedData({
+                        ...scrapedData,
+                        targetAudience: event.target.value
+                      })
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      gap: 5,
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  ></Box>
+                </Grid>
               </Grid>
-              <Grid item xs={12} style={{ marginTop: '10px' }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  type='text'
-                  label={t('branding_description')}
-                  placeholder='A flying bottle'
-                  helperText={t('branding_description_helper_text')}
-                  inputRef={brandNameDescriptionRef || data?.defaultBrandDescription}
-                  value={data?.defaultBrandDescription}
-                />
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-        </Grid>
-      </Grid>
+            </CardContent>
+          </Card>
 
-      <Card style={{ marginTop: '20px',  padding: 15 }}>
-        <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
-        <CardContent>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <FormControl>
-                <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_location')}</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby='demo-row-radio-buttons-group-label'
-                  name='row-radio-buttons-group'
-                  value={selectedLocation}
-                  onChange={handleLocationChange}
-                >
-                  <FormControlLabel value='facebook' control={<Radio />} label='Facebook' />
-                  <FormControlLabel value='instagram' control={<Radio />} label='Instagram' />
-                  <FormControlLabel value='tiktok' control={<Radio />} label='Tiktok' />
-                  <FormControlLabel value='other' control={<Radio />} label='other' />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-
-            <AdvertisementCategorySelector selectedTypeAd={selectedTypeAd} handleTypeAd={handleTypeAd} />
-
-            <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
-
+          <Grid container spacing={5} style={{ marginTop: '20px' }}>
             <Grid item xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-                  <Typography>{t('advanced_settings')}</Typography>
+                  <Typography>{t('branding_information')}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Grid item xs={12}>
-                    <FormControl>
-                      <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_length')}</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby='demo-row-radio-buttons-group-label'
-                        name='row-radio-buttons-group'
-                        value={selectedTextLength}
-                        onChange={handleTextLength}
-                      >
-                        <FormControlLabel value='short' control={<Radio />} label='Short Text' />
-                        <FormControlLabel value='medium' control={<Radio />} label='Medium Text' />
-                        <FormControlLabel value='long' control={<Radio />} label='Long Text' />
-                      </RadioGroup>
-                    </FormControl>
+                    <TextField
+                      fullWidth
+                      label={t('branding_name')}
+                      inputRef={brandNameRef || data?.defaultBrandName}
+                      value={data?.defaultBrandName}
+                      helperText={t('branding_name_helper_text')}
+                    />
                   </Grid>
-
-                  <Grid item xs={12}>
-                    <FormControl>
-                      <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby='demo-row-radio-buttons-group-label'
-                        name='row-radio-buttons-group'
-                        value={selectedMood}
-                        onChange={handleMood}
-                      >
-                        <FormControlLabel value='sell' control={<Radio />} label='Sell' />
-                        <FormControlLabel value='promote' control={<Radio />} label='Promote' />
-                        <FormControlLabel value='engage' control={<Radio />} label='Engage' />
-                        <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12} style={{ marginTop: '20px' }}>
-                    <FormControl sx={{ minWidth: 370 }}>
-                      <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
-                      <Select
-                        labelId='demo-multiple-chip-label'
-                        id='demo-multiple-chip'
-                        multiple
-                        value={personName}
-                        onChange={handleChange}
-                        input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
-                        renderValue={selected => (
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {selected.map(value => (
-                              <Chip key={value} label={value} />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={MenuProps}
-                      >
-                        {names.map(name => (
-                          <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                  <Grid item xs={12} style={{ marginTop: '10px' }}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={4}
+                      type='text'
+                      label={t('branding_description')}
+                      placeholder='A flying bottle'
+                      helperText={t('branding_description_helper_text')}
+                      inputRef={brandNameDescriptionRef || data?.defaultBrandDescription}
+                      value={data?.defaultBrandDescription}
+                    />
                   </Grid>
                 </AccordionDetails>
               </Accordion>
             </Grid>
           </Grid>
-        </CardContent>
-      </Card>
 
-      {data.imageUploadFeatureEnabled && (
-        <Card style={{ marginTop: '20px',  padding: 15 }}>
-          <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
-          <CardContent>
-            <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ImgStyled src={imgSrc} alt='Profile Pic' />
-                <Box>
-                  <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
-                    Upload New Photo
-                    <input
-                      hidden
-                      type='file'
-                      onChange={onChange}
-                      accept='image/png, image/jpeg'
-                      id='account-settings-upload-image'
-                      multiple
-                    />
-                  </ButtonStyled>
-                  <ResetButtonStyled
-                    color='error'
-                    variant='outlined'
-                    onClick={() => setImgSrc('/images/avatars/1.png')}
-                  >
-                    Reset
-                  </ResetButtonStyled>
-                  <Typography variant='body2' sx={{ marginTop: 5 }}>
-                    Allowed PNG or JPEG. Max size of 800K.
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </CardContent>
-        </Card>
+          <Card style={{ marginTop: '20px', padding: 15 }}>
+            <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
+              <Grid container spacing={5}>
+                <Grid item xs={12}>
+                  <FormControl>
+                    <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_location')}</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby='demo-row-radio-buttons-group-label'
+                      name='row-radio-buttons-group'
+                      value={selectedLocation}
+                      onChange={handleLocationChange}
+                    >
+                      <FormControlLabel value='facebook' control={<Radio />} label='Facebook' />
+                      <FormControlLabel value='instagram' control={<Radio />} label='Instagram' />
+                      <FormControlLabel value='tiktok' control={<Radio />} label='Tiktok' />
+                      <FormControlLabel value='other' control={<Radio />} label='other' />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+
+                <AdvertisementCategorySelector selectedTypeAd={selectedTypeAd} handleTypeAd={handleTypeAd} />
+
+                <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
+
+                <Grid item xs={12}>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls='panel1a-content'
+                      id='panel1a-header'
+                    >
+                      <Typography>{t('advanced_settings')}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid item xs={12}>
+                        <FormControl>
+                          <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_length')}</FormLabel>
+                          <RadioGroup
+                            row
+                            aria-labelledby='demo-row-radio-buttons-group-label'
+                            name='row-radio-buttons-group'
+                            value={selectedTextLength}
+                            onChange={handleTextLength}
+                          >
+                            <FormControlLabel value='short' control={<Radio />} label='Short Text' />
+                            <FormControlLabel value='medium' control={<Radio />} label='Medium Text' />
+                            <FormControlLabel value='long' control={<Radio />} label='Long Text' />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <FormControl>
+                          <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
+                          <RadioGroup
+                            row
+                            aria-labelledby='demo-row-radio-buttons-group-label'
+                            name='row-radio-buttons-group'
+                            value={selectedMood}
+                            onChange={handleMood}
+                          >
+                            <FormControlLabel value='sell' control={<Radio />} label='Sell' />
+                            <FormControlLabel value='promote' control={<Radio />} label='Promote' />
+                            <FormControlLabel value='engage' control={<Radio />} label='Engage' />
+                            <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} style={{ marginTop: '20px' }}>
+                        <FormControl sx={{ minWidth: 370 }}>
+                          <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
+                          <Select
+                            labelId='demo-multiple-chip-label'
+                            id='demo-multiple-chip'
+                            multiple
+                            value={personName}
+                            onChange={handleChange}
+                            input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
+                            renderValue={selected => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map(value => (
+                                  <Chip key={value} label={value} />
+                                ))}
+                              </Box>
+                            )}
+                            MenuProps={MenuProps}
+                          >
+                            {names.map(name => (
+                              <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                                {name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {data.imageUploadFeatureEnabled && (
+            <Card style={{ marginTop: '20px', padding: 15 }}>
+              <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
+              <CardContent>
+                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ImgStyled src={imgSrc} alt='Profile Pic' />
+                    <Box>
+                      <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                        Upload New Photo
+                        <input
+                          hidden
+                          type='file'
+                          onChange={onChange}
+                          accept='image/png, image/jpeg'
+                          id='account-settings-upload-image'
+                          multiple
+                        />
+                      </ButtonStyled>
+                      <ResetButtonStyled
+                        color='error'
+                        variant='outlined'
+                        onClick={() => setImgSrc('/images/avatars/1.png')}
+                      >
+                        Reset
+                      </ResetButtonStyled>
+                      <Typography variant='body2' sx={{ marginTop: 5 }}>
+                        Allowed PNG or JPEG. Max size of 800K.
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </CardContent>
+            </Card>
+          )}
+
+          <Tooltip title={isButtonDisabled ? 'You have reached your limit of advertisements' : ''} arrow>
+            <span>
+              <Button
+                type='submit'
+                variant='contained'
+                size='large'
+                style={{ marginTop: '20px' }}
+                disabled={isButtonDisabled}
+              >
+                {t('create')}
+              </Button>
+            </span>
+          </Tooltip>
+        </>
       )}
-
-      <Tooltip title={isButtonDisabled ? 'You have reached your limit of advertisements' : ''} arrow>
-        <span>
-          <Button
-            type='submit'
-            variant='contained'
-            size='large'
-            style={{ marginTop: '20px' }}
-            disabled={isButtonDisabled}
-          >
-            {t('create')}
-          </Button>
-        </span>
-      </Tooltip>
     </form>
   )
 }

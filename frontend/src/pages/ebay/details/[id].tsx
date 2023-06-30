@@ -37,11 +37,13 @@ const ProductDetail: React.FC = () => {
   const router = useRouter()
   const { userId } = useUserData()
   const { post, get } = useCustomApiHook()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const { t } = useTranslation()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [data, setData] = useState([])
   const [infoAlertOpen, setInfoAlertOpen] = useState(true)
+  const [teamGroupMember, setTeamGroupMember] = useState([])
+  const [teamData, setTeamData] = useState([])
 
   const handleInfoAlertClose = () => {
     setInfoAlertOpen(false)
@@ -49,12 +51,37 @@ const ProductDetail: React.FC = () => {
 
   useEffect(() => {
     userId && fetchSingleUser()
+    userId && fetchTeamGroupMember()
   }, [userId])
+
+  useEffect(() => {
+    teamGroupMember?.teamGroupId && fetchTeamData()
+  }, [teamGroupMember?.teamGroupId])
 
   const fetchSingleUser = async () => {
     const response = await get(`/users/getSingleUser/${userId}`)
     if (response?.data) {
       setData(response.data)
+    }
+  }
+
+
+  const fetchTeamGroupMember = async () => {
+    const response = await get(`/groups/members/list/${userId}`)
+    if (response?.data) {
+      setTeamGroupMember(response.data)
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const fetchTeamData = async () => {
+    const getTeamData = await get(`/groups/list/${teamGroupMember?.teamGroupId}`)
+    if (getTeamData?.data) {
+      setTeamData(getTeamData.data)
+      setLoading(false)
+    } else{
+      setLoading(false)
     }
   }
 
@@ -77,8 +104,6 @@ const ProductDetail: React.FC = () => {
       alert('No product selected')
     }
   }
-
-  console.log(data)
 
   const handleDownloadImages = async () => {
     const zip = new JSZip()
@@ -136,17 +161,17 @@ const ProductDetail: React.FC = () => {
     event.preventDefault()
 
     const categoriesString = product.categories
-    .map((category: { categoryName: any }) => category.categoryName)
-    .join(', ')
-    
-    const formSupplyType = 'Copy Form';
+      .map((category: { categoryName: any }) => category.categoryName)
+      .join(', ')
+
+    const formSupplyType = 'Copy Form'
     const customCommands = ''
 
     const copyData = {
       title: product?.title,
       keyWords: categoriesString,
       description: product?.title || product.description,
-      formType:formSupplyType,
+      formType: formSupplyType,
       targetAudience: categoriesString,
       toneOfCopy: data?.defaultCopyTone,
       copyLength: data?.defaultCopyLength,
@@ -155,10 +180,8 @@ const ProductDetail: React.FC = () => {
       brandDescription: '',
       customCommands: customCommands,
       copyWritingType: data?.defaultCopyType,
-      copyWritingContext: null,
+      copyWritingContext: null
     }
-
-    console.log(copyData)
 
     const response = await post(`/copyWriting/${userId}`, copyData)
     const newAdvertisementId = (response?.data as ResponseData)?.id
@@ -179,8 +202,6 @@ const ProductDetail: React.FC = () => {
       </Box>
     )
   }
-
-  console.log(product)
 
   return (
     <>
@@ -256,34 +277,51 @@ const ProductDetail: React.FC = () => {
               titleTypographyProps={{ variant: 'h6' }}
               action={
                 <>
-                  <Tooltip title='Click to generate an instant advertisement'>
-                    <Button
-                      component='a'
-                      variant='contained'
-                      sx={{ px: 5.5, marginRight: '10px' }}
-                      onClick={handleGenerateAdvert}
-                    >
-                      Generate Ad
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title='Click to create an advertisement based on the product data'>
-                    <Button component='a' variant='contained' sx={{ px: 5.5, marginRight: '10px' }} onClick={handleImportAdvert}>
-                      Import Ad
-                    </Button>
-                  </Tooltip>
+                  {teamData?.spyToolAccess !== 'VIEW' && (
+                    <>
+                      <Tooltip title='Click to generate an instant advertisement'>
+                        <Button
+                          component='a'
+                          variant='contained'
+                          sx={{ px: 5.5, marginRight: '10px' }}
+                          onClick={handleGenerateAdvert}
+                        >
+                          Generate Ad
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title='Click to create an advertisement based on the product data'>
+                        <Button
+                          component='a'
+                          variant='contained'
+                          sx={{ px: 5.5, marginRight: '10px' }}
+                          onClick={handleImportAdvert}
+                        >
+                          Import Ad
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )}
 
-                  <Tooltip title='Click to generate an instant copy'>
-                    <Button component='a' variant='contained' sx={{ px: 5.5, marginRight: '10px' }} onClick={handleGenerateCopy}>
-                      Generate Copy
-                    </Button>
-                  </Tooltip>
+                  {teamData?.copyWritingAccess !== 'VIEW' && (
+                    <>
+                      <Tooltip title='Click to generate an instant copy'>
+                        <Button
+                          component='a'
+                          variant='contained'
+                          sx={{ px: 5.5, marginRight: '10px' }}
+                          onClick={handleGenerateCopy}
+                        >
+                          Generate Copy
+                        </Button>
+                      </Tooltip>
 
-                  <Tooltip title='Click to create a copy based on the product data'>
-                    <Button component='a' variant='contained' sx={{ px: 5.5 }} onClick={handleImportCopy}>
-                      Import Copy
-                    </Button>
-                  </Tooltip>
-                  
+                      <Tooltip title='Click to create a copy based on the product data'>
+                        <Button component='a' variant='contained' sx={{ px: 5.5 }} onClick={handleImportCopy}>
+                          Import Copy
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )}
                 </>
               }
             />

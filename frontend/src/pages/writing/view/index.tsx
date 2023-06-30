@@ -83,7 +83,6 @@ const Copy = () => {
 
   const getAllUsers = async () => {
     const copyWritingData = await get(`/copyWriting/${userId}`);
-    console.log(copyWritingData)
     setCopy(copyWritingData.data)
     setLoading(false)
   }

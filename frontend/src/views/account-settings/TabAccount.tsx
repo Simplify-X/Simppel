@@ -97,7 +97,6 @@ const TabAccount = () => {
 
   const fetchSingleUser = async () => {
     const singleUserResult = await get(`/users/getSingleUser/${userId}`)
-    console.log(singleUserResult)
     setUserData(singleUserResult?.data)
     setLoading(true)
   }
@@ -115,7 +114,6 @@ const TabAccount = () => {
       defaultAdvertisementLocation
     }
 
-    console.log(data)
 
     try {
       await put(`/users/users/management/${userId}`, data)
