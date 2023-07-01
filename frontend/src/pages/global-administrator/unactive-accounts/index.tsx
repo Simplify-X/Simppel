@@ -5,7 +5,7 @@ import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-import CircularProgress from '@mui/material/CircularProgress'
+import Loader from 'src/@core/components/ui/Loader'
 
 const UnactiveAccounts = () => {
   const [role, setRole] = useState([])
@@ -86,7 +86,7 @@ const UnactiveAccounts = () => {
 
   
   if (accountLoading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return <MUIDataTable title={'Unactive User List'} data={sortedArray} columns={columns} options={options} />

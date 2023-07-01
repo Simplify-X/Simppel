@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import * as Sentry from '@sentry/nextjs'
 import { API_BASE_URL } from 'src/config'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-import CircularProgress from '@mui/material/CircularProgress'
+import Loader from 'src/@core/components/ui/Loader'
 
 const AllInvitedUsers = () => {
   const [role, setRole] = useState([])
@@ -135,7 +135,7 @@ const AllInvitedUsers = () => {
   
 
   if (isUserExtensionLoading || isTeamGroupLoading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return <MUIDataTable title={'Invited User List'} data={sortedArray} columns={columns} options={options} />

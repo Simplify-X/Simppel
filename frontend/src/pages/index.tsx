@@ -38,6 +38,7 @@ import { Helmet } from 'react-helmet'
 import Loader from 'src/@core/components/ui/Loader'
 import authRoute from 'src/@core/utils/auth-route'
 import { useRouter } from 'next/router'
+import FirstSettings from '../views/modal-templates/firstSettings'
 
 const useStyles = makeStyles({
   textField: {
@@ -270,7 +271,11 @@ const Search: React.FC = () => {
     router.push('/global-administrator/users')
 
     return <Loader />
-  } else {
+  } else if (!data?.firstTimeLoggedIn){
+    return <FirstSettings/>
+  }
+  
+  else {
     return (
       <div>
         <Helmet>

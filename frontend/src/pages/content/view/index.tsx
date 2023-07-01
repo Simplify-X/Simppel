@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import * as Sentry from '@sentry/nextjs'
 import { API_BASE_URL } from 'src/config'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 
 const ViewContent = () => {
   const [content, setContent] = useState([])
@@ -123,7 +123,7 @@ const ViewContent = () => {
   });
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return (

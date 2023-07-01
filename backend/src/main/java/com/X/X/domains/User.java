@@ -104,4 +104,6 @@ public class User extends Auditable {
 
     private String defaultBrandDescription;
 
+    private Boolean firstTimeLoggedIn = false;
+
 }
