@@ -8,7 +8,7 @@ import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 
 const UserManagement = () => {
   const [role, setRole] = useState([])
@@ -97,7 +97,7 @@ const UserManagement = () => {
   }
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return (

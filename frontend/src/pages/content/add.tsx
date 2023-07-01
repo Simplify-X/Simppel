@@ -43,7 +43,7 @@ import Tooltip from '@mui/material/Tooltip'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import { Helmet } from 'react-helmet'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 import { useStore } from 'src/store'
 
 const ITEM_HEIGHT = 48
@@ -294,7 +294,7 @@ const Content = () => {
   }, [response, error])
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
 

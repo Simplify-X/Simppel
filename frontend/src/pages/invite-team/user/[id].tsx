@@ -33,7 +33,6 @@ const ViewUserGroup = () => {
   const { response, get, post, del } = useCustomApiHook()
   const { accountId, userId } = useUserData()
 
-
   const handleOpen = () => {
     setOpen(true)
   }
@@ -145,8 +144,8 @@ const ViewUserGroup = () => {
       const res = await get(`/users/getUserForAccount/${accountId}/${userId}`)
       res?.data && setUsers(res.data)
     }
-    accountId && fetchUserForAccount()
-  }, [accountId, open])
+    userId && accountId && fetchUserForAccount()
+  }, [accountId, open, userId])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -192,26 +191,25 @@ const ViewUserGroup = () => {
           <Box marginTop={5}>
             <InputLabel>User</InputLabel>
             <TextField
-  select
-  label='Select'
-  value={selectedUser}
-  onChange={e => setSelectedUser(e.target.value)}
-  fullWidth
-  margin='normal'
->
-  {users.length === 0 ? (
-    <MenuItem value="" disabled>
-      No Users
-    </MenuItem>
-  ) : (
-    users.map(user => (
-      <MenuItem key={user?.userId} value={user?.userId}>
-        {user?.username}
-      </MenuItem>
-    ))
-  )}
-</TextField>
-
+              select
+              label='Select'
+              value={selectedUser}
+              onChange={e => setSelectedUser(e.target.value)}
+              fullWidth
+              margin='normal'
+            >
+              {users.length === 0 ? (
+                <MenuItem value='' disabled>
+                  No Users
+                </MenuItem>
+              ) : (
+                users.map(user => (
+                  <MenuItem key={user?.userId} value={user?.userId}>
+                    {user?.username}
+                  </MenuItem>
+                ))
+              )}
+            </TextField>
           </Box>
 
           <Box marginTop={2}>

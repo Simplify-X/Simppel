@@ -6,7 +6,7 @@ import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 
 //import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
@@ -92,7 +92,7 @@ const Copy = () => {
   });
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return <MUIDataTable title={'Copy List'} data={sortedArray} columns={columns} options={options} />

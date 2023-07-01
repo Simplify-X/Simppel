@@ -34,6 +34,7 @@ public record UserService(UserRepository userRepo,
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
+        
         if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             if(user.isUserActive() != false){
                 String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
@@ -71,6 +72,7 @@ public record UserService(UserRepository userRepo,
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(true)
                 .isLinkedToTeamGroup(false)
+                .firstTimeLoggedIn(false)
                 .build();
         try {
             userRepo.save(newUser);
@@ -199,6 +201,7 @@ public record UserService(UserRepository userRepo,
         user.setDefaultCopyType(userDetails.getDefaultCopyType());
         user.setDefaultBrandDescription(userDetails.getDefaultBrandDescription());
         user.setDefaultBrandName(userDetails.getDefaultBrandName());
+        user.setFirstTimeLoggedIn(userDetails.getFirstTimeLoggedIn());
 
         return userRepo.save(user);
     }
@@ -261,6 +264,7 @@ public record UserService(UserRepository userRepo,
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(registerDTO.isAccountRole())
                 .isLinkedToTeamGroup(true)
+                .firstTimeLoggedIn(false)
                 .build();
         try {
             userRepo.save(newUser);

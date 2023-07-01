@@ -18,7 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { toast } from 'react-toastify'
 import { useUserData } from 'src/@core/hooks/useUserData'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -225,7 +225,7 @@ const InviteTeam = () => {
   }, [response])
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return (
