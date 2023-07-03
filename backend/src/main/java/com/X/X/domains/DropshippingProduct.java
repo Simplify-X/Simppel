@@ -13,6 +13,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -55,6 +56,11 @@ public class DropshippingProduct extends Auditable  {
 
     private String facebookAds;
 
+    private String productScore;
+
+    @OneToMany(mappedBy = "dropShippingProductId", fetch = FetchType.LAZY)
+    private List<FileUpload> additionalImages;
+
 
     public DropshippingProduct(DropshippingProduct getProduct) {
         this.title = getProduct.title;
@@ -68,5 +74,6 @@ public class DropshippingProduct extends Auditable  {
         this.category = getProduct.category;
         this.Image = getProduct.Image;
         this.price = getProduct.price;
+        this.productScore = getProduct.productScore;
     }
 }

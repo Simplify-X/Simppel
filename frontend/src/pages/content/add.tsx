@@ -45,6 +45,7 @@ import { useUserData } from 'src/@core/hooks/useUserData'
 import { Helmet } from 'react-helmet'
 import Loader from 'src/@core/components/ui/Loader'
 import { useStore } from 'src/store'
+import { dropStore } from 'src/dropStore'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -92,10 +93,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 const Content = () => {
   // ** States
   const router = useRouter()
-  const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedTypeAd, setSelectedTypeAd] = useState('')
-  const [selectedMood, setSelectedMood] = useState('')
-  const [selectedTextLength, setSelectedTextLength] = useState('')
   const [data, setData] = useState([])
   const [adCount, setAdCount] = useState(0)
   const [limit, setLimit] = useState(10)
@@ -104,12 +102,17 @@ const Content = () => {
   const [loading, setLoading] = useState(true)
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const { product } = useStore()
-  const [selectedLanguage, setSelectedLanguage] = useState('')
+  const { dropshipping } = dropStore()
   const [scrapedData, setScrapedData] = useState({})
   const { response, error, get, post } = useCustomApiHook()
   const { userId } = useUserData()
   const [teamGroupMember, setTeamGroupMember] = useState([])
   const [teamData, setTeamData] = useState([])
+
+  const [selectedLanguage, setSelectedLanguage] = useState(data?.defaultAdvertisementLanguage || '');
+  const [selectedLocation, setSelectedLocation] = useState(data?.defaultAdvertisementLocation || '');
+  const [selectedMood, setSelectedMood] = useState(data?.defaultAdvertisementMood || '');
+  const [selectedTextLength, setSelectedTextLength] = useState(data?.defaultAdvertisementLength || '');
 
 
   const handleScrapedData = data => {
@@ -217,6 +220,22 @@ const Content = () => {
   const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    if (!product && !dropshipping) {
+      setScrapedData({
+        title: '',
+        description: '',
+        targetAudience: ''
+      })
+      setSelectedLanguage(data?.defaultAdvertisementLanguage)
+      setSelectedLocation(data?.defaultAdvertisementLocation)
+      setSelectedTypeAd('')
+      setSelectedMood(data?.defaultAdvertisementMood)
+      setSelectedTextLength(data?.defaultAdvertisementLength)
+      setImgSrc('')
+    }
+  }, [product, dropshipping, data])
+
+  useEffect(() => {
     if (product && userId && data) {
       const categoriesString = product.categories.map(category => category.categoryName).join(', ')
       setScrapedData({
@@ -235,6 +254,25 @@ const Content = () => {
       }
     }
   }, [product, userId, data])
+
+
+  useEffect(() => {
+    if (dropshipping && userId && data) {
+      setScrapedData({
+        title: dropshipping.title,
+        description: dropshipping.description,
+        targetAudience: dropshipping.targeting,
+      })
+      setSelectedLanguage(data?.defaultAdvertisementLanguage)
+      setSelectedLocation(data?.defaultAdvertisementLocation)
+      setSelectedMood(data?.defaultAdvertisementMood)
+      setSelectedTextLength(data?.defaultAdvertisementLength)
+
+      if (dropshipping.additionalImages) {
+        setImgSrc(dropshipping.additionalImages)
+      }
+    }
+  }, [dropshipping, userId, data])
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()

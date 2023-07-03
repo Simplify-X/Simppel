@@ -34,7 +34,7 @@ public record UserService(UserRepository userRepo,
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
-        
+
         if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             if(user.isUserActive() != false){
                 String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
