@@ -110,7 +110,6 @@ const TabAccount = () => {
 
     const data = {
       ...userData,
-      productFormType,
       defaultAdvertisementLocation
     }
 
@@ -206,7 +205,7 @@ const TabAccount = () => {
                 disabled={!editable}
                 name='productFormType'
                 value={productFormType}
-                onChange={handleRadioChange}
+                onChange={e => setUserData({ ...userData, productFormType: e.target.value })}
                 style={{ display: 'block' }}
               >
                 <FormControlLabel disabled={!editable} value='amazon' control={<Radio />} label='Amazon' />

@@ -33,6 +33,7 @@ import EmailForm from './view/EmailForm'
 import AdditionalFeatures from './view/AdditionalFeatures'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useStore } from 'src/store'
+import { dropStore } from 'src/dropStore'
 import Loader from 'src/@core/components/ui/Loader'
 
 const Writing = () => {
@@ -40,6 +41,7 @@ const Writing = () => {
   const router = useRouter()
   const { t } = useTranslation()
   const { product } = useStore()
+  const { dropshipping } = dropStore()
   const { userId } = useUserData()
   const [data, setData] = useState([])
   const [selectedMood, setSelectedMood] = useState('')
@@ -158,6 +160,32 @@ const Writing = () => {
       setSelectedTextLength(data?.defaultCopyLength)
     }
   }, [product, userId, data])
+
+  
+  useEffect(() => {
+    if (dropshipping && data) {
+
+      if (nameRef.current) {
+        nameRef.current.value = dropshipping?.title || ''
+      }
+
+      if (descriptionRef.current) {
+        descriptionRef.current.value = dropshipping.description || ''
+      }
+
+      if (targetAudienceRef.current) {
+        targetAudienceRef.current.value = dropshipping?.targeting || ''
+      }
+
+      if (keywordInput.current) {
+        keywordInput.current.value = dropshipping?.targeting || ''
+      }
+      setSelectedLanguage(data?.defaultCopyLanguage)
+      setSelectedLocation('formal')
+      setSelectedCopyType('SEO')
+      setSelectedTextLength(data?.defaultCopyLength)
+    }
+  }, [dropshipping, data])
 
   const nameRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLInputElement>(null)

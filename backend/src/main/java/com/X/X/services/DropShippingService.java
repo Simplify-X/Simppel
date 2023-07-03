@@ -2,13 +2,16 @@ package com.X.X.services;
 
 import com.X.X.domains.*;
 import com.X.X.dto.ResponseStatus;
+import com.X.X.dto.ResponseStatusWithId;
 import com.X.X.help.Status;
 import com.X.X.repositories.DropShippingProductRepository;
+import com.X.X.repositories.FileUploadRepository;
 import com.X.X.repositories.NotificationRepository;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,13 +20,16 @@ public class DropShippingService {
     @Autowired
     private DropShippingProductRepository dropShippingProductRepository;
 
-    public ResponseStatus saveDropshippingProduct(DropshippingProduct dropshippingProduct) {
+    @Autowired
+    private FileUploadRepository fileUploadRepository;
+
+    public ResponseStatusWithId saveDropshippingProduct(DropshippingProduct dropshippingProduct) {
         try {
             dropShippingProductRepository.save(dropshippingProduct);
-            return new ResponseStatus(Status.OK, "Added");
+            return new ResponseStatusWithId(Status.OK, dropshippingProduct.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseStatus(Status.FAILED, "Failed to save notification");
+            return new ResponseStatusWithId(Status.FAILED, dropshippingProduct.getId());
         }
     }
 
@@ -33,8 +39,12 @@ public class DropShippingService {
     }
 
     public DropshippingProduct getSingleDropShippingProduct(UUID id) {
-        return dropShippingProductRepository.findByid(id);
+        DropshippingProduct dropshippingProduct = dropShippingProductRepository.findByid(id);
+        List<FileUpload> additionalImages = fileUploadRepository.findByDropShippingProductId(id);
+        dropshippingProduct.setAdditionalImages(additionalImages);
+        return dropshippingProduct;
     }
+
 
     public ResponseStatus deleteProduct(UUID id){
         try{
@@ -70,6 +80,7 @@ public class DropShippingService {
                 existingProduct.setImage(dropshippingProduct.getImage());
                 existingProduct.setProfitMargin(dropshippingProduct.getProfitMargin());
                 existingProduct.setSaturation(dropshippingProduct.getSaturation());
+                existingProduct.setProductScore(dropshippingProduct.getProductScore());
 
                 // Update other properties as needed
 

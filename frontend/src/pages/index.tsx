@@ -75,7 +75,7 @@ const Search: React.FC = () => {
   const { get } = useCustomApiHook()
   const apiKey = process.env.NEXT_PUBLIC_API_KEY
   const { t } = useTranslation()
-  const [data, setData] = useState([])
+  const [accountData, setData] = useState([])
 
   const [filters, setFilters] = useState<any>({
     productCategory: '',
@@ -94,7 +94,7 @@ const Search: React.FC = () => {
   const [product, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [marketplaceURL, setMarketplaceURL] = useState('amazon.com')
-  const [selectedValue, setSelectedValue] = useState('amazon')
+  const [selectedValue, setSelectedValue] = useState('')
   const { userId } = useUserData()
 
   const handleChangeForm = event => {
@@ -113,10 +113,10 @@ const Search: React.FC = () => {
   }
 
   useEffect(() => {
-    if (data && data.formType) {
-      setSelectedValue(data.productFormType)
+    if (accountData) {
+      setSelectedValue(accountData.productFormType)
     }
-  }, [data])
+  }, [accountData])
 
   useEffect(() => {
     const savedFields = Cookies.get('selectedFields')
@@ -265,17 +265,15 @@ const Search: React.FC = () => {
     return <CircularProgress />
   }
 
-  if (!data?.accountId) return <Loader />
+  if (!accountData?.accountId) return <Loader />
 
-  if (data?.role) {
+  if (accountData?.role) {
     router.push('/global-administrator/users')
 
     return <Loader />
-  } else if (!data?.firstTimeLoggedIn){
-    return <FirstSettings/>
-  }
-  
-  else {
+  } else if (!accountData?.firstTimeLoggedIn) {
+    return <FirstSettings />
+  } else {
     return (
       <div>
         <Helmet>
@@ -438,13 +436,16 @@ const Search: React.FC = () => {
             {selectedValue === 'dropshipping' && (
               <div>
                 <h1>Handpicked Dropshipping products</h1>
-                <Grid item xs={3}>
-                  <DropshippingCard />
-                </Grid>
               </div>
             )}
           </CardContent>
         </Card>
+
+        {selectedValue === 'dropshipping' && (
+          <Grid item xs={12} sm={6} md={4} style={{ marginTop: '20px', marginLeft: 40 }}>
+            <DropshippingCard />
+          </Grid>
+        )}
 
         <Dialog open={showModal} onClose={handleModalClose}>
           <DialogTitle>Select Additional Fields</DialogTitle>

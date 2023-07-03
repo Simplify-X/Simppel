@@ -17,6 +17,9 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import MenuItem from '@mui/material/MenuItem'
 import { Modal, Box } from '@mui/material'
 import MyEditor from 'src/@core/hooks/MyEditor'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+
 
 const AddDropshipping = () => {
   const router = useRouter()
@@ -26,6 +29,27 @@ const AddDropshipping = () => {
   const [editorContent, setEditorContent] = useState('')
   const { post } = useCustomApiHook()
   const [openModal, setOpenModal] = useState(false)
+  const [imageFiles, setUploadedImages] = useState([])
+
+  // const handleImageUpload = e => {
+  //   const files = Array.from(e.target.files)
+  //   setImageFiles(files)
+  // }
+
+  const handleImageUpload = event => {
+    const files = event.target.files
+    const newUploadedImages = Array.from(files)
+    setUploadedImages(prevUploadedImages => [...prevUploadedImages, ...newUploadedImages])
+  }
+
+  const handleRemoveImage = index => {
+    setUploadedImages(prevUploadedImages => {
+      const updatedImages = [...prevUploadedImages]
+      updatedImages.splice(index, 1)
+      
+      return updatedImages
+    })
+  }
 
   const handlePreview = () => {
     setOpenModal(true)
@@ -118,7 +142,8 @@ const AddDropshipping = () => {
     similarItems: '',
     targeting: '',
     analytics: '',
-    facebookAds: ''
+    facebookAds: '',
+    productScore: '',
   })
 
   const handleInputChange = e => {
@@ -148,11 +173,30 @@ const AddDropshipping = () => {
       targeting: formData.targeting,
       analytics: formData.analytics,
       facebookAds: formData.facebookAds,
-      description: editorContent
+      description: editorContent,
+      productScore: formData.productScore
     })
 
+
     const r = await post(`/dropshipping`, data)
+    const dropId = r?.data?.message
     const status = r?.data.status
+
+    const formD = new FormData()
+    formD.append('dropShippingProductId', dropId)
+    imageFiles.forEach(file => {
+      formD.append('files', file)
+    })
+
+    if (dropId) {
+      const response = await post('/file-upload', formD, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      const uploadedFileIds = response?.data
+      console.log(uploadedFileIds)
+    }
 
     if (status === 'OK') {
       setSnackbarMessage('Added Dropshipping product')
@@ -182,7 +226,8 @@ const AddDropshipping = () => {
       similarItems: [],
       targeting: '',
       analytics: '',
-      facebookAds: ''
+      facebookAds: '',
+      productScore: '',
     })
 
     // Redirect to another page after submission if needed
@@ -197,8 +242,9 @@ const AddDropshipping = () => {
     setEditorContent(content)
   }
 
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} encType='multipart/form-data'>
       <Card>
         <CardHeader title='Create Dropshipping Product' titleTypographyProps={{ variant: 'h6' }} />
         <CardContent>
@@ -321,6 +367,57 @@ const AddDropshipping = () => {
                 onChange={handleInputChange}
               />
             </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label='Product Score'
+                name='productScore'
+                value={formData.productScore}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <label htmlFor='image-upload' style={{ display: 'flex', alignItems: 'center' }}>
+                <Button variant='contained' component='span' color='primary' fullWidth>
+                  Upload Image
+                </Button>
+                <input
+                  id='image-upload'
+                  type='file'
+                  accept='image/*'
+                  multiple
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </Grid>
+            {imageFiles.map((file, index) => (
+              <Grid item key={index}>
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    style={{ width: '80px', height: '80px' }}
+                  />
+                  <IconButton
+                    style={{ position: 'absolute', top: 0, right: 0 }}
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <CloseIcon
+                      style={{
+                        color: '#000', // Set the desired color for the "X" icon
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)', // Set the desired background color for the icon
+                        borderRadius: '50%',
+                        position: 'absolute',
+                        top: '5px',
+                        right: '5px',
+                        padding: '2px'
+                      }}
+                    />
+                  </IconButton>
+                </div>
+              </Grid>
+            ))}
           </Grid>
         </CardContent>
       </Card>
