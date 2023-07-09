@@ -12,7 +12,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import { CircularProgress } from '@mui/material'
+import Loader from 'src/@core/components/ui/Loader'
 
 // import Cookies from 'js-cookie'
 import { IconButton } from '@mui/material'
@@ -172,7 +172,7 @@ const CustomFormTable = () => {
   }
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: (rowData: any) => {
       handleClick(rowData[0])
     }
@@ -242,7 +242,7 @@ const CustomFormTable = () => {
   }, [response])
 
   if (loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return (

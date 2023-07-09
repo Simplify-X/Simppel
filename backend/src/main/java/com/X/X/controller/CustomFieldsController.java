@@ -27,6 +27,16 @@ public class CustomFieldsController {
         CustomForm customForm = customFormService.getSingleCustomForm(customFormId);
         customFields.setCustomForm(customForm);
 
+        if (customFields.getFieldType() == FieldType.AUTO_COMPLETE) {
+            List<String> autoCompleteValues = customFields.getAutoCompleteValues();
+            customFields.setAutoCompleteValues(autoCompleteValues);
+        }
+
+        if (customFields.getFieldType() == FieldType.RADIO) {
+            List<String> radioFieldValues = customFields.getRadioFieldValues();
+            customFields.setRadioFieldValues(radioFieldValues);
+        }
+
         // Convert the frontend representation to backend enum value
         String frontendFieldType = customFields.getFieldType().toString();
         FieldType backendFieldType = customFieldsService.mapFieldType(frontendFieldType);
@@ -49,6 +59,16 @@ public class CustomFieldsController {
         if (existingFields == null) {
             // Handle error, custom fields not found
             // For simplicity, you can throw an exception or return an appropriate response
+        }
+
+        if (existingFields.getFieldType() == FieldType.AUTO_COMPLETE) {
+            List<String> autoCompleteValues = updatedFields.getAutoCompleteValues();
+            existingFields.setAutoCompleteValues(autoCompleteValues);
+        }
+
+        if (existingFields.getFieldType() == FieldType.RADIO) {
+            List<String> radioFieldValues = updatedFields.getRadioFieldValues();
+            existingFields.setRadioFieldValues(radioFieldValues);
         }
 
         // Update the fields with the new values

@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+import Loader from 'src/@core/components/ui/Loader'
 
 // import Cookies from 'js-cookie'
 import { IconButton } from '@mui/material'
@@ -38,6 +39,11 @@ const DynamicExtraFields = () => {
   const { response, error, del, get, post, put } = useCustomApiHook()
   const [isActive, setIsActive] = useState(false)
   const [fieldType, setFieldType] = useState('')
+  const [textFieldCount, setTextFieldCount] = useState(1)
+  const [autoCompleteValues, setAutoCompleteValues] = useState([])
+  const [radioTextFieldCount, setRadioTextFieldCount] = useState(1)
+  const [radioTextValues, setRadioTextValues] = useState([''])
+  const [loading, setLoading] = useState(true)
 
   const { id } = router.query
 
@@ -59,8 +65,28 @@ const DynamicExtraFields = () => {
     setIsActive(false)
   }
 
-  const handleClick = rowData => {
-    router.push(`/invite-team/user/${rowData}`)
+
+  const handleFieldTypeChange = event => {
+    setFieldType(event.target.value)
+    if (event.target.value === 'AutoComplete') {
+      setTextFieldCount(1)
+      setAutoCompleteValues([]) // Reset the AutoComplete values when the field type changes
+    }
+  }
+
+  // Handle adding more radio text fields
+  const handleAddRadioTextField = () => {
+    if (radioTextFieldCount < 5) {
+      setRadioTextFieldCount(prevCount => prevCount + 1)
+      setRadioTextValues(prevValues => [...prevValues, ''])
+    }
+  }
+
+  // Handle radio text field change
+  const handleRadioTextFieldChange = (index, value) => {
+    const updatedTextValues = [...radioTextValues]
+    updatedTextValues[index] = value
+    setRadioTextValues(updatedTextValues)
   }
 
   const columns = [
@@ -125,10 +151,6 @@ const DynamicExtraFields = () => {
     await del(`/customForm/delete/${rowId}`)
   }
 
-  const handleFieldTypeChange = event => {
-    setFieldType(event.target.value)
-  }
-
   useEffect(() => {
     const status = response?.data.status
 
@@ -148,13 +170,18 @@ const DynamicExtraFields = () => {
     setFieldType(selectedData.fieldType)
     setIsCreating(true)
     setRecordId(rowData[0])
+    if (selectedData.fieldType === 'AutoComplete') {
+      setAutoCompleteValues(selectedData.autoCompleteValues || [])
+      setTextFieldCount(selectedData.autoCompleteValues.length || 1)
+    }
+    if (selectedData.fieldType === 'Radio') {
+      setRadioTextValues(selectedData.radioFieldValues || [])
+      setRadioTextFieldCount(selectedData.radioFieldValues.length || 1)
+    }
   }
 
   const options = {
-    filterType: 'checkbox',
-    onRowClick: (rowData: any) => {
-      handleClick(rowData[0])
-    }
+    filterType: 'dropdown',
   }
 
   useEffect(() => {
@@ -178,6 +205,7 @@ const DynamicExtraFields = () => {
   const fetchCustomForm = async () => {
     const res = await get(`/customFields/${id}`)
     setRole(res?.data)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -193,13 +221,14 @@ const DynamicExtraFields = () => {
     }
   }, [response])
 
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     console.log(isActive)
     const data = {
       fieldName: formName,
-      fieldType
+      fieldType,
+      autoCompleteValues: autoCompleteValues.slice(0, textFieldCount),
+      radioFieldValues: radioTextValues.slice(0, radioTextFieldCount)
     }
 
     await post(`/customFields/create/${id}`, data)
@@ -210,10 +239,18 @@ const DynamicExtraFields = () => {
 
     const data = {
       fieldName: formName,
-      fieldType
+      fieldType,
+      autoCompleteValues: autoCompleteValues.slice(0, textFieldCount),
+      radioFieldValues: radioTextValues.slice(0, radioTextFieldCount)
     }
 
     await put(`/customFields/update/${recordId}`, data)
+  }
+
+  console.log(role)
+
+  if (loading) {
+    return <Loader />
   }
 
   return (
@@ -242,6 +279,48 @@ const DynamicExtraFields = () => {
                 </MenuItem>
               ))}
             </Select>
+            {fieldType === 'AutoComplete' && (
+              <>
+                {Array.from({ length: textFieldCount }).map((_, index) => (
+                  <TextField
+                    key={index}
+                    label={`Autocomplete value ${index + 1}`}
+                    value={autoCompleteValues[index] || ''}
+                    onChange={e => {
+                      const newValues = [...autoCompleteValues]
+                      newValues[index] = e.target.value
+                      setAutoCompleteValues(newValues)
+                    }}
+                    fullWidth
+                    margin='normal'
+                  />
+                ))}
+                {textFieldCount < 5 && (
+                  <Button variant='contained' onClick={() => setTextFieldCount(prevCount => prevCount + 1)}>
+                    Add Text Field
+                  </Button>
+                )}
+              </>
+            )}
+            {fieldType === 'Radio' && (
+              <>
+                {Array.from({ length: radioTextFieldCount }).map((_, index) => (
+                  <TextField
+                    key={index}
+                    label={`Radio Text ${index + 1}`}
+                    value={radioTextValues[index]}
+                    onChange={event => handleRadioTextFieldChange(index, event.target.value)}
+                    fullWidth
+                    margin='normal'
+                  />
+                ))}
+                {radioTextFieldCount < 6 && (
+                  <Button variant='contained' onClick={handleAddRadioTextField}>
+                    Add Radio Text
+                  </Button>
+                )}
+              </>
+            )}
           </FormControl>
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>

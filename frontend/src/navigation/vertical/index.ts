@@ -143,6 +143,11 @@ const Navigation = (): VerticalNavItemsType=> {
       path: '',
       children: [
       {
+        title: t('tiktok_spy_tools'),
+        icon: SearchIcon,
+        path: '/tiktok/search'
+      },
+      {
         title: t('ebay_spy_tools'),
         icon: SearchIcon,
         path: '/ebay/search'
