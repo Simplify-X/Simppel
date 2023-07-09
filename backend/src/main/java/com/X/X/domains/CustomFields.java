@@ -48,5 +48,14 @@ public class CustomFields extends Auditable {
     @Enumerated(EnumType.STRING)
     private FieldType fieldType;
 
+    @Column
+    @ElementCollection
+    private List<String> autoCompleteValues;
+
+    @Column
+    @ElementCollection
+    private List<String> radioFieldValues;
+
+
 
 }

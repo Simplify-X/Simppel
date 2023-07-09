@@ -69,7 +69,7 @@ const Users = () => {
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: rowData => {
       handleClick(rowData[0])
     }

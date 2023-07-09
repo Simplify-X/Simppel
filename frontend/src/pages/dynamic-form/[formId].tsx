@@ -16,6 +16,9 @@ import Checkbox from '@mui/material/Checkbox'
 import Autocomplete from '@mui/material/Autocomplete'
 import FormLabel from '@mui/material/FormLabel'
 import { v4 as uuidv4 } from 'uuid'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 const DynamicFormPage = () => {
   const router = useRouter()
@@ -32,18 +35,22 @@ const DynamicFormPage = () => {
   const [textFieldValue, setTextFieldValue] = useState('')
   const [textAreaValue, setTextAreaValue] = useState('')
   const [imageValue, setImageValue] = useState('')
-  const [autoCompleteValue, setAutoCompleteValue] = useState('')
-  const [checkValue, setCheckVal] = useState('')
+  const [, setAutoCompleteValue] = useState('')
+  const [, setCheckVal] = useState('')
   const [tableData, setTableData] = useState(null)
+  const [uploadedImages, setUploadedImages] = useState([])
+  const [selectedAutoCompleteValues, setSelectedAutoCompleteValues] = useState({})
+
+
+
+  const handleClick = rowData => {
+    const tableId = rowData[rowData.length - 1] // Assuming tableId is the last element in rowData
+    console.log(tableId)
+  }
+  
+
 
   // Function to handle radio option change
-
-  const autoCompleteOptions = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    { value: 'option4', label: 'Option 4' }
-  ]
 
   useEffect(() => {
     if (formId) {
@@ -103,20 +110,36 @@ const DynamicFormPage = () => {
     setTextAreaValue(event.target.value)
   }
 
-  const handleImageChange = event => {
-    setImageValue(event.target.value)
+  const handleAutoCompleteChange = (event, value, fieldName) => {
+    setSelectedAutoCompleteValues(prevSelectedValues => ({
+      ...prevSelectedValues,
+      [fieldName]: value || '' // Store the selected value or an empty string if cleared
+    }))
   }
 
-  const handleAutoCompleteChange = (event: React.ChangeEvent<{}>, value: any) => {
-    if (value) {
-      setAutoCompleteValue(value)
-    } else {
-      setAutoCompleteValue('')
-    }
-  }
+  const [selectedValues, setSelectedValues] = useState({})
 
-  const handleLocationChange = event => {
+  const handleLocationChange = (event, fieldName) => {
+    setSelectedValues(prevSelectedValues => ({
+      ...prevSelectedValues,
+      [fieldName]: event.target.value
+    }))
     setCheckVal(event.target.value)
+  }
+
+  const handleImageUpload = event => {
+    const files = event.target.files
+    const newUploadedImages = Array.from(files)
+    setUploadedImages(prevUploadedImages => [...prevUploadedImages, ...newUploadedImages])
+  }
+
+  const handleRemoveImage = index => {
+    setUploadedImages(prevUploadedImages => {
+      const updatedImages = [...prevUploadedImages]
+      updatedImages.splice(index, 1)
+
+      return updatedImages
+    })
   }
 
   const MAX_TITLE_LENGTH = 20 // Maximum length of the product title
@@ -137,16 +160,16 @@ const DynamicFormPage = () => {
     setCheckVal('')
   }
 
-  const getValueForField = fieldType => {
+  const getValueForField = (fieldType, fieldName) => {
     switch (fieldType) {
       case 'Tracker':
         return select1Value
       case 'Radio':
-        return checkValue
+        return selectedValues[fieldName] || ''
       case 'Image':
         return imageValue
       case 'AutoComplete':
-        return autoCompleteValue
+        return selectedAutoCompleteValues[fieldName] || ''
       case 'Textarea':
         return textAreaValue
       case 'Checkbox':
@@ -165,7 +188,7 @@ const DynamicFormPage = () => {
 
     const fieldValues = form.map(f => ({
       fieldName: f.fieldName,
-      fieldValue: getValueForField(f.fieldType),
+      fieldValue: getValueForField(f.fieldType, f.fieldName),
       tableId: tableId
     }))
 
@@ -202,17 +225,20 @@ const DynamicFormPage = () => {
 
   const transformTableData = () => {
     const transformedData = []
-
+  
     tableData?.forEach(rowArray => {
       const rowData = {}
+      let tableId = ''
       rowArray.forEach(row => {
         rowData[row.fieldName] = row.fieldValue
+        tableId = row.tableId // capturing tableId from the data
       })
-      transformedData.push(rowData)
+      transformedData.push({ ...rowData, tableId }) // include tableId in the row data
     })
-
+  
     return transformedData
   }
+  
 
   const generateTableColumns = () => {
     if (!form) return []
@@ -222,8 +248,8 @@ const DynamicFormPage = () => {
       label: field.fieldName,
       options: {
         filter: true,
-        sort: true
-      }
+        sort: true,
+      },
     }))
 
     return columns
@@ -235,7 +261,10 @@ const DynamicFormPage = () => {
   const options = {
     filter: true,
     responsive: 'vertical',
-    selectableRows: 'none'
+    selectableRows: 'none',
+    onRowClick: rowData => {
+      handleClick(rowData[0])
+    }
   }
 
   const handleSelect1Change = e => {
@@ -305,38 +334,84 @@ const DynamicFormPage = () => {
                 </>
               )}
               {f.fieldType === 'Radio' && (
-                <FormControl>
-                  <FormLabel id='demo-radio-button-group-label'></FormLabel>
+                <FormControl style={{ marginTop: 20 }}>
+                  <FormLabel id={`demo-radio-button-group-label-${f.fieldName}`}>{f.fieldName}</FormLabel>
                   <RadioGroup
-                    aria-labelledby='demo-radio-button-group-label'
-                    name='radio-button-group'
-                    value={checkValue}
-                    onChange={handleLocationChange}
+                    aria-labelledby={`demo-radio-button-group-label-${f.fieldName}`}
+                    name={`radio-button-group-${f.fieldName}`}
+                    value={selectedValues[f.fieldName] || ''}
+                    onChange={event => handleLocationChange(event, f.fieldName)}
                   >
-                    <FormControlLabel value='facebook' control={<Radio />} label={f.fieldName} />
+                    {f.radioFieldValues.map(value => (
+                      <FormControlLabel key={value} value={value} control={<Radio />} label={value} />
+                    ))}
                   </RadioGroup>
                 </FormControl>
               )}
+
               {f.fieldType === 'Image' && (
-                <TextField
-                  label={f.fieldName}
-                  value={imageValue}
-                  onChange={handleImageChange}
-                  fullWidth
-                  margin='normal'
-                />
+                <>
+                  <input
+                    accept='image/*'
+                    id='image-uploader'
+                    type='file'
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                  />
+                  <label htmlFor='image-uploader'>
+                    <Button variant='contained' component='span' fullWidth>
+                      Upload Image
+                    </Button>
+                  </label>
+                  <Grid container spacing={1}>
+                    {uploadedImages.map((file, index) => (
+                      <Grid item key={index}>
+                        <div style={{ position: 'relative' }}>
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            style={{ width: '80px', height: '80px' }}
+                          />
+                          <IconButton
+                            style={{ position: 'absolute', top: 0, right: 0 }}
+                            onClick={() => handleRemoveImage(index)}
+                          >
+                            <CloseIcon
+                              style={{
+                                color: '#000', // Set the desired color for the "X" icon
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // Set the desired background color for the icon
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '5px',
+                                right: '5px',
+                                padding: '2px'
+                              }}
+                            />
+                          </IconButton>
+                        </div>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
               )}
               {f.fieldType === 'AutoComplete' && (
                 <Autocomplete
-                  options={autoCompleteOptions}
-                  getOptionLabel={option => option.label}
-                  onInputChange={handleAutoCompleteChange}
+                  options={f?.autoCompleteValues}
+                  onInputChange={(event, value) => handleAutoCompleteChange(event, value, f.fieldName)}
                   renderInput={params => (
-                    <TextField {...params} label={f.fieldName} value={autoCompleteValue} fullWidth margin='normal' />
+                    <TextField
+                      {...params}
+                      label={f.fieldName}
+                      value={selectedAutoCompleteValues[f.fieldName] || ''}
+                      fullWidth
+                      margin='normal'
+                    />
                   )}
                 />
               )}
-              {f.fieldType === 'Textarea' && (
+
+              {f.fieldType === 'TextArea' && (
                 <TextField
                   label={f.fieldName}
                   value={textAreaValue}

@@ -152,7 +152,7 @@ const InviteTeam = () => {
   }
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: (rowData: any) => {
       handleClick(rowData[0])
     }

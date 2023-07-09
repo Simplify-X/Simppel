@@ -79,7 +79,7 @@ const Logs = () => {
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
   }
 
   async function getLogs() {

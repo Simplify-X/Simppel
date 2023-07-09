@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/dynamic-fields")
@@ -28,28 +29,36 @@ public class DynamicFieldController {
             @PathVariable UUID customFormId,
             @RequestBody List<Map<String, String>> fieldValues
     ) {
-        for (Map<String, String> fieldValueMap : fieldValues) {
-            String fieldName = fieldValueMap.get("fieldName");
-            String fieldValue = fieldValueMap.get("fieldValue");
-            UUID tableId = UUID.fromString(fieldValueMap.get("tableId"));
+        // Group the field values by tableId
+        Map<UUID, List<Map<String, String>>> groupedFieldValues = fieldValues.stream()
+                .collect(Collectors.groupingBy(fieldValueMap -> UUID.fromString(fieldValueMap.get("tableId"))));
 
-            if (fieldValue != null && !fieldValue.isEmpty()) {
-                DynamicField dynamicField = new DynamicField();
-                dynamicField.setCustomFormId(customFormId);
-                dynamicField.setFieldName(fieldName);
-                dynamicField.setFieldValue(fieldValue);
-                dynamicField.setTableId(tableId); // Set the tableId
+        // Save the fields for each tableId
+        for (List<Map<String, String>> tableFieldValues : groupedFieldValues.values()) {
+            for (Map<String, String> fieldValueMap : tableFieldValues) {
+                String fieldName = fieldValueMap.get("fieldName");
+                String fieldValue = fieldValueMap.get("fieldValue");
+                UUID tableId = UUID.fromString(fieldValueMap.get("tableId"));
 
-                DynamicField savedDynamicField = dynamicFieldService.saveDynamicField(dynamicField);
+                if (fieldValue != null && !fieldValue.isEmpty()) {
+                    DynamicField dynamicField = new DynamicField();
+                    dynamicField.setCustomFormId(customFormId);
+                    dynamicField.setFieldName(fieldName);
+                    dynamicField.setFieldValue(fieldValue);
+                    dynamicField.setTableId(tableId); // Set the tableId
 
-                if (savedDynamicField == null) {
-                    return new ResponseEntity<>("Error occurred while saving dynamic field.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    DynamicField savedDynamicField = dynamicFieldService.saveDynamicField(dynamicField);
+
+                    if (savedDynamicField == null) {
+                        return new ResponseEntity<>("Error occurred while saving dynamic field.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
             }
         }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 
 
 
