@@ -19,9 +19,13 @@ import { v4 as uuidv4 } from 'uuid'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import Loader from 'src/@core/components/ui/Loader'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const DynamicFormPage = () => {
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
   const { formId } = router.query
   const [form, setForm] = useState(null)
   const [open, setOpen] = useState(false)
@@ -29,7 +33,7 @@ const DynamicFormPage = () => {
   const [select2Value, setSelect2Value] = useState('')
   const [, setProducts] = useState([])
   const [selectOptions, setSelectOptions] = useState([])
-  const { get, post } = useCustomApiHook()
+  const { get, post, put } = useCustomApiHook()
   const { userId } = useUserData()
   const [checkboxValue, setCheckboxValue] = useState(false)
   const [textFieldValue, setTextFieldValue] = useState('')
@@ -37,15 +41,18 @@ const DynamicFormPage = () => {
   const [imageValue, setImageValue] = useState('')
   const [, setAutoCompleteValue] = useState('')
   const [, setCheckVal] = useState('')
+  const [editMode, setEditMode] = useState(false);
   const [tableData, setTableData] = useState(null)
   const [uploadedImages, setUploadedImages] = useState([])
+  const [editingTableId, setEditingTableId] = useState(null);
+
   const [selectedAutoCompleteValues, setSelectedAutoCompleteValues] = useState({})
+  
 
 
 
   const handleClick = rowData => {
-    const tableId = rowData[rowData.length - 1] // Assuming tableId is the last element in rowData
-    console.log(tableId)
+    router.push(`/dynamic-form/details/${rowData}`)
   }
   
 
@@ -145,6 +152,7 @@ const DynamicFormPage = () => {
   const MAX_TITLE_LENGTH = 20 // Maximum length of the product title
 
   const handleOpen = () => {
+    setEditMode(false)
     setOpen(true)
   }
 
@@ -189,6 +197,7 @@ const DynamicFormPage = () => {
     const fieldValues = form.map(f => ({
       fieldName: f.fieldName,
       fieldValue: getValueForField(f.fieldType, f.fieldName),
+      fieldType: f.fieldType,
       tableId: tableId
     }))
 
@@ -204,11 +213,37 @@ const DynamicFormPage = () => {
     handleClose()
   }
 
+  async function handleEditForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+  
+    const fieldValues = form.map(f => ({
+      fieldName: f.fieldName,
+      fieldValue: getValueForField(f.fieldType, f.fieldName),
+      fieldType: f.fieldType,
+      tableId: editingTableId // Using the tableId of the row you're editing
+    }))
+  
+    const payload = fieldValues;
+  
+    // Using a PATCH request for the edit
+    const r = await put(`/dynamic-fields/${formId}`, payload)
+  
+    if (r.status == 200) { // Typically, a 200 OK is returned for successful updates
+      const res = await get(`/dynamic-fields/${formId}`)
+      setTableData(res?.data)
+    }
+  
+    setEditingTableId(null); // Clear the editingTableId after edit
+    handleClose();
+  }
+  
+
   useEffect(() => {
     if (formId) {
       const fetchTableData = async () => {
         const res = await get(`/dynamic-fields/${formId}`)
         setTableData(res?.data)
+        setLoading(false)
       }
 
       fetchTableData()
@@ -227,13 +262,11 @@ const DynamicFormPage = () => {
     const transformedData = []
   
     tableData?.forEach(rowArray => {
-      const rowData = {}
-      let tableId = ''
+      const rowData = { tableId: rowArray[0].tableId }  // Initializing with id
       rowArray.forEach(row => {
         rowData[row.fieldName] = row.fieldValue
-        tableId = row.tableId // capturing tableId from the data
       })
-      transformedData.push({ ...rowData, tableId }) // include tableId in the row data
+      transformedData.push(rowData)
     })
   
     return transformedData
@@ -242,18 +275,59 @@ const DynamicFormPage = () => {
 
   const generateTableColumns = () => {
     if (!form) return []
-
-    const columns = form.map(field => ({
-      name: field.fieldName,
-      label: field.fieldName,
-      options: {
-        filter: true,
-        sort: true,
+  
+    const columns = [
+      {
+        name: 'tableId',
+        label: 'ID',
+        options: {
+          filter: true,
+          sort: true,
+          display: 'false'
+        },
       },
-    }))
-
+      ...form.map(field => ({
+        name: field.fieldName,
+        label: field.fieldName,
+        options: {
+          filter: true,
+          sort: true,
+        },
+      })), 
+      {
+        name: 'actions',
+        label: 'Actions',
+        options: {
+          customBodyRender: (value, tableMeta) => {
+  
+            return (
+              <>
+                <IconButton
+                  onClick={e => {
+                    e.stopPropagation() // stop click event propagation
+                    handleEdit(tableMeta.rowData)
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleClick(tableMeta.rowData[0])
+                  }}
+                >
+                  <VisibilityIcon />
+                </IconButton>
+              </>
+            )
+          }
+        }
+      }
+    ]
+  
     return columns
   }
+  
 
   const tableColumns = generateTableColumns()
   const transformedTableData = transformTableData()
@@ -262,9 +336,6 @@ const DynamicFormPage = () => {
     filter: true,
     responsive: 'vertical',
     selectableRows: 'none',
-    onRowClick: rowData => {
-      handleClick(rowData[0])
-    }
   }
 
   const handleSelect1Change = e => {
@@ -285,6 +356,60 @@ const DynamicFormPage = () => {
     if (value === select1Value) {
       setSelect1Value('')
     }
+  }
+
+  const handleEdit = rowData => {
+    setOpen(true);
+    setEditMode(true);
+    
+    const [
+      tableId,
+      ...fields
+    ] = rowData;
+    
+    setEditingTableId(tableId); // Set the current editingTableId
+
+    form.forEach((field, index) => {
+      const value = fields[index];
+      
+      switch (field.fieldType) {
+        case 'Tracker':
+          setSelect1Value(value);
+          break;
+        case 'Checkbox':
+          setCheckboxValue(value === "true" || value === true);
+          break;
+        case 'TextField':
+          setTextFieldValue(value);
+          break;
+        case 'Radio':
+          setSelectedValues(prevValues => ({
+            ...prevValues,
+            [field.fieldName]: value
+          }));
+          break;
+        case 'Image':
+          setImageValue(value);
+          break;
+        case 'AutoComplete':
+          setSelectedAutoCompleteValues(prevValues => ({
+            ...prevValues,
+            [field.fieldName]: value
+          }));
+          break;
+        case 'Textarea':
+          setTextAreaValue(value);
+          break;
+        default:
+          break;
+      }
+    });
+  
+  };
+  
+
+  if (loading) {
+    return <Loader />
   }
 
   return (
@@ -441,9 +566,9 @@ const DynamicFormPage = () => {
               )}
             </div>
           ))}
-          <Button variant='contained' color='primary' onClick={handleSubmit} style={{ marginTop: '1rem' }}>
-            Submit
-          </Button>
+            <Button variant='contained' onClick={editMode ? handleEditForm : handleSubmit} sx={{ marginLeft: 1 }}>
+              {editMode ? 'Edit' : 'Save'}
+            </Button>
         </DialogContent>
       </Dialog>
     </>

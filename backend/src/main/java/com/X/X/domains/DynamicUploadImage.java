@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "uploaded_images")
-public class DynamicUploadImage {
+public class DynamicUploadImage extends Auditable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
