@@ -2,7 +2,6 @@ package com.X.X.controller;
 
 import com.X.X.domains.DynamicField;
 import com.X.X.domains.FieldType;
-import com.X.X.dto.DynamicFieldsDTO;
 import com.X.X.services.DynamicFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

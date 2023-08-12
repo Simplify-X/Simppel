@@ -3,7 +3,6 @@ package com.X.X.repositories;
 
 import com.X.X.domains.CustomForm;
 import com.X.X.domains.DynamicField;
-import com.X.X.dto.DynamicFieldsDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

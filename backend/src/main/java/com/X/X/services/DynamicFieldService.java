@@ -4,7 +4,6 @@ package com.X.X.services;
 import com.X.X.domains.CustomForm;
 import com.X.X.domains.DynamicField;
 import com.X.X.domains.FieldType;
-import com.X.X.dto.DynamicFieldsDTO;
 import com.X.X.repositories.CustomFormRepository;
 import com.X.X.repositories.DynamicFieldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
