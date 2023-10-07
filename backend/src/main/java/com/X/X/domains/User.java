@@ -106,4 +106,12 @@ public class User extends Auditable {
 
     private Boolean firstTimeLoggedIn = false;
 
+    private boolean isCopyWritingEnabled;
+
+    private boolean isAutomationEnabled;
+
+    private boolean isSpyToolsEnabled;
+
+    private boolean isProductSearchEnabled;
+
 }

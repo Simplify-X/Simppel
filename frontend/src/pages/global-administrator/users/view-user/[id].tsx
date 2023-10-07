@@ -233,7 +233,44 @@ const ViewUsers = () => {
                   }
                   label='Custom Tab'
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.copyWritingEnabled}
+                      onChange={event => setData({ ...data, copyWritingEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Copywriting enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.automationEnabled}
+                      onChange={event => setData({ ...data, automationEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Automation enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.spyToolsEnabled}
+                      onChange={event => setData({ ...data, spyToolsEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Spy tools enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.productSearchEnabled}
+                      onChange={event => setData({ ...data, productSearchEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Product Search enabled'
+                />
               </Grid>
+              
 
               <Grid item xs={12}>
                 <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={handleSave}>

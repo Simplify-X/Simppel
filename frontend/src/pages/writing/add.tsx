@@ -270,10 +270,13 @@ const Writing = () => {
     return <Loader />
   }
 
+  if (!data?.copyWritingEnabled) {
+    router.push('/')
+  }
 
   return (
     <form onSubmit={submitForm}>
-      {teamData?.copyWritingAccess === 'VIEW' ? (
+      {teamData?.copyWritingAccess === 'VIEW' || !data?.copyWritingEnabled ? (
         <Card style={{ padding: 15, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
             <Typography variant='h6' component='div' align='center'>

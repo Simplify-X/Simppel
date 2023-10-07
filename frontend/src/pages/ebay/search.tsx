@@ -27,6 +27,8 @@ import MenuItem from '@mui/material/MenuItem'
 import { saveAs } from 'file-saver'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles({
   textField: {
@@ -49,9 +51,21 @@ const useStyles = makeStyles({
   }
 })
 
+interface UserData {
+  role?: string
+  advertisementEnabled?: boolean
+  accountId?: string
+  customTabEnabled?: boolean
+  copyWritingEnabled?: boolean
+  automationEnabled? :boolean
+  spyToolsEnabled? :boolean
+  productSearchEnabled? :boolean
+}
+
+
 const SearchEbay: React.FC = () => {
   const classes = useStyles()
-  const { getMiranda } = useCustomApiHook()
+  const { getMiranda, get } = useCustomApiHook()
   const { t } = useTranslation()
   const theme = useTheme()
   const [filters, setFilters] = useState<any>({
@@ -72,6 +86,40 @@ const SearchEbay: React.FC = () => {
   const [ebayData, setEbayData] = useState([])
   const [sortOption, setSortOption] = useState('')
   const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState(null)
+  const { token } = useUserData()
+
+  const [userData, setUserData] = useState<UserData>({
+    role: '',
+    advertisementEnabled: false,
+    customTabEnabled: false,
+    copyWritingEnabled: false,
+    automationEnabled: false,
+    spyToolsEnabled: false,
+    productSearchEnabled: false,
+  })
+  const router = useRouter()
+
+  useEffect(() => {
+    token && handleGetUser(token)
+  }, [token])
+
+  const handleGetUser = async (token: string) => {
+    const userData = await get(`/users/role`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+
+    userData?.data && setUserData(userData?.data as UserData)
+
+  }
+
+  useEffect(() => {
+        if (!userData?.spyToolsEnabled) {
+            router.push('/');
+        }
+    }, [userData]);
 
   const handleSortOptionChange = option => {
     setSortOption(option)
@@ -83,7 +131,6 @@ const SearchEbay: React.FC = () => {
     } else if (option === 'lowestToHighest') {
       sortedData.sort((a, b) => a.price.value - b.price.value)
     } else if (option === 'latest') {
-      console.log('here')
       sortedData.sort((a, b) => {
         console.log(a);
         const dateA = moment(a.itemCreationDate);
