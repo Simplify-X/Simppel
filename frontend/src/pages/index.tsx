@@ -28,6 +28,7 @@ import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Loader from 'src/@core/components/ui/Loader'
+import FirstSettings from '../views/modal-templates/firstSettings'
 
 interface UserData {
   role?: string,
@@ -77,7 +78,10 @@ const Dashboard = () => {
     router.push("/global-administrator/users")
     
     return <Loader/>
-  } else {
+  } else if (!userData?.firstTimeLoggedIn) {
+    return <FirstSettings />
+  }
+  else {
 
   return (
     <ApexChartWrapper>

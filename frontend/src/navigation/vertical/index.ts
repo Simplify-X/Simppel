@@ -154,7 +154,7 @@ const Navigation = (): VerticalNavItemsType => {
       !userData.role && {
         title: t('product_search'),
         icon: LocationSearchingIcon,
-        path: '/'
+        path: '/product-search'
       },
 
     userData?.productSearchEnabled &&

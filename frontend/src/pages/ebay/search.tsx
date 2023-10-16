@@ -88,15 +88,7 @@ const SearchEbay: React.FC = () => {
   const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState(null)
   const { token } = useUserData()
 
-  const [userData, setUserData] = useState<UserData>({
-    role: '',
-    advertisementEnabled: false,
-    customTabEnabled: false,
-    copyWritingEnabled: false,
-    automationEnabled: false,
-    spyToolsEnabled: false,
-    productSearchEnabled: false,
-  })
+  const [userData, setUserData] = useState([]);
   const router = useRouter()
 
   useEffect(() => {
@@ -110,16 +102,10 @@ const SearchEbay: React.FC = () => {
       }
     })
 
-
-    userData?.data && setUserData(userData?.data as UserData)
+    console.log(userData);
+    userData?.data && setUserData(userData?.data)
 
   }
-
-  useEffect(() => {
-        if (!userData?.spyToolsEnabled) {
-            router.push('/');
-        }
-    }, [userData]);
 
   const handleSortOptionChange = option => {
     setSortOption(option)
@@ -239,6 +225,14 @@ const SearchEbay: React.FC = () => {
       saveAs(excelData, 'ebay_products.xlsx')
     }
   }
+
+  useEffect(() => {
+    if (userData?.spyToolsEnabled) {
+      if (!userData?.spyToolsEnabled) {
+        router.push('/');
+      }
+    }
+  }, [router, userData]);
 
 
   return (

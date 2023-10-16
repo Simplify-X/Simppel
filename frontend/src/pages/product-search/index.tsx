@@ -19,7 +19,7 @@ import CardContent from '@mui/material/CardContent'
 import Autocomplete from '@mui/material/Autocomplete'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { getProductByCategory } from 'src/@core/utils/amazon-product-api'
-import StickyHeadTable from './product/CustomTable'
+import StickyHeadTable from '../product/CustomTable'
 import { CircularProgress } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
@@ -31,14 +31,13 @@ import FormLabel from '@mui/material/FormLabel'
 import Box from '@mui/material/Box'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useTranslation } from 'react-i18next'
-import DropshippingCard from './product/DropshippingCard' // Import the DropshippingCard component
+import DropshippingCard from '../product/DropshippingCard' // Import the DropshippingCard component
 import { useUserData } from 'src/@core/hooks/useUserData'
 import Divider from '@mui/material/Divider'
 import { Helmet } from 'react-helmet'
 import Loader from 'src/@core/components/ui/Loader'
 import authRoute from 'src/@core/utils/auth-route'
 import { useRouter } from 'next/router'
-import FirstSettings from '../views/modal-templates/firstSettings'
 
 const useStyles = makeStyles({
   textField: {
@@ -271,8 +270,6 @@ const Search: React.FC = () => {
     router.push('/global-administrator/users')
 
     return <Loader />
-  } else if (!accountData?.firstTimeLoggedIn) {
-    return <FirstSettings />
   } else {
     return (
       <div>
