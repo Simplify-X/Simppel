@@ -51,17 +51,6 @@ const useStyles = makeStyles({
   }
 })
 
-interface UserData {
-  role?: string
-  advertisementEnabled?: boolean
-  accountId?: string
-  customTabEnabled?: boolean
-  copyWritingEnabled?: boolean
-  automationEnabled? :boolean
-  spyToolsEnabled? :boolean
-  productSearchEnabled? :boolean
-}
-
 
 const SearchEbay: React.FC = () => {
   const classes = useStyles()
@@ -93,6 +82,7 @@ const SearchEbay: React.FC = () => {
 
   useEffect(() => {
     token && handleGetUser(token)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   const handleGetUser = async (token: string) => {
@@ -152,6 +142,7 @@ const SearchEbay: React.FC = () => {
 
   useEffect(() => {
     fetchEbayDefaultData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

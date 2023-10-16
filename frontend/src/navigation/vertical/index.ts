@@ -64,6 +64,7 @@ const Navigation = (): VerticalNavItemsType => {
 
   useEffect(() => {
     token && handleGetUser(token)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   const handleGetUser = async (token: string) => {

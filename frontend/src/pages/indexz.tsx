@@ -32,6 +32,7 @@ const Dashboard = () => {
     }
 
     token && handleGetUser(token)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleGetUser = async (token: string) => {

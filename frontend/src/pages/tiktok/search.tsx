@@ -137,6 +137,7 @@ const SearchTiktok: React.FC = () => {
 
   useEffect(() => {
     fetchEbayDefaultData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
