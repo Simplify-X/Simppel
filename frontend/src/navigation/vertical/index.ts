@@ -315,6 +315,29 @@ const Navigation = (): VerticalNavItemsType => {
     },
 
     userData.role && {
+      sectionTitle: ' UI Design'
+    },
+
+    userData.role && {
+      title: 'Customize UI',
+      icon: PeopleIcon,
+      path: '',
+      children: [
+        // The submenu items
+        {
+          title: 'Tiktok Filter UI',
+          icon: AlarmAddIcon,
+          path: '/global-administrator/tiktok/filter'
+        },
+        {
+          title: 'View Automation',
+          icon: VisibilityIcon,
+          path: '/automation/view'
+        }
+      ]
+    },
+
+    userData.role && {
       sectionTitle: ' Account Management'
     },
 

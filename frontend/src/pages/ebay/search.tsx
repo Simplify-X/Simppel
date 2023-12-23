@@ -29,6 +29,8 @@ import * as XLSX from 'xlsx'
 import moment from 'moment'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import { useRouter } from 'next/router'
+import Typography from '@mui/material/Typography'
+import FilterSidebar from 'src/@core/components/ui/FilterSidebar'
 
 const useStyles = makeStyles({
   textField: {
@@ -50,7 +52,6 @@ const useStyles = makeStyles({
     width: 180
   }
 })
-
 
 const SearchEbay: React.FC = () => {
   const classes = useStyles()
@@ -75,14 +76,15 @@ const SearchEbay: React.FC = () => {
   const [ebayData, setEbayData] = useState([])
   const [sortOption, setSortOption] = useState('')
   const [filterMenuAnchorEl, setFilterMenuAnchorEl] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('');
   const { token } = useUserData()
 
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState([])
   const router = useRouter()
 
   useEffect(() => {
     token && handleGetUser(token)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   const handleGetUser = async (token: string) => {
@@ -92,9 +94,8 @@ const SearchEbay: React.FC = () => {
       }
     })
 
-    console.log(userData);
+    console.log(userData)
     userData?.data && setUserData(userData?.data)
-
   }
 
   const handleSortOptionChange = option => {
@@ -108,12 +109,12 @@ const SearchEbay: React.FC = () => {
       sortedData.sort((a, b) => a.price.value - b.price.value)
     } else if (option === 'latest') {
       sortedData.sort((a, b) => {
-        console.log(a);
-        const dateA = moment(a.itemCreationDate);
-        const dateB = moment(b.itemCreationDate);
-        
-        return dateB.diff(dateA);
-      });
+        console.log(a)
+        const dateA = moment(a.itemCreationDate)
+        const dateB = moment(b.itemCreationDate)
+
+        return dateB.diff(dateA)
+      })
     }
 
     setEbayData(sortedData)
@@ -129,6 +130,10 @@ const SearchEbay: React.FC = () => {
     setFilterMenuAnchorEl(null)
   }
 
+  const filteredEbayData = ebayData.filter(product => 
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const fetchEbayDefaultData = async () => {
     const savedResults = localStorage.getItem('searchResults')
     if (savedResults) {
@@ -142,7 +147,7 @@ const SearchEbay: React.FC = () => {
 
   useEffect(() => {
     fetchEbayDefaultData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -220,11 +225,10 @@ const SearchEbay: React.FC = () => {
   useEffect(() => {
     if (userData?.spyToolsEnabled) {
       if (!userData?.spyToolsEnabled) {
-        router.push('/');
+        router.push('/')
       }
     }
-  }, [router, userData]);
-
+  }, [router, userData])
 
   return (
     <div>
@@ -233,55 +237,54 @@ const SearchEbay: React.FC = () => {
       </Helmet>
       <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
         <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <FormControl component='fieldset'>
-        <FormLabel component='legend' style={{ marginTop: 20 }}>
-          <span style={{ marginRight: 8 }}>Ebay Product Search</span>
-        </FormLabel>
-      </FormControl>
-      {ebayData.length > 0 && (
-        <Box>
-          <Tooltip title='Export to Excel'>
-            <IconButton onClick={handleExportToExcel}>
-              <img src='/icons/excel-icon.png' alt='Excel Icon' style={{ width: '24px', height: '24px' }} />
-            </IconButton>
-          </Tooltip>
-          <IconButton
-            className={classes.filterButton}
-            onClick={handleFilterButtonClick}
-            aria-controls='filter-menu'
-            aria-haspopup='true'
-          >
-            <FilterListIcon />
-          </IconButton>
-          <Menu
-            id='filter-menu'
-            anchorEl={filterMenuAnchorEl}
-            open={Boolean(filterMenuAnchorEl)}
-            onClose={handleFilterMenuClose}
-          >
-            <MenuItem
-              onClick={() => handleSortOptionChange('latest')}
-              selected={sortOption === 'latest'}
-            >
-              Latest Listings 
-            </MenuItem>
-            <MenuItem
-              onClick={() => handleSortOptionChange('highestToLowest')}
-              selected={sortOption === 'highestToLowest'}
-            >
-              Price - High to Low 
-            </MenuItem>
-            <MenuItem
-              onClick={() => handleSortOptionChange('lowestToHighest')}
-              selected={sortOption === 'lowestToHighest'}
-            >
-              Price - Low to High 
-            </MenuItem>
-          </Menu>
-        </Box>
-      )}
-    </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <FormControl component='fieldset'>
+              <FormLabel component='legend' style={{ marginTop: 20 }}>
+              <Typography variant='h6' gutterBottom>
+                  Ebay Product Search
+                </Typography>
+              </FormLabel>
+            </FormControl>
+            {ebayData.length > 0 && (
+              <Box>
+                <Tooltip title='Export to Excel'>
+                  <IconButton onClick={handleExportToExcel}>
+                    <img src='/icons/excel-icon.png' alt='Excel Icon' style={{ width: '24px', height: '24px' }} />
+                  </IconButton>
+                </Tooltip>
+                <IconButton
+                  className={classes.filterButton}
+                  onClick={handleFilterButtonClick}
+                  aria-controls='filter-menu'
+                  aria-haspopup='true'
+                >
+                  <FilterListIcon />
+                </IconButton>
+                <Menu
+                  id='filter-menu'
+                  anchorEl={filterMenuAnchorEl}
+                  open={Boolean(filterMenuAnchorEl)}
+                  onClose={handleFilterMenuClose}
+                >
+                  <MenuItem onClick={() => handleSortOptionChange('latest')} selected={sortOption === 'latest'}>
+                    Latest Listings
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleSortOptionChange('highestToLowest')}
+                    selected={sortOption === 'highestToLowest'}
+                  >
+                    Price - High to Low
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleSortOptionChange('lowestToHighest')}
+                    selected={sortOption === 'lowestToHighest'}
+                  >
+                    Price - Low to High
+                  </MenuItem>
+                </Menu>
+              </Box>
+            )}
+          </Box>
           <Grid item xs={12}>
             <Divider />
           </Grid>
@@ -394,15 +397,25 @@ const SearchEbay: React.FC = () => {
         </CardContent>
       </Card>
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <CircularProgress />
+      <div style={{ display: 'flex', marginTop: 50 }}>
+        {/* Filter Sidebar */}
+        <div style={{ flex: 1, marginRight: '20px' }}>
+          {' '}
+          {/* Adjust styling as needed */}
+          <FilterSidebar setSearchTerm={setSearchTerm} />
         </div>
-      ) : (
-        <div style={{ marginTop: 50, marginLeft: 50 }}>
-          <ProductCardGrid products={ebayData} itemsPerPage={12} />
+
+        {/* Product Card Grid */}
+        <div style={{ flex: 4 }}>
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <ProductCardGrid products={filteredEbayData} itemsPerPage={12} />
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

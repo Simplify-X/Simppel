@@ -28,6 +28,8 @@ import * as XLSX from 'xlsx'
 import moment from 'moment'
 import { getTiktokProductByKeywords } from 'src/@core/utils/tiktok-product-search'
 import Autocomplete from '@mui/material/Autocomplete'
+import Typography from '@mui/material/Typography'
+import FilterSidebar from "src/@core/components/ui/FilterSidebar";
 
 const useStyles = makeStyles({
   textField: {
@@ -57,8 +59,8 @@ const top100Films = [
   { title: 'The Dark Knight', year: 2008 },
   { title: '12 Angry Men', year: 1957 },
   { title: "Schindler's List", year: 1993 },
-  { title: 'Pulp Fiction', year: 1994 },
-];
+  { title: 'Pulp Fiction', year: 1994 }
+]
 
 const SearchTiktok: React.FC = () => {
   const classes = useStyles()
@@ -95,12 +97,12 @@ const SearchTiktok: React.FC = () => {
     } else if (option === 'latest') {
       console.log('here')
       sortedData.sort((a, b) => {
-        console.log(a);
-        const dateA = moment(a.itemCreationDate);
-        const dateB = moment(b.itemCreationDate);
-        
-        return dateB.diff(dateA);
-      });
+        console.log(a)
+        const dateA = moment(a.itemCreationDate)
+        const dateB = moment(b.itemCreationDate)
+
+        return dateB.diff(dateA)
+      })
     }
 
     setEbayData(sortedData)
@@ -126,7 +128,7 @@ const SearchTiktok: React.FC = () => {
   const fetchEbayDefaultData = async () => {
     const savedResults = localStorage.getItem('searchResults')
     if (savedResults) {
-        console.log(JSON.stringify(savedResults));
+      console.log(JSON.stringify(savedResults))
       setEbayData(JSON.parse(savedResults))
     } else {
       const r = await getMiranda(`/search?q=Gaming chairs&limit=10`)
@@ -135,9 +137,16 @@ const SearchTiktok: React.FC = () => {
     }
   }
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filter products based on the search term
+  const filteredEbayData = ebayData.filter(product => 
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     fetchEbayDefaultData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -211,7 +220,6 @@ const SearchTiktok: React.FC = () => {
     }
   }
 
-
   return (
     <div>
       <Helmet>
@@ -219,55 +227,54 @@ const SearchTiktok: React.FC = () => {
       </Helmet>
       <Card style={{ padding: 10, marginTop: 50, height: 'auto' }}>
         <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <FormControl component='fieldset'>
-        <FormLabel component='legend' style={{ marginTop: 20 }}>
-          <span style={{ marginRight: 8 }}>Tiktok Product Search</span>
-        </FormLabel>
-      </FormControl>
-      {ebayData.length > 0 && (
-        <Box>
-          <Tooltip title='Export to Excel'>
-            <IconButton onClick={handleExportToExcel}>
-              <img src='/icons/excel-icon.png' alt='Excel Icon' style={{ width: '24px', height: '24px' }} />
-            </IconButton>
-          </Tooltip>
-          <IconButton
-            className={classes.filterButton}
-            onClick={handleFilterButtonClick}
-            aria-controls='filter-menu'
-            aria-haspopup='true'
-          >
-            <FilterListIcon />
-          </IconButton>
-          <Menu
-            id='filter-menu'
-            anchorEl={filterMenuAnchorEl}
-            open={Boolean(filterMenuAnchorEl)}
-            onClose={handleFilterMenuClose}
-          >
-            <MenuItem
-              onClick={() => handleSortOptionChange('latest')}
-              selected={sortOption === 'latest'}
-            >
-              Latest Listings 
-            </MenuItem>
-            <MenuItem
-              onClick={() => handleSortOptionChange('highestToLowest')}
-              selected={sortOption === 'highestToLowest'}
-            >
-              Price - High to Low 
-            </MenuItem>
-            <MenuItem
-              onClick={() => handleSortOptionChange('lowestToHighest')}
-              selected={sortOption === 'lowestToHighest'}
-            >
-              Price - Low to High 
-            </MenuItem>
-          </Menu>
-        </Box>
-      )}
-    </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <FormControl component='fieldset'>
+              <FormLabel component='legend' style={{ marginTop: 10, marginBottom: 10 }}>
+                <Typography variant='h6' gutterBottom>
+                  Tiktok Product Search
+                </Typography>
+              </FormLabel>
+            </FormControl>
+            {ebayData.length > 0 && (
+              <Box>
+                <Tooltip title='Export to Excel'>
+                  <IconButton onClick={handleExportToExcel}>
+                    <img src='/icons/excel-icon.png' alt='Excel Icon' style={{ width: '24px', height: '24px' }} />
+                  </IconButton>
+                </Tooltip>
+                <IconButton
+                  className={classes.filterButton}
+                  onClick={handleFilterButtonClick}
+                  aria-controls='filter-menu'
+                  aria-haspopup='true'
+                >
+                  <FilterListIcon />
+                </IconButton>
+                <Menu
+                  id='filter-menu'
+                  anchorEl={filterMenuAnchorEl}
+                  open={Boolean(filterMenuAnchorEl)}
+                  onClose={handleFilterMenuClose}
+                >
+                  <MenuItem onClick={() => handleSortOptionChange('latest')} selected={sortOption === 'latest'}>
+                    Latest Listings
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleSortOptionChange('highestToLowest')}
+                    selected={sortOption === 'highestToLowest'}
+                  >
+                    Price - High to Low
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleSortOptionChange('lowestToHighest')}
+                    selected={sortOption === 'lowestToHighest'}
+                  >
+                    Price - Low to High
+                  </MenuItem>
+                </Menu>
+              </Box>
+            )}
+          </Box>
           <Grid item xs={12}>
             <Divider />
           </Grid>
@@ -275,10 +282,10 @@ const SearchTiktok: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <h1 style={{ marginRight: 'auto' }}>Product Filters</h1>
             </div>
-            <Grid container spacing={2} style={{marginTop: 5}}>
-              <Grid item xs={12}>
+            <Grid container spacing={2} style={{ marginTop: 5 }}>
+              <Grid item xs={4}>
                 <TextField
-                fullWidth
+                  fullWidth
                   label='Search Specific Product'
                   name='productSearch'
                   value={filters.productSearch}
@@ -297,61 +304,60 @@ const SearchTiktok: React.FC = () => {
                   }}
                 />
               </Grid>
-                  <Grid item>
-                    <Autocomplete
-                      disablePortal
-                      id='combo-box-demo'
-                      options={top100Films.map((option) => option.title)}
-                      value={filters.productMarketPlace}
-                      onInputChange={handleMarketPlaceChange}
-                      sx={{ width: 300 }}
-                      className={classes.textField}
-                      renderInput={params => <TextField {...params} label={t('marketplace')} />}
-                    />
-                  </Grid>
+              <Grid item>
+                <Autocomplete
+                  disablePortal
+                  id='combo-box-demo'
+                  options={top100Films.map(option => option.title)}
+                  value={filters.productMarketPlace}
+                  onInputChange={handleMarketPlaceChange}
+                  sx={{ width: 300 }}
+                  className={classes.textField}
+                  renderInput={params => <TextField {...params} label={t('marketplace')} />}
+                />
+              </Grid>
 
-                  <Grid item>
-                    <TextField
-                      label='Likes'
-                      name='sales'
-                      value={filters.sales}
-                      onChange={handleFilterChange}
-                      className={classes.textField}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                            <Tooltip title={t('enter_estimated_sales_of_product')}>
-                              <IconButton size='small'>
-                                <HelpOutlineIcon style={{ color: 'gray' }} />
-                              </IconButton>
-                            </Tooltip>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  </Grid>
+              <Grid item>
+                <TextField
+                  label='Likes'
+                  name='sales'
+                  value={filters.sales}
+                  onChange={handleFilterChange}
+                  className={classes.textField}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                        <Tooltip title={t('enter_estimated_sales_of_product')}>
+                          <IconButton size='small'>
+                            <HelpOutlineIcon style={{ color: 'gray' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
 
-                  <Grid item>
-                    <TextField
-                      label='Views'
-                      name='sales'
-                      value={filters.sales}
-                      onChange={handleFilterChange}
-                      className={classes.textField}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
-                            <Tooltip title={t('enter_estimated_sales_of_product')}>
-                              <IconButton size='small'>
-                                <HelpOutlineIcon style={{ color: 'gray' }} />
-                              </IconButton>
-                            </Tooltip>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  </Grid>
-
+              <Grid item>
+                <TextField
+                  label='Views'
+                  name='sales'
+                  value={filters.sales}
+                  onChange={handleFilterChange}
+                  className={classes.textField}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end' style={{ marginLeft: '-30px' }}>
+                        <Tooltip title={t('enter_estimated_sales_of_product')}>
+                          <IconButton size='small'>
+                            <HelpOutlineIcon style={{ color: 'gray' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
 
               <Grid item>
                 <Button variant='contained' color='primary' className={classes.button} onClick={handleFindProducts}>
@@ -363,16 +369,24 @@ const SearchTiktok: React.FC = () => {
         </CardContent>
       </Card>
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <CircularProgress />
-        </div>
-      ) : (
-        <div style={{ marginTop: 50, marginLeft: 50 }}>
-          <ProductCardGrid products={ebayData} itemsPerPage={12} />
-        </div>
-      )}
+      <div style={{ display: 'flex', marginTop: 50 }}>
+      {/* Filter Sidebar */}
+      <div style={{ flex: 1, marginRight: '20px' }}> {/* Adjust styling as needed */}
+      <FilterSidebar setSearchTerm={setSearchTerm} />
+      </div>
+
+      {/* Product Card Grid */}
+      <div style={{ flex: 4 }}>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <ProductCardGrid products={filteredEbayData} itemsPerPage={12} />
+        )}
+      </div>
     </div>
+  </div>
   )
 }
 

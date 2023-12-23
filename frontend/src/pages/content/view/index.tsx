@@ -11,11 +11,30 @@ import Box from '@mui/material/Box'
 import * as Sentry from '@sentry/nextjs'
 import { API_BASE_URL } from 'src/config'
 import Loader from 'src/@core/components/ui/Loader'
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
 
 const ViewContent = () => {
   const [content, setContent] = useState([])
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+
+  const renderTextWithTooltip = (value, maxLength = 50) => {
+    if (!value) return '-';
+  
+    if (value.length > maxLength) {
+      return (
+        <Tooltip title={value} arrow>
+          <Typography noWrap>
+            {`${value.substring(0, maxLength)}...`}
+          </Typography>
+        </Tooltip>
+      );
+    }
+  
+    return value;
+  };
 
   const columns = [
     {
@@ -32,7 +51,8 @@ const ViewContent = () => {
       label: 'Product Name',
       options: {
         filter: true,
-        sort: true
+        sort: true,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
     {
@@ -40,10 +60,10 @@ const ViewContent = () => {
       label: 'Product Description',
       options: {
         filter: true,
-        sort: false
+        sort: false,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
-
     {
       name: 'targetAudience',
       label: 'Target Audience',

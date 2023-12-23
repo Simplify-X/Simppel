@@ -48,8 +48,10 @@ const WebScraper = ({ onScrapedData }) => {
           </Alert>
         </Stack>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={10}>
         <TextField fullWidth label={t('web_scraper_url')} value={url} onChange={event => setUrl(event.target.value)} />
+      </Grid>
+      <Grid item xs={2}>
         <Button variant='contained' onClick={scrapeWebsite} style={{ marginTop: '10px' }}>
           {t('import_data')}
         </Button>

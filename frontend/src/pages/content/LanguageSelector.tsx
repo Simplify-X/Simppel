@@ -29,12 +29,18 @@ const LanguageSelector = ({ selectedLanguage, onChange }) => {
             value={selectedLanguage}
             onChange={onChange}
             displayEmpty
-            renderValue={value => (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Flag code={value} height={16} />
-                <span style={{ marginLeft: 10 }}>{value}</span>
-              </div>
-            )}
+            renderValue={value => {
+              const selectedOption = languageOptions.find(option => option.value === value);
+
+              return (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Flag code={value} height={16} />
+                  {/* Use the label from the found option */}
+                  <span style={{ marginLeft: 10 }}>{selectedOption ? selectedOption.label : ''}</span>
+                </div>
+              );
+            }}
+            
           >
             {languageOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
