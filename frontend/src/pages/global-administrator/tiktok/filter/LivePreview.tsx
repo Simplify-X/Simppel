@@ -50,7 +50,7 @@ const LivePreview = ({ filterElements, onDragEnd, setFilterElements }) => {
             <Card className={classes.filterPanel}>
               <CardContent>
                 <Typography variant='h6' className={classes.title}>FILTER</Typography>
-                {filterElements.map((element, index) => (
+                {filterElements?.map((element, index) => (
                   <Draggable key={element.id} draggableId={element.id} index={index}>
                     {provided => (
                       <Box 
