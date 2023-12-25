@@ -37,6 +37,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import Loader from 'src/@core/components/ui/Loader'
 import CardActions from '@mui/material/CardActions'
+import ImageGallery from 'src/@core/components/ImageGallery';
 
 const StyledDialogContentText = styled(DialogContentText)`
   font-size: 24px;
@@ -427,6 +428,10 @@ const SingleContent = () => {
                   <Grid item xs={6}>
                     <Typography variant='caption'>Number of Generated Times</Typography>
                     <Typography variant='body1'>1</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant='caption'>Number of Generated Times</Typography>
+                    <ImageGallery advertisementId={id} />
                   </Grid>
                 </Grid>
               )}

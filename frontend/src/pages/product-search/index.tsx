@@ -31,7 +31,7 @@ import FormLabel from '@mui/material/FormLabel'
 import Box from '@mui/material/Box'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useTranslation } from 'react-i18next'
-import DropshippingCard from '../product/DropshippingCard' // Import the DropshippingCard component
+import DropshippingCard from '../product/DropshippingCard'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import Divider from '@mui/material/Divider'
 import { Helmet } from 'react-helmet'
@@ -45,10 +45,10 @@ const useStyles = makeStyles({
   },
   filterButton: {
     marginLeft: 'auto',
-    backgroundColor: '#9c27b0', // Update with desired color
-    color: '#ffffff', // Update with desired color
+    backgroundColor: '#9c27b0',
+    color: '#ffffff',
     '&:hover': {
-      backgroundColor: '#7b1fa2' // Update with desired color
+      backgroundColor: '#7b1fa2'
     }
   },
   additionalFieldsContainer: {
@@ -102,6 +102,7 @@ const Search: React.FC = () => {
 
   useEffect(() => {
     userId && fetchSingleUser()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const fetchSingleUser = async () => {
@@ -123,11 +124,10 @@ const Search: React.FC = () => {
       setSelectedFields(JSON.parse(savedFields))
     }
 
-    // Retrieve filter information and search results from local storage
     const savedFilterData = localStorage.getItem('filterData')
     const savedProductData = localStorage.getItem('productData')
 
-    if (savedFilterData && savedProductData) {
+    if (savedProductData && savedProductData !== 'undefined') {
       setFilters(JSON.parse(savedFilterData))
       setProducts(JSON.parse(savedProductData))
       setLoadings(false)
@@ -146,7 +146,6 @@ const Search: React.FC = () => {
         setMarketplaceURL(domain)
         const storedCategories = localStorage.getItem('categories')
 
-        // if (storedCategories && domain.includes(marketplaceURL)) {
         if (storedCategories) {
           setCategories(JSON.parse(storedCategories))
         } else {
@@ -156,7 +155,6 @@ const Search: React.FC = () => {
           const sortedCategoryNames = categoryNames.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
           setCategories(sortedCategoryNames)
 
-          // Store categories in localStorage for future use
           localStorage.setItem('categories', JSON.stringify(sortedCategoryNames))
         }
       } catch (error) {
@@ -172,7 +170,8 @@ const Search: React.FC = () => {
         : filters.productMarketPlace === 'Italy'
         ? 'amazon.it'
         : 'amazon.com'
-    fetchCategories(domain) // Initial fetch based on selected marketplace
+    fetchCategories(domain)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.productMarketPlace])
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,7 +190,7 @@ const Search: React.FC = () => {
   }
 
   const handleCategoryChange = (event, value) => {
-    const selectedCategory = value || '' // If no value is selected, set it to an empty string
+    const selectedCategory = value || ''
     setFilters(prevFilters => ({
       ...prevFilters,
       productCategory: selectedCategory
@@ -221,13 +220,11 @@ const Search: React.FC = () => {
 
   const handleFindProducts = async () => {
     try {
-      // Clear the table data
       setProducts([])
-
-      // Set loading state
       setLoading(true)
 
-      // Your existing code to fetch products
+      const productData = products?.category_results
+
       const products = await getProductByCategory(
         filters.productCategory,
         filters.price,
@@ -237,25 +234,23 @@ const Search: React.FC = () => {
         marketplaceURL
       )
 
-      // Update state with new filter information and search results
       setFilters(prevFilters => ({
         ...prevFilters,
         ...filters
       }))
       setProducts(products?.category_results)
 
-      // Store filter information and search results in local storage
       localStorage.setItem('filterData', JSON.stringify(filters))
-      localStorage.setItem('productData', JSON.stringify(products?.category_results))
 
-      // Reset loading state
+      if (productData) {
+        localStorage.setItem('productData', JSON.stringify(productData))
+      } else {
+        localStorage.removeItem('productData')
+      }
+
       setLoading(false)
-
-      // Trigger any other action you want
     } catch (error) {
       console.error('Error fetching products:', error)
-
-      // Reset loading state in case of error
       setLoading(false)
     }
   }
@@ -439,7 +434,7 @@ const Search: React.FC = () => {
         </Card>
 
         {selectedValue === 'dropshipping' && (
-          <Grid item xs={12} sm={6} md={4} style={{ marginTop: '20px', marginLeft: 40 }}>
+          <Grid item xs={12} sm={6} md={4} style={{ marginTop: '20px'}}>
             <DropshippingCard />
           </Grid>
         )}

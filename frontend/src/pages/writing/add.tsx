@@ -19,6 +19,8 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
 
 // import SelectChangeEvent from '@mui/material/Select'
 
@@ -35,6 +37,11 @@ import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { useStore } from 'src/store'
 import { dropStore } from 'src/dropStore'
 import Loader from 'src/@core/components/ui/Loader'
+import UploadViewer from 'src/@core/components/UploadViewer'
+import Uppy from '@uppy/core'
+import CardHeader from '@mui/material/CardHeader'
+import Grid from '@mui/material/Grid'
+import { useTheme } from '@mui/material/styles'
 
 const Writing = () => {
   // ** States
@@ -50,10 +57,12 @@ const Writing = () => {
   const [selectedTextLength, setSelectedTextLength] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [selectedValue, setSelectedValue] = useState('create')
-  const { response, error, get, post } = useCustomApiHook()
+  const { error, get, post } = useCustomApiHook()
   const [teamGroupMember, setTeamGroupMember] = useState([])
   const [teamData, setTeamData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [uppy, setUppy] = useState(null)
+  const theme = useTheme()
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -95,6 +104,24 @@ const Writing = () => {
   }
 
   useEffect(() => {
+    const uppyInstance = new Uppy({
+      autoProceed: false,
+      restrictions: {
+        maxNumberOfFiles: 10,
+        allowedFileTypes: ['image/*', '.jpg', '.jpeg', '.png', '.gif']
+      }
+    })
+
+    uppyInstance.on('file-added', () => {
+      // Just add the file, do not upload yet
+    })
+
+    setUppy(uppyInstance)
+
+    return () => uppyInstance.close()
+  }, [])
+
+  useEffect(() => {
     const fetchSingleUser = async () => {
       const res = await get(`/users/getSingleUser/${userId}`)
       res?.data && setData(res.data)
@@ -124,6 +151,11 @@ const Writing = () => {
     }
   }
 
+  
+  const handleDiscard = () => {
+    router.push('/writing/view/');
+  };
+
   const fetchTeamData = async () => {
     const getTeamData = await get(`/groups/list/${teamGroupMember?.teamGroupId}`)
     if (getTeamData?.data) {
@@ -133,7 +165,6 @@ const Writing = () => {
       setLoading(false)
     }
   }
-
 
   useEffect(() => {
     if (product && userId && data) {
@@ -161,10 +192,8 @@ const Writing = () => {
     }
   }, [product, userId, data])
 
-  
   useEffect(() => {
     if (dropshipping && data) {
-
       if (nameRef.current) {
         nameRef.current.value = dropshipping?.title || ''
       }
@@ -194,6 +223,26 @@ const Writing = () => {
   const brandDescription = useRef<HTMLInputElement>(null)
   const customCommandRef = useRef<HTMLInputElement>(null)
   const keywordInput = useRef<HTMLInputElement>(null)
+
+  const uploadImagesToCloudinary = async (files, contentId) => {
+    for (const file of files) {
+      const formData = new FormData()
+      formData.append('upload_preset', 'v31206aa')
+      formData.append('file', file.data)
+      formData.append('folder', contentId)
+
+      try {
+        const response = await fetch('https://api.cloudinary.com/v1_1/dovfsnzn8/image/upload', {
+          method: 'POST',
+          body: formData
+        })
+        const responseData = await response.json()
+        console.log('Uploaded file data:', responseData)
+      } catch (error) {
+        console.error('Upload error:', error)
+      }
+    }
+  }
 
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -239,32 +288,26 @@ const Writing = () => {
       copyWritingContext: null
     }
 
-    await post(`/copyWriting/${userId}`, data)
-  }
+    const contentResponse = await post(`/copyWriting/${userId}`, data)
+    console.log(contentResponse)
+    if (contentResponse.data.id) {
+      if (uppy.getFiles().length > 0) {
+        const contentId = contentResponse.data.id
+        await uploadImagesToCloudinary(uppy.getFiles(), contentId)
+      }
 
-  useEffect(() => {
-    const status = response?.data.status
-
-    if (response?.data) {
       toast.success('Copy Added', { autoClose: 2000 })
       nameRef.current.value = ''
       descriptionRef.current.value = ''
-      router.push('/writing/view')
-    }
-
-    if (status === 'FAILED') {
+      router.push('/content/view')
+    } else {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
       nameRef.current.value = ''
       descriptionRef.current.value = ''
     }
-
-    if (error) {
-      Sentry.captureException(error)
-      toast.error('An error occurred. Please try again later', { autoClose: 3000 })
-    }
-  }, [response, error])
+  }
 
   if (loading) {
     return <Loader />
@@ -288,7 +331,49 @@ const Writing = () => {
         </Card>
       ) : (
         <>
-          <Card style={{ padding: 15 }}>
+          <Typography
+            variant='h4'
+            id='h1-header'
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 'bold',
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }
+            }}
+          >
+            {t('create_copy')}
+          </Typography>
+
+          <Typography
+            variant='subtitle1'
+            gutterBottom
+            sx={{
+              color: theme.palette.text.secondary,
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                marginBottom: '18px'
+              }
+            }}
+          >
+            Mandatory fields are marked with asterisk (*)
+          </Typography>
+
+          <Card
+            sx={{
+              padding: 2,
+              margin: 'auto',
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }
+            }}
+          >
             <CardContent>
               <ToastContainer position={'top-center'} draggable={false} />
               <Box>
@@ -377,25 +462,64 @@ const Writing = () => {
                 />
               )}
             </CardContent>
+
+            <AdditionalFeatures
+              selectedLanguage={selectedLanguage}
+              handleLanguageChange={handleLanguageChange}
+              brandName={brandName}
+              brandDescription={brandDescription}
+              customCommandRef={customCommandRef}
+              selectedMood={selectedMood}
+              handleMood={handleMood}
+              data={data}
+              selectedValue={selectedValue}
+              selectedCopyType={selectedCopyType}
+              handleCopyType={handleCopyType}
+            />
+            <Grid item xs={12}>
+              {' '}
+              {/* Make sure this is xs={12} if you want it to be in its own row */}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Divider sx={{ width: '98%', my: 2 }} /> {/* Adjust the width as needed */}
+              </Box>
+            </Grid>
+
+            {data.imageUploadFeatureEnabled && (
+              <>
+                <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
+                <CardContent>
+                  <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <UploadViewer uppy={uppy} />
+                    </Box>
+                  </Grid>
+                </CardContent>
+              </>
+            )}
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '8px' }}>
+              <Button
+                type='button'
+                variant='outlined'
+                size='large'
+                sx={{ textTransform: 'none' }}
+                startIcon={<CloseIcon />}
+                onClick={handleDiscard}
+              >
+                {t('discard')}
+              </Button>
+
+              <Button
+                type='submit'
+                variant='contained'
+                size='large'
+                sx={{ textTransform: 'none' }}
+                startIcon={<AddIcon />}
+              >
+                {t('create')}
+              </Button>
+            </Box>
           </Card>
-
-          <AdditionalFeatures
-            selectedLanguage={selectedLanguage}
-            handleLanguageChange={handleLanguageChange}
-            brandName={brandName}
-            brandDescription={brandDescription}
-            customCommandRef={customCommandRef}
-            selectedMood={selectedMood}
-            handleMood={handleMood}
-            data={data}
-            selectedValue={selectedValue}
-            selectedCopyType={selectedCopyType}
-            handleCopyType={handleCopyType}
-          />
-
-          <Button type='submit' variant='contained' size='large' style={{ marginTop: '20px' }}>
-            {t('create')}
-          </Button>
         </>
       )}
     </form>

@@ -56,23 +56,28 @@ const DropShippingCard: React.FC = () => {
   }
 
   if (isLoading) {
-    // Show a loading spinner while products are being fetched
-    return <CircularProgress />
+    return (
+      <Grid container justifyContent="center" style={{ paddingTop: '16px' }}>
+        <Grid item>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    );
   }
-
-
+  
+  
   const handleDetailPage = (productId: number) => {
     router.push(`/product/view/dropShipView/${productId}`)
   }
 
   return (
     <>
-      <Grid container>
+      <Grid container spacing={10}>
         {currentProducts.map(product => (
-          <Grid item xs={12} sm={6} md={4} key={product.id} style={{ marginTop: '20px', padding: '5px' }}>
+          <Grid item xs={12} sm={6} md={4} key={product.id}>
             <Card
               sx={{
-                maxWidth: 350,
+                width: '100%', // Adjusted for dynamic width
                 cursor: 'pointer',
                 height: '100%',
                 display: 'flex',

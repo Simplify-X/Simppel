@@ -7,12 +7,13 @@ import { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import Button, { ButtonProps } from '@mui/material/Button'
+import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import authRoute from 'src/@core/utils/auth-route'
 import { ToastContainer, toast } from 'react-toastify'
+import Divider from '@mui/material/Divider'
 import 'react-toastify/dist/ReactToastify.css'
 
 // import Cookies from 'js-cookie'
@@ -33,9 +34,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Chip from '@mui/material/Chip'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { Theme, useTheme } from '@mui/material/styles'
-import { styled } from '@mui/material/styles'
 import LanguageSelector from './LanguageSelector'
-import * as Sentry from '@sentry/nextjs'
 import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
 import WebScraper from './WebScraper'
@@ -46,6 +45,10 @@ import { Helmet } from 'react-helmet'
 import Loader from 'src/@core/components/ui/Loader'
 import { useStore } from 'src/store'
 import { dropStore } from 'src/dropStore'
+import UploadViewer from 'src/@core/components/UploadViewer'
+import Uppy from '@uppy/core'
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -66,30 +69,6 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   }
 }
 
-const ImgStyled = styled('img')(({ theme }) => ({
-  width: 120,
-  height: 120,
-  marginRight: theme.spacing(6.25),
-  borderRadius: theme.shape.borderRadius
-}))
-
-const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    textAlign: 'center'
-  }
-}))
-
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4.5),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
-  }
-}))
-
 const Content = () => {
   // ** States
   const router = useRouter()
@@ -100,44 +79,31 @@ const Content = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const { product } = useStore()
   const { dropshipping } = dropStore()
   const [scrapedData, setScrapedData] = useState({})
-  const { response, error, get, post } = useCustomApiHook()
+  const { get, post } = useCustomApiHook()
   const { userId } = useUserData()
   const [teamGroupMember, setTeamGroupMember] = useState([])
   const [teamData, setTeamData] = useState([])
 
-  const [selectedLanguage, setSelectedLanguage] = useState(data?.defaultAdvertisementLanguage || '');
-  const [selectedLocation, setSelectedLocation] = useState(data?.defaultAdvertisementLocation || '');
-  const [selectedMood, setSelectedMood] = useState(data?.defaultAdvertisementMood || '');
-  const [selectedTextLength, setSelectedTextLength] = useState(data?.defaultAdvertisementLength || '');
+  const [selectedLanguage, setSelectedLanguage] = useState(data?.defaultAdvertisementLanguage || '')
+  const [selectedLocation, setSelectedLocation] = useState(data?.defaultAdvertisementLocation || '')
+  const [selectedMood, setSelectedMood] = useState(data?.defaultAdvertisementMood || '')
+  const [selectedTextLength, setSelectedTextLength] = useState(data?.defaultAdvertisementLength || '')
 
+  const [uppy, setUppy] = useState(null)
 
   const handleScrapedData = data => {
     setScrapedData(data)
   }
 
-  function handleLanguageChange(event) {
-    setSelectedLanguage(event.target.value)
+  const handleDiscard = () => {
+    router.push('/writing/view/')
   }
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader()
-    const files = event.target.files
-    if (files && files.length !== 0) {
-      const newImages = []
-      for (let i = 0; i < files.length; i++) {
-        reader.onload = () => {
-          newImages.push(reader.result as string)
-          if (newImages.length === files.length) {
-            setImgSrc(newImages)
-          }
-        }
-        reader.readAsDataURL(files[i])
-      }
-    }
+  function handleLanguageChange(event) {
+    setSelectedLanguage(event.target.value)
   }
 
   const theme = useTheme()
@@ -193,6 +159,23 @@ const Content = () => {
     }
   }
 
+  useEffect(() => {
+    const uppyInstance = new Uppy({
+      autoProceed: false,
+      restrictions: {
+        maxNumberOfFiles: 10,
+        allowedFileTypes: ['image/*', '.jpg', '.jpeg', '.png', '.gif']
+      }
+    })
+
+    uppyInstance.on('file-added', () => {
+      // Just add the file, do not upload yet
+    })
+
+    setUppy(uppyInstance)
+
+    return () => uppyInstance.close()
+  }, [])
 
   useEffect(() => {
     userId && fetchSingleUser()
@@ -231,7 +214,6 @@ const Content = () => {
       setSelectedTypeAd('')
       setSelectedMood(data?.defaultAdvertisementMood)
       setSelectedTextLength(data?.defaultAdvertisementLength)
-      setImgSrc('')
     }
   }, [product, dropshipping, data])
 
@@ -248,29 +230,20 @@ const Content = () => {
       setSelectedTypeAd(product.typeAd)
       setSelectedMood(data?.defaultAdvertisementMood)
       setSelectedTextLength(data?.defaultAdvertisementLength)
-
-      if (product.image.imageUrl) {
-        setImgSrc(product.image.imageUrl)
-      }
     }
   }, [product, userId, data])
-
 
   useEffect(() => {
     if (dropshipping && userId && data) {
       setScrapedData({
         title: dropshipping.title,
         description: dropshipping.description,
-        targetAudience: dropshipping.targeting,
+        targetAudience: dropshipping.targeting
       })
       setSelectedLanguage(data?.defaultAdvertisementLanguage)
       setSelectedLocation(data?.defaultAdvertisementLocation)
       setSelectedMood(data?.defaultAdvertisementMood)
       setSelectedTextLength(data?.defaultAdvertisementLength)
-
-      if (dropshipping.additionalImages) {
-        setImgSrc(dropshipping.additionalImages)
-      }
     }
   }, [dropshipping, userId, data])
 
@@ -303,38 +276,50 @@ const Content = () => {
       brandDescription
     }
 
-    await post(`/advertisements/${userId}`, data)
-  }
+    const adResponse = await post(`/advertisements/${userId}`, data)
+    console.log(adResponse)
+    if (adResponse.data.id) {
+      if (uppy.getFiles().length > 0) {
+        const adId = adResponse.data.id
+        await uploadImagesToCloudinary(uppy.getFiles(), adId)
+      }
 
-  useEffect(() => {
-    const status = response?.data.status
-    const data = response?.data
-
-    if (data) {
       toast.success('Advertisement Added', { autoClose: 2000 })
       nameRef.current.value = ''
       descriptionRef.current.value = ''
       router.push('/content/view')
-    }
-
-    if (status === 'FAILED') {
+    } else {
       toast.error('Error', { autoClose: 3000 })
 
       // @ts-ignore
       nameRef.current.value = ''
       descriptionRef.current.value = ''
     }
+  }
 
-    if (error) {
-      Sentry.captureException(error)
-      toast.error('An error occurred. Please try again later', { autoClose: 3000 })
+  const uploadImagesToCloudinary = async (files, adId) => {
+    for (const file of files) {
+      const formData = new FormData()
+      formData.append('upload_preset', 'v31206aa')
+      formData.append('file', file.data)
+      formData.append('folder', adId)
+
+      try {
+        const response = await fetch('https://api.cloudinary.com/v1_1/dovfsnzn8/image/upload', {
+          method: 'POST',
+          body: formData
+        })
+        const responseData = await response.json()
+        console.log('Uploaded file data:', responseData)
+      } catch (error) {
+        console.error('Upload error:', error)
+      }
     }
-  }, [response, error])
+  }
 
   if (loading) {
     return <Loader />
   }
-
 
   return (
     <form onSubmit={submitForm}>
@@ -353,8 +338,49 @@ const Content = () => {
         </Card>
       ) : (
         <>
-          <Card style={{ padding: 15 }}>
-            <CardHeader title={t('create_advertisement')} titleTypographyProps={{ variant: 'h6' }} />
+          <Typography
+            variant='h4'
+            id='h1-header'
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 'bold',
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }
+            }}
+          >
+            {t('create_advertisement')}
+          </Typography>
+
+          <Typography
+            variant='subtitle1'
+            gutterBottom
+            sx={{
+              color: theme.palette.text.secondary,
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                marginBottom: '18px'
+              }
+            }}
+          >
+            Mandatory fields are marked with asterisk (*)
+          </Typography>
+
+          <Card
+            sx={{
+              padding: 2,
+              margin: 'auto',
+              '@media (min-width:1440px)': {
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }
+            }}
+          >
             <CardContent>
               <ToastContainer position={'top-center'} draggable={false} />
               <Grid container spacing={5}>
@@ -365,7 +391,6 @@ const Content = () => {
                     label={scrapedData.title ? '' : t('product_name')}
                     inputRef={nameRef}
                     required
-                    helperText={t('enter_product_name')}
                     value={scrapedData.title}
                     onChange={event => {
                       setScrapedData({
@@ -383,7 +408,6 @@ const Content = () => {
                     type='text'
                     label={scrapedData.description ? '' : t('product_description')}
                     placeholder='A flying bottle'
-                    helperText={t('product_description_helper_text')}
                     inputRef={descriptionRef}
                     value={scrapedData.description}
                     required
@@ -401,7 +425,6 @@ const Content = () => {
                     type='text'
                     label={scrapedData.targetAudience ? '' : t('target_audience')}
                     placeholder='Gym Rats, Soccer Moms, etc.'
-                    helperText={t('target_audience_helper_text')}
                     inputRef={targetAudienceRef}
                     required
                     value={scrapedData.targetAudience}
@@ -426,9 +449,16 @@ const Content = () => {
                 </Grid>
               </Grid>
             </CardContent>
-          </Card>
 
-          <Grid container spacing={5} style={{ marginTop: '20px' }}>
+            <Grid item xs={12}>
+              {' '}
+              {/* Make sure this is xs={12} if you want it to be in its own row */}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Divider sx={{ width: '94%', my: 2 }} /> {/* Adjust the width as needed */}
+              </Box>
+            </Grid>
+
+            {/* <Grid container spacing={5} style={{ marginTop: '20px' }}>
             <Grid item xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
@@ -460,9 +490,8 @@ const Content = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-          </Grid>
+          </Grid> */}
 
-          <Card style={{ marginTop: '20px', padding: 15 }}>
             <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
             <CardContent>
               <Grid container spacing={5}>
@@ -565,57 +594,55 @@ const Content = () => {
                 </Grid>
               </Grid>
             </CardContent>
-          </Card>
 
-          {data.imageUploadFeatureEnabled && (
-            <Card style={{ marginTop: '20px', padding: 15 }}>
-              <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
-              <CardContent>
-                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ImgStyled src={imgSrc} alt='Profile Pic' />
-                    <Box>
-                      <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
-                        Upload New Photo
-                        <input
-                          hidden
-                          type='file'
-                          onChange={onChange}
-                          accept='image/png, image/jpeg'
-                          id='account-settings-upload-image'
-                          multiple
-                        />
-                      </ButtonStyled>
-                      <ResetButtonStyled
-                        color='error'
-                        variant='outlined'
-                        onClick={() => setImgSrc('/images/avatars/1.png')}
-                      >
-                        Reset
-                      </ResetButtonStyled>
-                      <Typography variant='body2' sx={{ marginTop: 5 }}>
-                        Allowed PNG or JPEG. Max size of 800K.
-                      </Typography>
+            <Grid item xs={12}>
+              {' '}
+              {/* Make sure this is xs={12} if you want it to be in its own row */}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Divider sx={{ width: '94%', my: 2 }} /> {/* Adjust the width as needed */}
+              </Box>
+            </Grid>
+
+            {data.imageUploadFeatureEnabled && (
+              <>
+                <CardHeader title={t('images')} titleTypographyProps={{ variant: 'h6' }} />
+                <CardContent>
+                  <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <UploadViewer uppy={uppy} />
                     </Box>
-                  </Box>
-                </Grid>
-              </CardContent>
-            </Card>
-          )}
+                  </Grid>
+                </CardContent>
+              </>
+            )}
 
-          <Tooltip title={isButtonDisabled ? 'You have reached your limit of advertisements' : ''} arrow>
-            <span>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '8px' }}>
               <Button
-                type='submit'
-                variant='contained'
+                type='button'
+                variant='outlined'
                 size='large'
-                style={{ marginTop: '20px' }}
-                disabled={isButtonDisabled}
+                sx={{ textTransform: 'none' }}
+                startIcon={<CloseIcon />}
+                onClick={handleDiscard}
               >
-                {t('create')}
+                {t('discard')}
               </Button>
-            </span>
-          </Tooltip>
+
+              <Tooltip title={isButtonDisabled ? 'You have reached your limit of advertisements' : ''} arrow>
+                <span>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    size='large'
+                    sx={{ textTransform: 'none' }}
+                    startIcon={<AddIcon />}
+                  >
+                    {t('create')}
+                  </Button>
+                </span>
+              </Tooltip>
+            </Box>
+          </Card>
         </>
       )}
     </form>
