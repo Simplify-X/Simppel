@@ -21,6 +21,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
+import TextField from '@mui/material/TextField'
 
 // import SelectChangeEvent from '@mui/material/Select'
 
@@ -29,26 +30,22 @@ import { useTranslation } from 'react-i18next'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
 import Divider from '@mui/material/Divider'
-import CopyForm from './view/CopyForm'
-import SummarizeForm from './view/SummarizeForm'
-import EmailForm from './view/EmailForm'
 import AdditionalFeatures from './view/AdditionalFeatures'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
-import { useStore } from 'src/store'
-import { dropStore } from 'src/dropStore'
 import Loader from 'src/@core/components/ui/Loader'
 import UploadViewer from 'src/@core/components/UploadViewer'
 import Uppy from '@uppy/core'
 import CardHeader from '@mui/material/CardHeader'
 import Grid from '@mui/material/Grid'
 import { useTheme } from '@mui/material/styles'
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 
 const Writing = () => {
   // ** States
   const router = useRouter()
   const { t } = useTranslation()
-  const { product } = useStore()
-  const { dropshipping } = dropStore()
   const { userId } = useUserData()
   const [data, setData] = useState([])
   const [selectedMood, setSelectedMood] = useState('')
@@ -63,6 +60,24 @@ const Writing = () => {
   const [loading, setLoading] = useState(true)
   const [uppy, setUppy] = useState(null)
   const theme = useTheme()
+
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required(t('product_name_required')),
+    description: Yup.string().required(t('description_required')),
+    targetAudience: Yup.string().required(t('target_audience_required')),
+    keywords: Yup.string().required(t('target_audience_required')),
+  });
+
+  const { 
+    register, 
+    handleSubmit, 
+    errors, 
+  } = useForm({
+    mode: 'onBlur',
+    criteriaMode: "all",
+    shouldUnregister: true,
+    resolver: yupResolver(validationSchema)
+  });
 
   function handleLanguageChange(event) {
     setSelectedLanguage(event.target.value)
@@ -88,19 +103,6 @@ const Writing = () => {
 
   const handleTextLength = event => {
     setSelectedTextLength(event.target.value)
-  }
-
-  const [selectedChecbox, setSelectedChecbox] = useState([])
-
-  const handleCheckboxChange = event => {
-    const { value, checked } = event.target
-    if (checked) {
-      // Add the value to the selectedLocation array
-      setSelectedChecbox([...selectedChecbox, value])
-    } else {
-      // Remove the value from the selectedLocation array
-      setSelectedChecbox(selectedChecbox.filter(item => item !== value))
-    }
   }
 
   useEffect(() => {
@@ -151,10 +153,9 @@ const Writing = () => {
     }
   }
 
-  
   const handleDiscard = () => {
-    router.push('/writing/view/');
-  };
+    router.push('/writing/view/')
+  }
 
   const fetchTeamData = async () => {
     const getTeamData = await get(`/groups/list/${teamGroupMember?.teamGroupId}`)
@@ -166,63 +167,10 @@ const Writing = () => {
     }
   }
 
-  useEffect(() => {
-    if (product && userId && data) {
-      const categoriesString = product.categories.map(category => category.categoryName).join(', ')
 
-      if (nameRef.current) {
-        nameRef.current.value = product?.title || ''
-      }
-
-      if (descriptionRef.current) {
-        descriptionRef.current.value = product.description || product.title || ''
-      }
-
-      if (targetAudienceRef.current) {
-        targetAudienceRef.current.value = categoriesString || ''
-      }
-
-      if (keywordInput.current) {
-        keywordInput.current.value = categoriesString || ''
-      }
-      setSelectedLanguage(data?.defaultCopyLanguage)
-      setSelectedLocation('formal')
-      setSelectedCopyType('SEO')
-      setSelectedTextLength(data?.defaultCopyLength)
-    }
-  }, [product, userId, data])
-
-  useEffect(() => {
-    if (dropshipping && data) {
-      if (nameRef.current) {
-        nameRef.current.value = dropshipping?.title || ''
-      }
-
-      if (descriptionRef.current) {
-        descriptionRef.current.value = dropshipping.description || ''
-      }
-
-      if (targetAudienceRef.current) {
-        targetAudienceRef.current.value = dropshipping?.targeting || ''
-      }
-
-      if (keywordInput.current) {
-        keywordInput.current.value = dropshipping?.targeting || ''
-      }
-      setSelectedLanguage(data?.defaultCopyLanguage)
-      setSelectedLocation('formal')
-      setSelectedCopyType('SEO')
-      setSelectedTextLength(data?.defaultCopyLength)
-    }
-  }, [dropshipping, data])
-
-  const nameRef = useRef<HTMLInputElement>(null)
-  const descriptionRef = useRef<HTMLInputElement>(null)
-  const targetAudienceRef = useRef<HTMLInputElement>(null)
   const brandName = useRef<HTMLInputElement>(null)
   const brandDescription = useRef<HTMLInputElement>(null)
   const customCommandRef = useRef<HTMLInputElement>(null)
-  const keywordInput = useRef<HTMLInputElement>(null)
 
   const uploadImagesToCloudinary = async (files, contentId) => {
     for (const file of files) {
@@ -244,15 +192,21 @@ const Writing = () => {
     }
   }
 
-  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const name = nameRef.current?.value
-    const description = descriptionRef.current?.value
-    const targetAudience = targetAudienceRef.current?.value
+  async function submitForm(formData) {
+
+    console.log(formData)
+
+    const {
+      title,
+      description,
+      targetAudience,
+      keywords,
+    } = formData;
+
+
     const brandNames = brandName.current?.value
     const brandDescriptions = brandDescription.current?.value
     const customCommands = customCommandRef.current?.value
-    const keyWords = keywordInput.current?.value
 
     const formSupplyType = selectedValue
     let formattedSupplyType
@@ -273,8 +227,8 @@ const Writing = () => {
     }
 
     const data = {
-      title: name,
-      keyWords,
+      title,
+      keyWords: keywords,
       description,
       formType: formattedSupplyType,
       targetAudience: targetAudience,
@@ -318,7 +272,7 @@ const Writing = () => {
   }
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit(submitForm)}>
       {teamData?.copyWritingAccess === 'VIEW' || !data?.copyWritingEnabled ? (
         <Card style={{ padding: 15, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
@@ -381,7 +335,7 @@ const Writing = () => {
                   <FormLabel component='legend' style={{ marginTop: 20 }}>
                     <span style={{ marginRight: 8 }}>Form Type</span>
                     <IconButton>
-                      <AcUnitIcon /> {/* Replace 'IconName' with the desired icon from '@material-ui/icons' */}
+                      <AcUnitIcon />
                     </IconButton>
                   </FormLabel>
                   <RadioGroup row value={selectedValue} onChange={handleChangeForm}>
@@ -390,11 +344,6 @@ const Writing = () => {
                       control={<Radio checked={selectedValue === 'create'} />}
                       label='Create Copy'
                     />
-                    {/* <FormControlLabel
-                  value='edit'
-                  control={<Radio checked={selectedValue === 'edit'} />}
-                  label='Alter Copy'
-                /> */}
                     <FormControlLabel
                       value='summarize'
                       control={<Radio checked={selectedValue === 'summarize'} />}
@@ -412,54 +361,143 @@ const Writing = () => {
               <Divider style={{ marginBottom: 20 }} />
 
               {selectedValue === 'create' && (
-                <CopyForm
-                  handleLocationChange={handleLocationChange}
-                  selectedLocation={selectedLocation}
-                  selectedTextLength={selectedTextLength}
-                  handleTextLength={handleTextLength}
-                  nameRef={nameRef}
-                  targetAudienceRef={targetAudienceRef}
-                  descriptionRef={descriptionRef}
-                  keywordInput={keywordInput}
-                />
-              )}
+                <>
+                  <Typography style={{ marginBottom: 20, color: '#C6A7FE' }} variant='h6'>
+                    Copy writing data
+                  </Typography>
+                  <Grid container spacing={10}>
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        label={t('title_of_copy')}
+                        name="title"
+                        inputRef={register}
+                        error={!!errors.title}
+                        helperText={errors.title?.message}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        type='text'
+                        label={t('target_audience')}
+                        placeholder='Gym Rats, Soccer Moms, etc.'
+                        name="targetAudience"
+                        inputRef={register}
+                        error={!!errors.targetAudience}
+                        helperText={errors.targetAudience?.message}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        type='text'
+                        label={t('keywords_title')}
+                        placeholder='Mouse, Elephant, Space.'
+                        name="keywords"
+                        inputRef={register}
+                        error={!!errors.keywords}
+                        helperText={errors.keywords?.message}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        type='text'
+                        label={t('description_copy')}
+                        placeholder='A flying bottle'
+                        name="description"
+                        inputRef={register}
+                        error={!!errors.description}
+                        helperText={errors.description?.message}
+                        required
+                        multiline
+                        rows={8}
+                      />
+                    </Grid>
 
-              {/* {selectedValue === 'edit' && (
-            <AlterCopyForm
-              handleLocationChange={handleLocationChange}
-              selectedLocation={selectedLocation}
-              selectedTextLength={selectedTextLength}
-              handleTextLength={handleTextLength}
-              nameRef={nameRef}
-              targetAudienceRef={targetAudienceRef}
-              descriptionRef={descriptionRef}
-            />
-          )} */}
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
 
-              {selectedValue === 'summarize' && (
-                <SummarizeForm
-                  handleLocationChange={handleLocationChange}
-                  selectedLocation={selectedLocation}
-                  selectedTextLength={selectedTextLength}
-                  handleTextLength={handleTextLength}
-                  nameRef={nameRef}
-                  targetAudienceRef={targetAudienceRef}
-                  descriptionRef={descriptionRef}
-                  selectedChecbox={selectedChecbox}
-                  handleCheckboxChange={handleCheckboxChange}
-                />
-              )}
+                    <Grid item xs={4}>
+                      <Typography style={{ marginBottom: 20, color: '#C6A7FE' }} variant='h6'>
+                        Copy Settings
+                      </Typography>
+                      <Grid item xs={12}>
+                        <FormControl component='fieldset'>
+                          <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
+                            {t('tone')}
+                          </FormLabel>
+                          <RadioGroup
+                            row
+                            aria-labelledby='demo-row-radio-buttons-group-label'
+                            name='row-radio-buttons-group'
+                            value={selectedLocation}
+                            onChange={handleLocationChange}
+                          >
+                            <FormControlLabel
+                              value='formal'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Formal</span>}
+                            />
+                            <FormControlLabel
+                              value='informal'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Informal</span>}
+                            />
+                            <FormControlLabel
+                              value='humorous'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Humorous</span>}
+                            />
+                            <FormControlLabel
+                              value='serious'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Serious</span>}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
 
-              {selectedValue === 'email' && (
-                <EmailForm
-                  handleLocationChange={handleLocationChange}
-                  selectedLocation={selectedLocation}
-                  selectedTextLength={selectedTextLength}
-                  handleTextLength={handleTextLength}
-                  nameRef={nameRef}
-                  targetAudienceRef={targetAudienceRef}
-                  descriptionRef={descriptionRef}
-                />
+                      <Grid item xs={12} style={{ marginTop: '17px' }}>
+                        <FormControl component='fieldset'>
+                          <FormLabel id='demo-row-radio-buttons-group-label' style={{ color: '#C6A7FE' }}>
+                            {t('copy_length')}
+                          </FormLabel>
+                          <RadioGroup
+                            row
+                            aria-labelledby='demo-row-radio-buttons-group-label'
+                            name='row-radio-buttons-group'
+                            value={selectedTextLength}
+                            onChange={handleTextLength}
+                          >
+                            <FormControlLabel
+                              value='short'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Short</span>}
+                            />
+                            <FormControlLabel
+                              value='medium'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Medium</span>}
+                            />
+                            <FormControlLabel
+                              value='long'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Long</span>}
+                            />
+                            <FormControlLabel
+                              value='long'
+                              control={<Radio />}
+                              label={<span style={{ width: '70px', display: 'inline-block' }}>Random</span>}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </>
               )}
             </CardContent>
 
@@ -478,9 +516,8 @@ const Writing = () => {
             />
             <Grid item xs={12}>
               {' '}
-              {/* Make sure this is xs={12} if you want it to be in its own row */}
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Divider sx={{ width: '98%', my: 2 }} /> {/* Adjust the width as needed */}
+                <Divider sx={{ width: '98%', my: 2 }} />
               </Box>
             </Grid>
 

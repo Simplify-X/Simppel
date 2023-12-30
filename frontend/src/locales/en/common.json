@@ -39,6 +39,7 @@
   "custom_command" : "Enter a custom command to get customized information",
   "custom_form": "Custom Form",
   "dashboard": "Dashboard",
+  "description": "Description",
   "description_copy" : "Description of copy",
   "discard": "Discard",
   "dropship_product" : "Dropshipping Product",
@@ -69,6 +70,10 @@
   "product_search" : "Product search",
   "product_spy": "Product spy",
   "product_type": "Product Type",
+  "product_name_required": "Product name is required",
+  "description_required": "Description is required",
+  "target_audience_required": "Target audience is required",
+  "brand_section": "Branding section",
   "rank": "Rank",
   "revenue": "Revenue",
   "sales": "Sales",
@@ -91,6 +96,7 @@
   "view_advertisement": "View Advertisement",
   "view_copy": "View Copy",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
+  "web_scraper_tooltip": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct before creating an advertisement",
   "web_scraper_url": "Website URL",
   "weight": "Weight"
 }

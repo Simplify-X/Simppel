@@ -1,7 +1,7 @@
 // @ts-nocheck
 // ** React Imports
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -25,11 +25,7 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
 import Typography from '@mui/material/Typography'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Chip from '@mui/material/Chip'
 import OutlinedInput from '@mui/material/OutlinedInput'
@@ -49,6 +45,9 @@ import UploadViewer from 'src/@core/components/UploadViewer'
 import Uppy from '@uppy/core'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Yup from 'yup'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -91,8 +90,20 @@ const Content = () => {
   const [selectedLocation, setSelectedLocation] = useState(data?.defaultAdvertisementLocation || '')
   const [selectedMood, setSelectedMood] = useState(data?.defaultAdvertisementMood || '')
   const [selectedTextLength, setSelectedTextLength] = useState(data?.defaultAdvertisementLength || '')
-
   const [uppy, setUppy] = useState(null)
+
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required(t('product_name_required')),
+    description: Yup.string().required(t('description_required')),
+    targetAudience: Yup.string().required(t('target_audience_required'))
+  })
+
+  const { register, handleSubmit, errors, setValue } = useForm({
+    mode: 'onBlur',
+    criteriaMode: 'all',
+    shouldUnregister: true,
+    resolver: yupResolver(validationSchema)
+  })
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -196,12 +207,6 @@ const Content = () => {
     response?.advertisements && setAdCount(response.advertisements?.length)
   }
 
-  const nameRef = useRef<HTMLInputElement>(null)
-  const descriptionRef = useRef<HTMLInputElement>(null)
-  const targetAudienceRef = useRef<HTMLInputElement>(null)
-  const brandNameRef = useRef<HTMLInputElement>(null)
-  const brandNameDescriptionRef = useRef<HTMLInputElement>(null)
-
   useEffect(() => {
     if (!product && !dropshipping) {
       setScrapedData({
@@ -247,8 +252,20 @@ const Content = () => {
     }
   }, [dropshipping, userId, data])
 
-  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  useEffect(() => {
+    if (scrapedData) {
+      setValue('title', scrapedData.title)
+      setValue('description', scrapedData.description)
+      setValue('targetAudience', scrapedData.targetAudience)
+    }
+  }, [scrapedData, setValue])
+
+  async function submitForm(formData) {
+    console.log(formData)
+
+    const { title, description, targetAudience, brandName, brandDescription } = formData
+
+    console.log(selectedLocation)
 
     if (adCount >= limit) {
       toast.error('You have reached your limit of advertisements', { autoClose: 3000 })
@@ -257,14 +274,8 @@ const Content = () => {
       return
     }
 
-    const name = nameRef.current?.value
-    const description = descriptionRef.current?.value
-    const targetAudience = targetAudienceRef.current?.value
-    const brandName = brandNameRef.current?.value
-    const brandDescription = brandNameDescriptionRef.current?.value
-
     const data = {
-      name,
+      name: title,
       description,
       targetAudience: targetAudience,
       advertisementLocation: selectedLocation,
@@ -285,15 +296,10 @@ const Content = () => {
       }
 
       toast.success('Advertisement Added', { autoClose: 2000 })
-      nameRef.current.value = ''
-      descriptionRef.current.value = ''
+
       router.push('/content/view')
     } else {
       toast.error('Error', { autoClose: 3000 })
-
-      // @ts-ignore
-      nameRef.current.value = ''
-      descriptionRef.current.value = ''
     }
   }
 
@@ -322,7 +328,7 @@ const Content = () => {
   }
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit(submitForm)}>
       <Helmet>
         <title>Simppel - Create Advertisement</title>
       </Helmet>
@@ -385,19 +391,25 @@ const Content = () => {
               <ToastContainer position={'top-center'} draggable={false} />
               <Grid container spacing={5}>
                 {data.advertisementImportEnabled && <WebScraper onScrapedData={handleScrapedData} />}
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
-                    label={scrapedData.title ? '' : t('product_name')}
-                    inputRef={nameRef}
-                    required
-                    value={scrapedData.title}
-                    onChange={event => {
-                      setScrapedData({
-                        ...scrapedData,
-                        title: event.target.value
-                      })
-                    }}
+                    label={t('product_name')}
+                    name='title'
+                    inputRef={register}
+                    error={!!errors.title}
+                    helperText={errors.title?.message}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    name='targetAudience'
+                    inputRef={register}
+                    error={!!errors.targetAudience}
+                    helperText={errors.targetAudience?.message}
+                    label={t('target_audience')}
+                    placeholder='Gym Rats, Soccer Moms, etc.'
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -405,35 +417,12 @@ const Content = () => {
                     fullWidth
                     multiline
                     rows={4}
-                    type='text'
-                    label={scrapedData.description ? '' : t('product_description')}
+                    name='description'
+                    label={t('description')}
+                    inputRef={register}
+                    error={!!errors.description}
+                    helperText={errors.description?.message}
                     placeholder='A flying bottle'
-                    inputRef={descriptionRef}
-                    value={scrapedData.description}
-                    required
-                    onChange={event => {
-                      setScrapedData({
-                        ...scrapedData,
-                        description: event.target.value
-                      })
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    type='text'
-                    label={scrapedData.targetAudience ? '' : t('target_audience')}
-                    placeholder='Gym Rats, Soccer Moms, etc.'
-                    inputRef={targetAudienceRef}
-                    required
-                    value={scrapedData.targetAudience}
-                    onChange={event => {
-                      setScrapedData({
-                        ...scrapedData,
-                        targetAudience: event.target.value
-                      })
-                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -452,45 +441,42 @@ const Content = () => {
 
             <Grid item xs={12}>
               {' '}
-              {/* Make sure this is xs={12} if you want it to be in its own row */}
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Divider sx={{ width: '94%', my: 2 }} /> {/* Adjust the width as needed */}
+                <Divider sx={{ width: '94%', my: 2 }} />
               </Box>
             </Grid>
 
-            {/* <Grid container spacing={5} style={{ marginTop: '20px' }}>
-            <Grid item xs={12}>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-                  <Typography>{t('branding_information')}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label={t('branding_name')}
-                      inputRef={brandNameRef || data?.defaultBrandName}
-                      value={data?.defaultBrandName}
-                      helperText={t('branding_name_helper_text')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} style={{ marginTop: '10px' }}>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={4}
-                      type='text'
-                      label={t('branding_description')}
-                      placeholder='A flying bottle'
-                      helperText={t('branding_description_helper_text')}
-                      inputRef={brandNameDescriptionRef || data?.defaultBrandDescription}
-                      value={data?.defaultBrandDescription}
-                    />
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
-            </Grid>
-          </Grid> */}
+            <CardHeader title={t('brand_section')} titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
+              <Grid container spacing={5}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label={t('branding_name')}
+                    name='brandName'
+                    inputRef={register}
+                    value={data?.defaultBrandName}
+                    error={!!errors.brandName}
+                    helperText={errors.brandName?.message}
+                  />
+                </Grid>
+                <Grid item xs={12} style={{ marginTop: '10px' }}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    type='text'
+                    label={t('branding_description')}
+                    name='brandDescription'
+                    placeholder='A flying bottle'
+                    inputRef={register}
+                    value={data?.defaultBrandDescription}
+                    error={!!errors.brandDescription}
+                    helperText={errors.brandDescription?.message}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
 
             <CardHeader title={t('additional_features')} titleTypographyProps={{ variant: 'h6' }} />
             <CardContent>
@@ -516,90 +502,81 @@ const Content = () => {
                 <AdvertisementCategorySelector selectedTypeAd={selectedTypeAd} handleTypeAd={handleTypeAd} />
 
                 <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
+              </Grid>
+            </CardContent>
+
+            <CardHeader title={t('advanced_settings')} titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
+              <Grid item xs={12}>
+                <Grid item xs={12}>
+                  <FormControl>
+                    <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_length')}</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby='demo-row-radio-buttons-group-label'
+                      name='row-radio-buttons-group'
+                      value={selectedTextLength}
+                      onChange={handleTextLength}
+                    >
+                      <FormControlLabel value='short' control={<Radio />} label='Short Text' />
+                      <FormControlLabel value='medium' control={<Radio />} label='Medium Text' />
+                      <FormControlLabel value='long' control={<Radio />} label='Long Text' />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
 
                 <Grid item xs={12}>
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls='panel1a-content'
-                      id='panel1a-header'
+                  <FormControl>
+                    <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby='demo-row-radio-buttons-group-label'
+                      name='row-radio-buttons-group'
+                      value={selectedMood}
+                      onChange={handleMood}
                     >
-                      <Typography>{t('advanced_settings')}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Grid item xs={12}>
-                        <FormControl>
-                          <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_length')}</FormLabel>
-                          <RadioGroup
-                            row
-                            aria-labelledby='demo-row-radio-buttons-group-label'
-                            name='row-radio-buttons-group'
-                            value={selectedTextLength}
-                            onChange={handleTextLength}
-                          >
-                            <FormControlLabel value='short' control={<Radio />} label='Short Text' />
-                            <FormControlLabel value='medium' control={<Radio />} label='Medium Text' />
-                            <FormControlLabel value='long' control={<Radio />} label='Long Text' />
-                          </RadioGroup>
-                        </FormControl>
-                      </Grid>
+                      <FormControlLabel value='sell' control={<Radio />} label='Sell' />
+                      <FormControlLabel value='promote' control={<Radio />} label='Promote' />
+                      <FormControlLabel value='engage' control={<Radio />} label='Engage' />
+                      <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
 
-                      <Grid item xs={12}>
-                        <FormControl>
-                          <FormLabel id='demo-row-radio-buttons-group-label'>Mood</FormLabel>
-                          <RadioGroup
-                            row
-                            aria-labelledby='demo-row-radio-buttons-group-label'
-                            name='row-radio-buttons-group'
-                            value={selectedMood}
-                            onChange={handleMood}
-                          >
-                            <FormControlLabel value='sell' control={<Radio />} label='Sell' />
-                            <FormControlLabel value='promote' control={<Radio />} label='Promote' />
-                            <FormControlLabel value='engage' control={<Radio />} label='Engage' />
-                            <FormControlLabel value='traffic' control={<Radio />} label='Traffic' />
-                          </RadioGroup>
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} style={{ marginTop: '20px' }}>
-                        <FormControl sx={{ minWidth: 370 }}>
-                          <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
-                          <Select
-                            labelId='demo-multiple-chip-label'
-                            id='demo-multiple-chip'
-                            multiple
-                            value={personName}
-                            onChange={handleChange}
-                            input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
-                            renderValue={selected => (
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selected.map(value => (
-                                  <Chip key={value} label={value} />
-                                ))}
-                              </Box>
-                            )}
-                            MenuProps={MenuProps}
-                          >
-                            {names.map(name => (
-                              <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                                {name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    </AccordionDetails>
-                  </Accordion>
+                <Grid item xs={12} style={{ marginTop: '20px' }}>
+                  <FormControl sx={{ minWidth: 370 }}>
+                    <InputLabel id='demo-multiple-chip-label'>{t('product_type')}</InputLabel>
+                    <Select
+                      labelId='demo-multiple-chip-label'
+                      id='demo-multiple-chip'
+                      multiple
+                      value={personName}
+                      onChange={handleChange}
+                      input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
+                      renderValue={selected => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map(value => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                      MenuProps={MenuProps}
+                    >
+                      {names.map(name => (
+                        <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
             </CardContent>
 
             <Grid item xs={12}>
               {' '}
-              {/* Make sure this is xs={12} if you want it to be in its own row */}
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Divider sx={{ width: '94%', my: 2 }} /> {/* Adjust the width as needed */}
+                <Divider sx={{ width: '94%', my: 2 }} />
               </Box>
             </Grid>
 

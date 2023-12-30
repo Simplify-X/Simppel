@@ -429,10 +429,13 @@ const SingleContent = () => {
                     <Typography variant='caption'>Number of Generated Times</Typography>
                     <Typography variant='body1'>1</Typography>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant='caption'>Number of Generated Times</Typography>
-                    <ImageGallery advertisementId={id} />
+                  <Grid item xs={12}>
+                    <Divider />
                   </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>Attachments</Typography>
+                  </Grid>
+                  <ImageGallery advertisementId={id} />
                 </Grid>
               )}
             </CardContent>
@@ -510,6 +513,7 @@ const SingleContent = () => {
             <LinearProgress color='primary' />
           </DialogContent>
         </Dialog>
+        
         <Grid item xs={12} sm={6}>
           <Card>
             <CardHeader
@@ -527,7 +531,10 @@ const SingleContent = () => {
             />
           </Card>
         </Grid>
+
+
       </Grid>
+      
 
       <Modal
         open={modalOpen}
