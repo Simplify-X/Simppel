@@ -22,24 +22,18 @@ public class CloudinaryImage {
 
     @CrossOrigin
     @GetMapping("/fetch/{folderId}")
-    public ResponseEntity<String> fetchImages(@PathVariable String folderId) {
-        String url = String.format("https://api.cloudinary.com/v1_1/%s/resources/image?prefix=%s&type=upload", cloudinaryCloudName, folderId);
+    public ResponseEntity<?> fetchImages(@PathVariable String folderId) {
+        String url = String.format("https://api.cloudinary.com/v1_1/%s/resources/image?prefix=%s&type=upload",
+                cloudinaryCloudName, folderId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(cloudinaryApiKey, cloudinaryApiSecret);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            return response;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+            return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error fetching images: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching images");
         }
     }
-
-
-
 }
