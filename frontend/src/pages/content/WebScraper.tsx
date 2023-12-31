@@ -1,12 +1,25 @@
 // @ts-nocheck
 import React, { useState } from 'react'
-import { Button, TextField, Grid, Dialog, DialogContent, DialogContentText, LinearProgress } from '@mui/material'
+import {
+  Button,
+  TextField,
+  Grid,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  LinearProgress,
+  InputAdornment,
+  Tooltip,
+  IconButton
+} from '@mui/material';
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
+
+// import Alert from '@mui/material/Alert'
+// import AlertTitle from '@mui/material/AlertTitle'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
+import InfoIcon from '@mui/icons-material/Info';
 
 const WebScraper = ({ onScrapedData }) => {
   const [url, setUrl] = useState('')
@@ -43,16 +56,45 @@ const WebScraper = ({ onScrapedData }) => {
     <>
       <Grid item xs={12}>
         <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert severity='info'>
+          {/* <Alert severity='info'>
             <AlertTitle>{t('web_scraper_alert')}</AlertTitle>
-          </Alert>
+          </Alert> */}
         </Stack>
       </Grid>
       <Grid item xs={12}>
-        <TextField fullWidth label={t('web_scraper_url')} value={url} onChange={event => setUrl(event.target.value)} />
-        <Button variant='contained' onClick={scrapeWebsite} style={{ marginTop: '10px' }}>
-          {t('import_data')}
-        </Button>
+        <TextField
+          fullWidth
+          label={t('web_scraper_url')}
+          value={url}
+          onChange={event => setUrl(event.target.value)}
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Tooltip title={t('web_scraper_tooltip')}>
+                  <IconButton>
+                    <InfoIcon />
+                  </IconButton>
+                </Tooltip>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <Button
+                  variant='contained'
+                  onClick={scrapeWebsite}
+                  sx={{
+                    marginLeft: '8px',
+                    whiteSpace: 'nowrap',
+                    boxShadow: 'none'
+                  }}
+                >
+                  {t('import_data')}
+                </Button>
+              </InputAdornment>
+            )
+          }}
+        />
       </Grid>
       <Dialog open={isLoading}>
         <DialogContent>

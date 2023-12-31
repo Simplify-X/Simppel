@@ -30,9 +30,8 @@ const ViewUserGroup = () => {
   const { id } = router.query
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
-  const { response, get, post } = useCustomApiHook()
-  const { accountId } = useUserData()
-
+  const { response, get, post, del } = useCustomApiHook()
+  const { accountId, userId } = useUserData()
 
   const handleOpen = () => {
     setOpen(true)
@@ -64,6 +63,15 @@ const ViewUserGroup = () => {
       }
     },
     {
+      name: 'userId',
+      label: 'UserId',
+      options: {
+        filter: true,
+        sort: true,
+        display: 'none'
+      }
+    },
+    {
       name: 'username',
       label: 'Username',
       options: {
@@ -85,13 +93,14 @@ const ViewUserGroup = () => {
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowId = tableMeta.rowData[0]
+          const userIdMember = tableMeta.rowData[1]
 
           return (
             <>
               <IconButton onClick={() => handleEdit(tableMeta.rowData)}>
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={() => handleDelete(rowId)}>
+              <IconButton onClick={() => handleDelete(rowId, userIdMember)}>
                 <DeleteIcon />
               </IconButton>
             </>
@@ -107,6 +116,10 @@ const ViewUserGroup = () => {
     setOpen(true)
     setSelectedUser(selectedData.userId)
     setMemberRole(selectedData.role)
+  }
+
+  async function handleDelete(rowId, userIdMember) {
+    await del(`/groups/members/delete/${rowId}/${userIdMember}`)
   }
 
   const options = {
@@ -128,11 +141,11 @@ const ViewUserGroup = () => {
 
   useEffect(() => {
     const fetchUserForAccount = async () => {
-      const res = await get(`/users/getUserForAccount/${accountId}`)
+      const res = await get(`/users/getUserForAccount/${accountId}/${userId}`)
       res?.data && setUsers(res.data)
     }
-    accountId && fetchUserForAccount()
-  }, [accountId])
+    userId && accountId && fetchUserForAccount()
+  }, [accountId, open, userId])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -185,11 +198,17 @@ const ViewUserGroup = () => {
               fullWidth
               margin='normal'
             >
-              {users.map(user => (
-                <MenuItem key={user?.userId} value={user?.userId}>
-                  {user?.username}
+              {users.length === 0 ? (
+                <MenuItem value='' disabled>
+                  No Users
                 </MenuItem>
-              ))}
+              ) : (
+                users.map(user => (
+                  <MenuItem key={user?.userId} value={user?.userId}>
+                    {user?.username}
+                  </MenuItem>
+                ))
+              )}
             </TextField>
           </Box>
 

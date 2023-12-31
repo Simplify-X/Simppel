@@ -8,12 +8,14 @@ import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import Loader from 'src/@core/components/ui/Loader'
 
 const UserManagement = () => {
   const [role, setRole] = useState([])
   const router = useRouter()
   const { get } = useCustomApiHook()
-  const { accountId } = useUserData()
+  const { accountId, userId } = useUserData()
+  const [loading, setLoading] = useState(true)
 
   const handleClick = ( rowData ) => {
     router.push(`/user-management/edit/${rowData}`)
@@ -72,7 +74,7 @@ const UserManagement = () => {
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: rowData => {
       handleClick(rowData[0])
     }
@@ -83,14 +85,19 @@ const UserManagement = () => {
   }
 
   useEffect(() => {
-    if (accountId) {
+    if (accountId && userId) {
       fetchUserForAccount()
     }
-  }, [accountId])
+  }, [accountId, userId])
 
   const fetchUserForAccount = async () => {
-    const getUsersForAccount = await get(`/users/getUserForAccount/${accountId}`)
+    const getUsersForAccount = await get(`/users/getUsersTeam/${accountId}/${userId}`)
     setRole(getUsersForAccount?.data)
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <Loader />
   }
 
   return (

@@ -80,8 +80,38 @@ public class User extends Auditable {
 
     private String defaultLanguage;
 
-    private Boolean isLinkedToTeamGroup;
+    private Boolean isLinkedToTeamGroup = false;
 
     private String productFormType;
+
+    private String defaultAdvertisementLocation;
+
+    private String defaultAdvertisementLanguage;
+
+    private String defaultAdvertisementLength;
+
+    private String defaultAdvertisementMood;
+
+    private String defaultCopyTone;
+
+    private String defaultCopyLength;
+
+    private String defaultCopyLanguage;
+
+    private String defaultCopyType;
+
+    private String defaultBrandName;
+
+    private String defaultBrandDescription;
+
+    private Boolean firstTimeLoggedIn = false;
+
+    private boolean isCopyWritingEnabled;
+
+    private boolean isAutomationEnabled;
+
+    private boolean isSpyToolsEnabled;
+
+    private boolean isProductSearchEnabled;
 
 }

@@ -38,6 +38,7 @@ export const useUserData = () => {
         type === 'me' && setAccountId(response?.data)
         type === 'my' && setUserId(response?.data)
       } else {
+        window.location.replace('/login')
         throw new Error('Invalid token')
       }
     }

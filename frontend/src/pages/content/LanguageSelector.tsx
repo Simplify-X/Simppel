@@ -6,8 +6,6 @@ import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Flag from 'react-world-flags'
 import { useTranslation } from 'react-i18next'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
 
 const languageOptions = [
   { value: 'us', label: 'English' },
@@ -31,12 +29,18 @@ const LanguageSelector = ({ selectedLanguage, onChange }) => {
             value={selectedLanguage}
             onChange={onChange}
             displayEmpty
-            renderValue={value => (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Flag code={value} height={16} />
-                <span style={{ marginLeft: 10 }}>{value}</span>
-              </div>
-            )}
+            renderValue={value => {
+              const selectedOption = languageOptions.find(option => option.value === value);
+
+              return (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Flag code={value} height={16} />
+                  {/* Use the label from the found option */}
+                  <span style={{ marginLeft: 10 }}>{selectedOption ? selectedOption.label : ''}</span>
+                </div>
+              );
+            }}
+            
           >
             {languageOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
@@ -48,9 +52,6 @@ const LanguageSelector = ({ selectedLanguage, onChange }) => {
             ))}
           </Select>
         </FormControl>
-      </Grid>
-      <Grid item xs={4}>
-        <FormControlLabel value='start' control={<Switch color='primary' />} label='Text in English' labelPlacement='start' />
       </Grid>
     </>
   )

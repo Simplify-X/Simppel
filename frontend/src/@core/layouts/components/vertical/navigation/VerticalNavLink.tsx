@@ -1,5 +1,5 @@
 // ** React Imports
-import { ElementType, ReactNode } from 'react'
+import { ElementType, ReactNode, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton'
+import Collapse from '@mui/material/Collapse'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
 
 // ** Configs Import
 import themeConfig from 'src/configs/themeConfig'
@@ -23,6 +26,7 @@ import { Settings } from 'src/@core/context/settingsContext'
 
 // ** Custom Components Imports
 import UserIcon from 'src/layouts/components/UserIcon'
+import VerticalNavItems from './VerticalNavItems' // Make sure to import this
 
 // ** Utils
 import { handleURLQueries } from 'src/@core/layouts/utils'
@@ -66,6 +70,9 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
   // ** Hooks
   const router = useRouter()
 
+  // ** State for nested menu
+  const [open, setOpen] = useState(item.openByDefault || false);
+
   const IconTag: ReactNode = item.icon
 
   const isNavLinkActive = () => {
@@ -76,7 +83,14 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
     }
   }
 
+  const handleNestedToggle = () => {
+    setOpen(!open);
+  }
+
+  const ExpandIcon = open ? <ExpandLess /> : <ExpandMore />;
+
   return (
+    <>
     <ListItem
       disablePadding
       className='nav-link'
@@ -89,11 +103,10 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
           className={isNavLinkActive() ? 'active' : ''}
           {...(item.openInNewTab ? { target: '_blank' } : null)}
           onClick={e => {
-            if (item.path === undefined) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            if (navVisible) {
+            if (item.children) {
+              e.preventDefault();
+              handleNestedToggle();
+            } else if (navVisible) {
               toggleNavVisibility()
             }
           }}
@@ -126,10 +139,27 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
                 }}
               />
             ) : null}
+            {item.children ? ExpandIcon : null}
           </MenuItemTextMetaWrapper>
         </MenuNavLink>
       </Link>
     </ListItem>
+    <Collapse in={open} timeout="auto" unmountOnExit>
+        <Box sx={{ pl: 4 }}>
+          <VerticalNavItems verticalNavItems={item.children} settings={{
+            mode: 'light',
+            themeColor: 'error',
+            contentWidth: 'full'
+          }} groupActive={[]} currentActiveGroup={[]} saveSettings={function (): void {
+            throw new Error('Function not implemented.')
+          } } setGroupActive={function (): void {
+            throw new Error('Function not implemented.')
+          } } setCurrentActiveGroup={function (): void {
+            throw new Error('Function not implemented.')
+          } } />
+        </Box>
+      </Collapse>
+    </>
   )
 }
 

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "dynamic_fields")
-public class DynamicField {
+public class DynamicField extends Auditable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -42,6 +42,9 @@ public class DynamicField {
 
     @Column(name = "field_value")
     private String fieldValue;
+
+    @Enumerated(EnumType.STRING)
+    private FieldType fieldType;
 
 
 }

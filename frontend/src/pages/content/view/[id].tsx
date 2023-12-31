@@ -28,6 +28,16 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { Snackbar } from '@mui/material'
 import { Alert } from '@mui/material'
 import moment from 'moment'
+import SendIcon from '@mui/icons-material/Send'
+import { useUserData } from 'src/@core/hooks/useUserData'
+import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { Modal } from '@mui/material'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import Button from '@mui/material/Button'
+import Loader from 'src/@core/components/ui/Loader'
+import CardActions from '@mui/material/CardActions'
+import ImageGallery from 'src/@core/components/ImageGallery';
 
 const StyledDialogContentText = styled(DialogContentText)`
   font-size: 24px;
@@ -52,15 +62,34 @@ const SingleContent = () => {
   const [newd, setNewData] = useState([])
   const [updated, setUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
+  const [role, setRole] = useState([])
   const router = useRouter()
   const { id } = router.query
   const [editMode, setEditMode] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
-
+  const { accountId } = useUserData()
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
+  const { get, post } = useCustomApiHook()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState(null)
+  const [groupLoading, setGroupLoading] = useState(true)
+  const [groupMember, setGroupMemberData] = useState()
+
+  const handleCloseModal = () => {
+    setModalOpen(false)
+  }
+
+  const handleSend = async () => {
+    try {
+      const res = await get(`/groups/${accountId}`)
+      setRole(res?.data)
+      setModalOpen(true)
+    } catch (error) {
+      // Handle error
+    }
+  }
 
   function handleSnackbarClose() {
     setOpenSnackbar(false)
@@ -140,6 +169,64 @@ const SingleContent = () => {
     setOpenSnackbar(true)
   }
 
+  useEffect(() => {
+    accountId && fecthGroupData()
+  }, [accountId])
+
+  useEffect(() => {
+    role && fetchGroupMemberData()
+  }, [role])
+
+  const fecthGroupData = async () => {
+    const res = await get(`/groups/${accountId}`)
+    setRole(res?.data)
+    setGroupLoading(false)
+  }
+
+  const fetchGroupMemberData = async () => {
+    const responses = await Promise.all(role.map(async (roleItem) => {
+      try {
+        const res = await get(`/groups/members/${roleItem.id}`);
+
+        return res?.data;
+      } catch (error) {
+        console.error(`Error fetching data for role ${roleItem.id}: `, error);
+
+        return null;  // or some other value to signify error
+      }
+    }));
+  
+    // filter out nulls (if any) and flatten the array
+    const filteredAndFlattenedResponses = responses.reduce((acc, curr) => {
+      if(curr !== null){
+          return [...acc, ...curr];
+      }
+
+      return acc;
+    }, []);
+    
+    setGroupMemberData(filteredAndFlattenedResponses);
+  }
+
+
+  async function sendAdvertisement(selectedGroupId) {
+
+    const advData = {
+      name: data?.name,
+      description: data?.description,
+      targetAudience: data?.targetAudience,
+      advertisementLocation: data?.advertisementLocation,
+      advertisementType: data?.advertisementType,
+      advertisementMood: data?.advertisementMood,
+      advertisementLength: data?.advertisementLength,
+      languageText: data?.languageText,
+      brandName: data?.brandName,
+      brandDescription: data?.brandDescription
+    }
+
+    await post(`/advertisements/${selectedGroupId}`, advData)
+  }
+
   const generateAdvertisement = async () => {
     setAd(false)
     setIsLoading(true)
@@ -196,9 +283,8 @@ const SingleContent = () => {
         body: JSON.stringify(resultRequestBody)
       })
 
-      const savedResult = await resultResponse.json()
+      await resultResponse.json()
       setIsLoading(false)
-      console.log('Advertisement result saved:', savedResult)
 
       setAd(true)
       setUpdated(true)
@@ -208,7 +294,10 @@ const SingleContent = () => {
     }
   }
 
-  console.log(data)
+  if (groupLoading) {
+    return <Loader />
+  }
+
 
   return (
     <>
@@ -340,6 +429,13 @@ const SingleContent = () => {
                     <Typography variant='caption'>Number of Generated Times</Typography>
                     <Typography variant='body1'>1</Typography>
                   </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>Attachments</Typography>
+                  </Grid>
+                  <ImageGallery advertisementId={id} />
                 </Grid>
               )}
             </CardContent>
@@ -417,7 +513,77 @@ const SingleContent = () => {
             <LinearProgress color='primary' />
           </DialogContent>
         </Dialog>
+        
+        <Grid item xs={12} sm={6}>
+          <Card>
+            <CardHeader
+              title='Share Advertisement'
+              titleTypographyProps={{ variant: 'h6' }}
+              action={
+                <>
+                  <Tooltip title='Share Advertisement with Team Groups'>
+                    <IconButton onClick={handleSend}>
+                      <SendIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              }
+            />
+          </Card>
+        </Grid>
+
+
       </Grid>
+      
+
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        sx={{
+          width: '40%',
+          margin: 'auto'
+        }}
+      >
+        <Card sx={{ width: '100%', maxWidth: 400 }}>
+          <CardHeader title='Select Team Member to Share With:' />
+          <CardContent>
+            {groupMember.map(group => (
+              <Card
+                key={group.groupId}
+                sx={{
+                  marginBottom: '0.5rem',
+                  backgroundColor: selectedGroup === group ? 'inherit' : 'inherit'
+                }}
+              >
+                <FormControlLabel
+                  control={<Checkbox checked={selectedGroup === group} onChange={() => setSelectedGroup(group)} />}
+                  label={group.username}
+                />
+              </Card>
+            ))}
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={() => {
+                if (selectedGroup) {
+                  sendAdvertisement(selectedGroup.userId)
+                }
+                handleCloseModal()
+              }}
+            >
+              Select
+            </Button>
+          </CardActions>
+        </Card>
+      </Modal>
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={2000}

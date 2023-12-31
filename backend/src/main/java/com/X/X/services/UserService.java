@@ -1,24 +1,22 @@
 package com.X.X.services;
 import com.X.X.config.ResourceNotFoundException;
 import com.X.X.domains.LoginLog;
-import com.X.X.domains.PasswordReset;
+
 import com.X.X.dto.*;
 import com.X.X.repositories.LoginLogRepository;
 import com.X.X.repositories.PasswordResetRepository;
 import com.X.X.token.TokenServices;
 import com.X.X.domains.User;
 import com.X.X.help.Status;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.X.X.repositories.UserRepository;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +32,7 @@ public record UserService(UserRepository userRepo,
 
     public LoginResponse login(LoginDTO loginDTO) {
         User user = userRepo.findByEmail(loginDTO.getEmail());
+
         if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             if(user.isUserActive() != false){
                 String token = tokenServices.generateTokenUser(user, loginDTO.isRememberMe());
@@ -71,6 +70,7 @@ public record UserService(UserRepository userRepo,
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(true)
                 .isLinkedToTeamGroup(false)
+                .firstTimeLoggedIn(false)
                 .build();
         try {
             userRepo.save(newUser);
@@ -161,6 +161,10 @@ public record UserService(UserRepository userRepo,
         user.setCountry(userDetails.getCountry());
         user.setAccountRole(userDetails.getAccountRole());
         user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
+        user.setCopyWritingEnabled(userDetails.isCopyWritingEnabled());
+        user.setAutomationEnabled(userDetails.isAutomationEnabled());
+        user.setSpyToolsEnabled(userDetails.isSpyToolsEnabled());
+        user.setProductSearchEnabled(userDetails.isProductSearchEnabled());
 
         return userRepo.save(user);
     }
@@ -189,6 +193,21 @@ public record UserService(UserRepository userRepo,
         user.setAccountRole(userDetails.getAccountRole());
         user.setProductFormType(userDetails.getProductFormType());
         user.setCustomTabEnabled(userDetails.isCustomTabEnabled());
+        user.setDefaultAdvertisementLocation(userDetails.getDefaultAdvertisementLocation());
+        user.setDefaultAdvertisementLanguage(userDetails.getDefaultAdvertisementLanguage());
+        user.setDefaultAdvertisementLength(userDetails.getDefaultAdvertisementLength());
+        user.setDefaultAdvertisementMood(userDetails.getDefaultAdvertisementMood());
+        user.setDefaultCopyLanguage(userDetails.getDefaultCopyLanguage());
+        user.setDefaultCopyLength(userDetails.getDefaultCopyLength());
+        user.setDefaultCopyTone(userDetails.getDefaultCopyTone());
+        user.setDefaultCopyType(userDetails.getDefaultCopyType());
+        user.setDefaultBrandDescription(userDetails.getDefaultBrandDescription());
+        user.setDefaultBrandName(userDetails.getDefaultBrandName());
+        user.setFirstTimeLoggedIn(userDetails.getFirstTimeLoggedIn());
+        user.setCopyWritingEnabled(userDetails.isCopyWritingEnabled());
+        user.setAutomationEnabled(userDetails.isAutomationEnabled());
+        user.setSpyToolsEnabled(userDetails.isSpyToolsEnabled());
+        user.setProductSearchEnabled(userDetails.isProductSearchEnabled());
 
         return userRepo.save(user);
     }
@@ -203,8 +222,12 @@ public record UserService(UserRepository userRepo,
         return userRepo.findByUserId(id);
     }
 
-    public List<User> getAllUserForAccount(UUID accountId) {
-        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId);
+    public List<User> getAllUserForAccount(UUID accountId, UUID userId) {
+        return userRepo.findAllByAccountIdAndAccountRoleNot(accountId, userId);
+    }
+
+    public List<User> getAllUserForAccountTeam(UUID accountId, UUID userId) {
+        return userRepo.findAllByAccountIdExceptCurrent(accountId, userId);
     }
 
     public User getUserByUserId(UUID userId) {
@@ -247,6 +270,7 @@ public record UserService(UserRepository userRepo,
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .accountRole(registerDTO.isAccountRole())
                 .isLinkedToTeamGroup(true)
+                .firstTimeLoggedIn(false)
                 .build();
         try {
             userRepo.save(newUser);

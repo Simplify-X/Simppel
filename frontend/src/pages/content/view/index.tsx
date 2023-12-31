@@ -10,10 +10,31 @@ import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import * as Sentry from '@sentry/nextjs'
 import { API_BASE_URL } from 'src/config'
+import Loader from 'src/@core/components/ui/Loader'
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
 
 const ViewContent = () => {
   const [content, setContent] = useState([])
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  const renderTextWithTooltip = (value, maxLength = 50) => {
+    if (!value) return '-';
+  
+    if (value.length > maxLength) {
+      return (
+        <Tooltip title={value} arrow>
+          <Typography noWrap>
+            {`${value.substring(0, maxLength)}...`}
+          </Typography>
+        </Tooltip>
+      );
+    }
+  
+    return value;
+  };
 
   const columns = [
     {
@@ -30,7 +51,8 @@ const ViewContent = () => {
       label: 'Product Name',
       options: {
         filter: true,
-        sort: true
+        sort: true,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
     {
@@ -38,10 +60,10 @@ const ViewContent = () => {
       label: 'Product Description',
       options: {
         filter: true,
-        sort: false
+        sort: false,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
-
     {
       name: 'targetAudience',
       label: 'Target Audience',
@@ -53,7 +75,7 @@ const ViewContent = () => {
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: rowData => {
       handleClick(rowData[0])
     }
@@ -98,6 +120,7 @@ const ViewContent = () => {
           return response.json()
         } else {
           // Token not valid, redirect to login page
+          window.location.replace('/login')
           throw new Error('Invalid token')
         }
       })
@@ -106,6 +129,7 @@ const ViewContent = () => {
           .then(response => response.json())
           .then(data => {
             setContent(data)
+            setLoading(false)
           })
       })
       .catch(error => {
@@ -117,6 +141,10 @@ const ViewContent = () => {
   const sortedArray = [...content].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
+
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <Box sx={{ width: '100%' }}>

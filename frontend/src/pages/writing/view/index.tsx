@@ -6,6 +6,9 @@ import MUIDataTable from 'mui-datatables'
 import { useRouter } from 'next/router'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import Loader from 'src/@core/components/ui/Loader'
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 //import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
@@ -13,12 +16,26 @@ const Copy = () => {
   const [copy, setCopy] = useState([])
   const router = useRouter()
   const {  get } = useCustomApiHook()
+  const [loading, setLoading] = useState(true)
+  const { userId } = useUserData()
 
-  const { accountId } = useUserData()
 
 
-
-  //const { get } = useCustomApiHook()
+  const renderTextWithTooltip = (value, maxLength = 50) => {
+    if (!value) return '-';
+  
+    if (value.length > maxLength) {
+      return (
+        <Tooltip title={value} arrow>
+          <Typography noWrap>
+            {`${value.substring(0, maxLength)}...`}
+          </Typography>
+        </Tooltip>
+      );
+    }
+  
+    return value;
+  };
 
   const handleClick = rowData => {
     router.push(`/writing/view/${rowData}`)
@@ -39,7 +56,8 @@ const Copy = () => {
       label: 'Title',
       options: {
         filter: true,
-        sort: true
+        sort: true,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
     {
@@ -47,7 +65,8 @@ const Copy = () => {
       label: 'Description',
       options: {
         filter: true,
-        sort: true
+        sort: true,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
     {
@@ -55,7 +74,8 @@ const Copy = () => {
       label: 'Form Type',
       options: {
         filter: true,
-        sort: false
+        sort: false,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     },
     {
@@ -64,32 +84,36 @@ const Copy = () => {
       options: {
         filter: true,
         sort: false,
+        customBodyRender: value => renderTextWithTooltip(value)
       }
     }
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: rowData => {
       handleClick(rowData[0])
     }
   }
 
   useEffect(() => {
-    accountId && getAllUsers();
-  }, [accountId])
+    userId && getAllUsers();
+  }, [userId])
 
 
   const getAllUsers = async () => {
-    const copyWritingData = await get(`/copyWriting/${accountId}`);
-    console.log(copyWritingData)
+    const copyWritingData = await get(`/copyWriting/${userId}`);
     setCopy(copyWritingData.data)
+    setLoading(false)
   }
 
   const sortedArray = [...copy].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 
+  if (loading) {
+    return <Loader />
+  }
 
   return <MUIDataTable title={'Copy List'} data={sortedArray} columns={columns} options={options} />
 }

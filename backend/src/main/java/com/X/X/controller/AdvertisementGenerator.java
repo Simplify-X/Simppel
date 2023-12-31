@@ -3,6 +3,8 @@ package com.X.X.controller;
 import com.X.X.domains.GenerateDescription;
 import com.X.X.domains.GenerateProductDescription;
 import com.X.X.domains.GenerateTitle;
+import org.springframework.beans.factory.annotation.Value;
+
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -15,8 +17,8 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/gpt3")
 public class AdvertisementGenerator {
-    private String apiKey = System.getenv("openAi");
-
+    @Value("${openai.api-key}")
+    private String apiKey;
     private final RestTemplate restTemplate = new RestTemplate();
     private final float TEMPERATURE = 0.7f;
     private final int MAX_TOKENS = 800;
@@ -26,10 +28,11 @@ public class AdvertisementGenerator {
     public ResponseEntity<String> generateTitle(
             @RequestBody GenerateTitle request
     ) {
-
-        String prompt = "Create a title for" + request.getProductName() + "in" + request.getLanguage();
+        String prompt = "You are a Social media advertising expert. Your job is to write advertisement creatives, take whatever information is given below to make the best advertisement out there";
+        prompt += "Create a title for" + request.getProductName() + "in" + request.getLanguage();
         String requestBody = "{ \"prompt\": \"" + prompt + "\", \"temperature\": " + TEMPERATURE + ", \"max_tokens\": " + MAX_TOKENS + " }";
-        String title = generateText(requestBody, "text-davinci-002");
+        String title = generateText(requestBody, "text-davinci-003");
+
 
         return ResponseEntity.ok(title);
     }
@@ -40,16 +43,17 @@ public class AdvertisementGenerator {
             @RequestBody GenerateDescription generateDescription
     ) {
 
-        String prompt;
+
+        String prompt = "You are a Social media advertising expert. Your job is to write advertisement creatives, take whatever information is given below to make the best advertisement out there";
 
         if(generateDescription.getBrandName() != null){
-             prompt = "Create a advertisement for a brand called " + generateDescription.getBrandName() + "with a brand description of " + generateDescription.getBrandDescription() + " about a product called " + generateDescription.getProductName() + " in" + generateDescription.getLanguage()
+             prompt += "Create a advertisement for a brand called " + generateDescription.getBrandName() + "with a brand description of " + generateDescription.getBrandDescription() + " about a product called " + generateDescription.getProductName() + " in" + generateDescription.getLanguage()
                     + " language for " + generateDescription.getAdvertisementLocation() + "." + "This is a brief description of the product : " + generateDescription.getProductDescription() + "." +
                     "The product type is a " + generateDescription.getProductType() + " And my target audience is " + generateDescription.getTargetAudience() + "." + " The tone of the writing should be " + generateDescription.getMood() + " and please make the text " + generateDescription.getLength() + " in length";
         }
 
         else{
-            prompt = "Create a advertisement description for a product called " + generateDescription.getProductName() + " in" + generateDescription.getLanguage()
+            prompt += "Create a advertisement description for a product called " + generateDescription.getProductName() + " in" + generateDescription.getLanguage()
                     + " language for " + generateDescription.getAdvertisementLocation() + "." + "This is a brief description of the product : " + generateDescription.getProductDescription() + "." +
                     "The product type is a " + generateDescription.getProductType() + " And my target audience is " + generateDescription.getTargetAudience() + "." + " The tone of the writing should be " + generateDescription.getMood() + " and please make the text " + generateDescription.getLength() + " in length";
         }
@@ -93,6 +97,7 @@ public class AdvertisementGenerator {
 
         return response.getBody();
     }
+
 }
 
 

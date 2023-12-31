@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-import CircularProgress from '@mui/material/CircularProgress'
+import Loader from 'src/@core/components/ui/Loader'
 
 const Logs = () => {
   const [role, setRole] = useState([])
@@ -79,7 +79,7 @@ const Logs = () => {
   ]
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
   }
 
   async function getLogs() {
@@ -104,7 +104,7 @@ const Logs = () => {
   
 
   if (isDataFetched) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return <MUIDataTable title={'Login Logs'} data={sortedArray} columns={columns} options={options} />

@@ -5,6 +5,7 @@ import com.X.X.domains.DropshippingProduct;
 import com.X.X.domains.Notification;
 import com.X.X.domains.ProductTracker;
 import com.X.X.dto.ResponseStatus;
+import com.X.X.dto.ResponseStatusWithId;
 import com.X.X.repositories.DropShippingProductRepository;
 import com.X.X.repositories.NotificationRepository;
 import com.X.X.repositories.ProductTrackerRepository;
@@ -31,7 +32,7 @@ public class DropShippingController {
     @CrossOrigin
     @PostMapping
     @Operation(summary = "Add a Dropshipping Product", description = "Create and add a dropshipping product to users")
-    public ResponseStatus createNotification(@RequestBody DropshippingProduct dropshippingProduct) {
+    public ResponseStatusWithId createNotification(@RequestBody DropshippingProduct dropshippingProduct) {
         return dropShippingService.saveDropshippingProduct(dropshippingProduct);
     }
 
@@ -43,7 +44,7 @@ public class DropShippingController {
     }
 
     @CrossOrigin
-    @Operation(summary = "Update a Dropshipping product", description = "Update a dropshipping product based on ID")
+    @Operation(summary = "Update a Dropshipping product", description = "Update a dropshipping product based on ID  ")
     @PostMapping("/duplicate/{id}")
     public ResponseStatus duplicate(@PathVariable UUID id) {
         return dropShippingService.duplicateProduct(id);

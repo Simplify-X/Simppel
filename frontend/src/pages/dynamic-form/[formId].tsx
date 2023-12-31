@@ -16,9 +16,16 @@ import Checkbox from '@mui/material/Checkbox'
 import Autocomplete from '@mui/material/Autocomplete'
 import FormLabel from '@mui/material/FormLabel'
 import { v4 as uuidv4 } from 'uuid'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import Loader from 'src/@core/components/ui/Loader'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const DynamicFormPage = () => {
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
   const { formId } = router.query
   const [form, setForm] = useState(null)
   const [open, setOpen] = useState(false)
@@ -26,24 +33,31 @@ const DynamicFormPage = () => {
   const [select2Value, setSelect2Value] = useState('')
   const [, setProducts] = useState([])
   const [selectOptions, setSelectOptions] = useState([])
-  const { get, post } = useCustomApiHook()
+  const { get, post, put } = useCustomApiHook()
   const { userId } = useUserData()
   const [checkboxValue, setCheckboxValue] = useState(false)
   const [textFieldValue, setTextFieldValue] = useState('')
   const [textAreaValue, setTextAreaValue] = useState('')
   const [imageValue, setImageValue] = useState('')
-  const [autoCompleteValue, setAutoCompleteValue] = useState('')
-  const [checkValue, setCheckVal] = useState('')
+  const [, setAutoCompleteValue] = useState('')
+  const [, setCheckVal] = useState('')
+  const [editMode, setEditMode] = useState(false);
   const [tableData, setTableData] = useState(null)
+  const [uploadedImages, setUploadedImages] = useState([])
+  const [editingTableId, setEditingTableId] = useState(null);
+
+  const [selectedAutoCompleteValues, setSelectedAutoCompleteValues] = useState({})
+  
+
+
+
+  const handleClick = rowData => {
+    router.push(`/dynamic-form/details/${rowData}`)
+  }
+  
+
 
   // Function to handle radio option change
-
-  const autoCompleteOptions = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    { value: 'option4', label: 'Option 4' }
-  ]
 
   useEffect(() => {
     if (formId) {
@@ -103,25 +117,42 @@ const DynamicFormPage = () => {
     setTextAreaValue(event.target.value)
   }
 
-  const handleImageChange = event => {
-    setImageValue(event.target.value)
+  const handleAutoCompleteChange = (event, value, fieldName) => {
+    setSelectedAutoCompleteValues(prevSelectedValues => ({
+      ...prevSelectedValues,
+      [fieldName]: value || '' // Store the selected value or an empty string if cleared
+    }))
   }
 
-  const handleAutoCompleteChange = (event: React.ChangeEvent<{}>, value: any) => {
-    if (value) {
-      setAutoCompleteValue(value)
-    } else {
-      setAutoCompleteValue('')
-    }
-  }
+  const [selectedValues, setSelectedValues] = useState({})
 
-  const handleLocationChange = event => {
+  const handleLocationChange = (event, fieldName) => {
+    setSelectedValues(prevSelectedValues => ({
+      ...prevSelectedValues,
+      [fieldName]: event.target.value
+    }))
     setCheckVal(event.target.value)
+  }
+
+  const handleImageUpload = event => {
+    const files = event.target.files
+    const newUploadedImages = Array.from(files)
+    setUploadedImages(prevUploadedImages => [...prevUploadedImages, ...newUploadedImages])
+  }
+
+  const handleRemoveImage = index => {
+    setUploadedImages(prevUploadedImages => {
+      const updatedImages = [...prevUploadedImages]
+      updatedImages.splice(index, 1)
+
+      return updatedImages
+    })
   }
 
   const MAX_TITLE_LENGTH = 20 // Maximum length of the product title
 
   const handleOpen = () => {
+    setEditMode(false)
     setOpen(true)
   }
 
@@ -137,16 +168,16 @@ const DynamicFormPage = () => {
     setCheckVal('')
   }
 
-  const getValueForField = fieldType => {
+  const getValueForField = (fieldType, fieldName) => {
     switch (fieldType) {
       case 'Tracker':
         return select1Value
       case 'Radio':
-        return checkValue
+        return selectedValues[fieldName] || ''
       case 'Image':
         return imageValue
       case 'AutoComplete':
-        return autoCompleteValue
+        return selectedAutoCompleteValues[fieldName] || ''
       case 'Textarea':
         return textAreaValue
       case 'Checkbox':
@@ -165,7 +196,8 @@ const DynamicFormPage = () => {
 
     const fieldValues = form.map(f => ({
       fieldName: f.fieldName,
-      fieldValue: getValueForField(f.fieldType),
+      fieldValue: getValueForField(f.fieldType, f.fieldName),
+      fieldType: f.fieldType,
       tableId: tableId
     }))
 
@@ -181,11 +213,37 @@ const DynamicFormPage = () => {
     handleClose()
   }
 
+  async function handleEditForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+  
+    const fieldValues = form.map(f => ({
+      fieldName: f.fieldName,
+      fieldValue: getValueForField(f.fieldType, f.fieldName),
+      fieldType: f.fieldType,
+      tableId: editingTableId // Using the tableId of the row you're editing
+    }))
+  
+    const payload = fieldValues;
+  
+    // Using a PATCH request for the edit
+    const r = await put(`/dynamic-fields/${formId}`, payload)
+  
+    if (r.status == 200) { // Typically, a 200 OK is returned for successful updates
+      const res = await get(`/dynamic-fields/${formId}`)
+      setTableData(res?.data)
+    }
+  
+    setEditingTableId(null); // Clear the editingTableId after edit
+    handleClose();
+  }
+  
+
   useEffect(() => {
     if (formId) {
       const fetchTableData = async () => {
         const res = await get(`/dynamic-fields/${formId}`)
         setTableData(res?.data)
+        setLoading(false)
       }
 
       fetchTableData()
@@ -202,32 +260,74 @@ const DynamicFormPage = () => {
 
   const transformTableData = () => {
     const transformedData = []
-
+  
     tableData?.forEach(rowArray => {
-      const rowData = {}
+      const rowData = { tableId: rowArray[0].tableId }  // Initializing with id
       rowArray.forEach(row => {
         rowData[row.fieldName] = row.fieldValue
       })
       transformedData.push(rowData)
     })
-
+  
     return transformedData
   }
+  
 
   const generateTableColumns = () => {
     if (!form) return []
-
-    const columns = form.map(field => ({
-      name: field.fieldName,
-      label: field.fieldName,
-      options: {
-        filter: true,
-        sort: true
+  
+    const columns = [
+      {
+        name: 'tableId',
+        label: 'ID',
+        options: {
+          filter: true,
+          sort: true,
+          display: 'false'
+        },
+      },
+      ...form.map(field => ({
+        name: field.fieldName,
+        label: field.fieldName,
+        options: {
+          filter: true,
+          sort: true,
+        },
+      })), 
+      {
+        name: 'actions',
+        label: 'Actions',
+        options: {
+          customBodyRender: (value, tableMeta) => {
+  
+            return (
+              <>
+                <IconButton
+                  onClick={e => {
+                    e.stopPropagation() // stop click event propagation
+                    handleEdit(tableMeta.rowData)
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleClick(tableMeta.rowData[0])
+                  }}
+                >
+                  <VisibilityIcon />
+                </IconButton>
+              </>
+            )
+          }
+        }
       }
-    }))
-
+    ]
+  
     return columns
   }
+  
 
   const tableColumns = generateTableColumns()
   const transformedTableData = transformTableData()
@@ -235,7 +335,7 @@ const DynamicFormPage = () => {
   const options = {
     filter: true,
     responsive: 'vertical',
-    selectableRows: 'none'
+    selectableRows: 'none',
   }
 
   const handleSelect1Change = e => {
@@ -256,6 +356,60 @@ const DynamicFormPage = () => {
     if (value === select1Value) {
       setSelect1Value('')
     }
+  }
+
+  const handleEdit = rowData => {
+    setOpen(true);
+    setEditMode(true);
+    
+    const [
+      tableId,
+      ...fields
+    ] = rowData;
+    
+    setEditingTableId(tableId); // Set the current editingTableId
+
+    form.forEach((field, index) => {
+      const value = fields[index];
+      
+      switch (field.fieldType) {
+        case 'Tracker':
+          setSelect1Value(value);
+          break;
+        case 'Checkbox':
+          setCheckboxValue(value === "true" || value === true);
+          break;
+        case 'TextField':
+          setTextFieldValue(value);
+          break;
+        case 'Radio':
+          setSelectedValues(prevValues => ({
+            ...prevValues,
+            [field.fieldName]: value
+          }));
+          break;
+        case 'Image':
+          setImageValue(value);
+          break;
+        case 'AutoComplete':
+          setSelectedAutoCompleteValues(prevValues => ({
+            ...prevValues,
+            [field.fieldName]: value
+          }));
+          break;
+        case 'Textarea':
+          setTextAreaValue(value);
+          break;
+        default:
+          break;
+      }
+    });
+  
+  };
+  
+
+  if (loading) {
+    return <Loader />
   }
 
   return (
@@ -305,38 +459,84 @@ const DynamicFormPage = () => {
                 </>
               )}
               {f.fieldType === 'Radio' && (
-                <FormControl>
-                  <FormLabel id='demo-radio-button-group-label'></FormLabel>
+                <FormControl style={{ marginTop: 20 }}>
+                  <FormLabel id={`demo-radio-button-group-label-${f.fieldName}`}>{f.fieldName}</FormLabel>
                   <RadioGroup
-                    aria-labelledby='demo-radio-button-group-label'
-                    name='radio-button-group'
-                    value={checkValue}
-                    onChange={handleLocationChange}
+                    aria-labelledby={`demo-radio-button-group-label-${f.fieldName}`}
+                    name={`radio-button-group-${f.fieldName}`}
+                    value={selectedValues[f.fieldName] || ''}
+                    onChange={event => handleLocationChange(event, f.fieldName)}
                   >
-                    <FormControlLabel value='facebook' control={<Radio />} label={f.fieldName} />
+                    {f.radioFieldValues.map(value => (
+                      <FormControlLabel key={value} value={value} control={<Radio />} label={value} />
+                    ))}
                   </RadioGroup>
                 </FormControl>
               )}
+
               {f.fieldType === 'Image' && (
-                <TextField
-                  label={f.fieldName}
-                  value={imageValue}
-                  onChange={handleImageChange}
-                  fullWidth
-                  margin='normal'
-                />
+                <>
+                  <input
+                    accept='image/*'
+                    id='image-uploader'
+                    type='file'
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                  />
+                  <label htmlFor='image-uploader'>
+                    <Button variant='contained' component='span' fullWidth>
+                      Upload Image
+                    </Button>
+                  </label>
+                  <Grid container spacing={1}>
+                    {uploadedImages.map((file, index) => (
+                      <Grid item key={index}>
+                        <div style={{ position: 'relative' }}>
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            style={{ width: '80px', height: '80px' }}
+                          />
+                          <IconButton
+                            style={{ position: 'absolute', top: 0, right: 0 }}
+                            onClick={() => handleRemoveImage(index)}
+                          >
+                            <CloseIcon
+                              style={{
+                                color: '#000', // Set the desired color for the "X" icon
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // Set the desired background color for the icon
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '5px',
+                                right: '5px',
+                                padding: '2px'
+                              }}
+                            />
+                          </IconButton>
+                        </div>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
               )}
               {f.fieldType === 'AutoComplete' && (
                 <Autocomplete
-                  options={autoCompleteOptions}
-                  getOptionLabel={option => option.label}
-                  onInputChange={handleAutoCompleteChange}
+                  options={f?.autoCompleteValues}
+                  onInputChange={(event, value) => handleAutoCompleteChange(event, value, f.fieldName)}
                   renderInput={params => (
-                    <TextField {...params} label={f.fieldName} value={autoCompleteValue} fullWidth margin='normal' />
+                    <TextField
+                      {...params}
+                      label={f.fieldName}
+                      value={selectedAutoCompleteValues[f.fieldName] || ''}
+                      fullWidth
+                      margin='normal'
+                    />
                   )}
                 />
               )}
-              {f.fieldType === 'Textarea' && (
+
+              {f.fieldType === 'TextArea' && (
                 <TextField
                   label={f.fieldName}
                   value={textAreaValue}
@@ -366,9 +566,9 @@ const DynamicFormPage = () => {
               )}
             </div>
           ))}
-          <Button variant='contained' color='primary' onClick={handleSubmit} style={{ marginTop: '1rem' }}>
-            Submit
-          </Button>
+            <Button variant='contained' onClick={editMode ? handleEditForm : handleSubmit} sx={{ marginLeft: 1 }}>
+              {editMode ? 'Edit' : 'Save'}
+            </Button>
         </DialogContent>
       </Dialog>
     </>

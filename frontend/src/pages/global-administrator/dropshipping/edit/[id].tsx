@@ -38,7 +38,8 @@ const EditDropshipping = () => {
     similarItems: '',
     targeting: '',
     analytics: '',
-    facebookAds: ''
+    facebookAds: '',
+    productScore: '',
   })
 
   const categories = [
@@ -83,7 +84,8 @@ const EditDropshipping = () => {
           similarItems: data.similarItems || '',
           targeting: data.targeting || '',
           analytics: data.analytics || '',
-          facebookAds: data.facebookAds || ''
+          facebookAds: data.facebookAds || '',
+          productScore: data.productScore || ''
         })
         setEditorContent(data.description || '')
       } catch (error) {
@@ -123,7 +125,8 @@ const EditDropshipping = () => {
       targeting: formData.targeting,
       analytics: formData.analytics,
       facebookAds: formData.facebookAds,
-      description: editorContent
+      description: editorContent,
+      productScore: formData.productScore
     })
 
     const r = await put(`/dropshipping/${id}`, data)
@@ -278,6 +281,15 @@ const EditDropshipping = () => {
                   label='Facebook Ads'
                   name='facebookAds'
                   value={formData.facebookAds}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  label='Product Score'
+                  name='productScore'
+                  value={formData.productScore}
                   onChange={handleInputChange}
                 />
               </Grid>

@@ -17,11 +17,15 @@ import ArticleIcon from '@mui/icons-material/Article'
 import NoAccountsIcon from '@mui/icons-material/NoAccounts'
 import GroupsIcon from '@mui/icons-material/Groups'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-import CategoryIcon from '@mui/icons-material/Category';
-import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
-import LogoDevIcon from '@mui/icons-material/LogoDev';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import CategoryIcon from '@mui/icons-material/Category'
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
+import LogoDevIcon from '@mui/icons-material/LogoDev'
+import PostAddIcon from '@mui/icons-material/PostAdd'
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
+import PagesIcon from '@mui/icons-material/Pages'
+import AutoModeIcon from '@mui/icons-material/AutoMode'
+import WorkspacesIcon from '@mui/icons-material/Workspaces'
+import SearchIcon from '@mui/icons-material/Search'
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -33,26 +37,34 @@ interface UserData {
   advertisementEnabled?: boolean
   accountId?: string
   customTabEnabled?: boolean
+  copyWritingEnabled?: boolean
+  automationEnabled?: boolean
+  spyToolsEnabled?: boolean
+  productSearchEnabled?: boolean
 }
 
-const Navigation = (): VerticalNavItemsType=> {
+const Navigation = (): VerticalNavItemsType => {
   const { t } = useTranslation()
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [userData, setUserData] = useState<UserData>({
     role: '',
     advertisementEnabled: false,
-    customTabEnabled: false
+    customTabEnabled: false,
+    copyWritingEnabled: false,
+    automationEnabled: false,
+    spyToolsEnabled: false,
+    productSearchEnabled: false
   })
 
-  const [customForms, setCustomForms] = useState<any[]>([]);
+  const [customForms, setCustomForms] = useState<any[]>([])
 
   const { error, get } = useCustomApiHook()
   const { token } = useUserData()
 
-
   useEffect(() => {
     token && handleGetUser(token)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   const handleGetUser = async (token: string) => {
@@ -65,7 +77,6 @@ const Navigation = (): VerticalNavItemsType=> {
     // if (!userData?.data) throw new Error('Invalid token')
 
     userData?.data && setUserData(userData?.data as UserData)
-
   }
 
   useEffect(() => {
@@ -75,44 +86,63 @@ const Navigation = (): VerticalNavItemsType=> {
     }
   }, [error])
 
-
   useEffect(() => {
     userData?.accountId && fetchCustomForm()
   }, [userData?.accountId])
 
   const fetchCustomForm = async () => {
     const res = await get(`/customForm/${userData?.accountId}`)
-    setCustomForms(res?.data);
+    setCustomForms(res?.data)
   }
 
-
-  if(!userData.accountId) return null;
-
+  if (!userData.accountId) return null
 
   const generateCustomTabs = () => {
-    const activeCustomForms = customForms?.filter((form) => form.isActive);
-    const customTabs = [];
-  
+    const activeCustomForms = customForms?.filter(form => form.isActive)
+    const customTabs = []
+
     if (userData.customTabEnabled) {
       customTabs.push(
-        ...activeCustomForms.map((form) => ({
+        ...activeCustomForms.map(form => ({
           title: form.formName,
           icon: HomeOutline,
-          path: `/dynamic-form/${form.id}`,
+          path: `/dynamic-form/${form.id}`
         }))
-      );
-  
+      )
+
       if (!userData.role && activeCustomForms.length > 0) {
         customTabs.unshift({
-          sectionTitle: 'Custom',
-        });
+          sectionTitle: 'Custom'
+        })
       }
     }
-  
-    return customTabs;
-  };
-  
-  
+
+    return customTabs
+  }
+
+  const basicMenuItems = [
+    {
+      title: t('user_management'),
+      icon: PersonAddAltIcon,
+      path: '/user-management'
+    },
+    {
+      title: t('invite_team_members'),
+      icon: GroupsIcon,
+      path: '/invite-team'
+    },
+    {
+      title: t('account_settings'),
+      icon: AccountCogOutline,
+      path: '/account-settings'
+    }
+  ]
+
+  const customFormMenuItem = {
+    title: t('custom_form'),
+    icon: DashboardCustomizeIcon,
+    path: '/custom-form'
+  }
 
   return [
     !userData.role && {
@@ -121,93 +151,132 @@ const Navigation = (): VerticalNavItemsType=> {
       path: '/'
     },
 
-    !userData.role && {
-      title: t('product_search'),
-      icon: LocationSearchingIcon,
-      path: '/product/search'
-    },
-    
+    userData?.productSearchEnabled &&
+      !userData.role && {
+        title: t('product_search'),
+        icon: LocationSearchingIcon,
+        path: '/product-search'
+      },
+
+    userData?.productSearchEnabled &&
+      userData?.spyToolsEnabled &&
+      !userData.role && {
+        sectionTitle: t('product_spy')
+      },
+
+    userData?.spyToolsEnabled &&
+      !userData.role && {
+        title: t('spy_tools'),
+        icon: ArticleIcon,
+        openByDefault: true,
+        path: '',
+        children: [
+          {
+            title: t('tiktok_spy_tools'),
+            icon: SearchIcon,
+            path: '/tiktok/search'
+          },
+          {
+            title: t('ebay_spy_tools'),
+            icon: SearchIcon,
+            path: '/ebay/search'
+          }
+        ]
+      },
+
     userData.advertisementEnabled &&
       !userData.role && {
-        sectionTitle: 'Content'
+        sectionTitle: t('content')
       },
+
     userData.advertisementEnabled &&
       !userData.role && {
-        title: t('add_advertisement'),
-        icon: AddIcon,
-        path: '/content/add'
+        title: t('advertisement'),
+        icon: PagesIcon,
+        path: '',
+        children: [
+          // The submenu items
+          {
+            title: t('add_advertisement'),
+            icon: AddIcon,
+            path: '/content/add'
+          },
+          {
+            title: t('view_advertisement'),
+            icon: VisibilityIcon,
+            path: '/content/view'
+          },
+          {
+            title: 'Product Information',
+            icon: CategoryIcon,
+            path: '/content/product-details'
+          }
+        ]
       },
-    userData.advertisementEnabled &&
+
+    userData.copyWritingEnabled &&
       !userData.role && {
-        title: t('view_advertisement'),
-        icon: VisibilityIcon,
-        path: '/content/view'
+        sectionTitle: t('copy_writing')
       },
-    
-    userData.advertisementEnabled &&
-    !userData.role && {
-      title: "Product Information",
-      icon: CategoryIcon,
-      path: '/content/product-details'
-    },
 
-    !userData.role && {
-      sectionTitle: 'Copy Writing'
-    },
+    userData.copyWritingEnabled &&
+      !userData.role && {
+        title: t('copy_writing'),
+        icon: ArticleIcon,
+        path: '',
+        children: [
+          // The submenu items
+          {
+            title: t('create_copy'),
+            icon: NotesIcon,
+            path: '/writing/add'
+          },
+          {
+            title: t('view_copy'),
+            icon: VisibilityIcon,
+            path: '/writing/view'
+          }
+        ]
+      },
 
-    !userData.role && {
-      title: t('create_copy'),
-      icon: NotesIcon,
-      path: '/writing/add'
-    },
-    !userData.role && {
-      title: t('view_copy'),
-      icon: VisibilityIcon,
-      path: '/writing/view'
-    },
+    userData?.automationEnabled &&
+      !userData.role && {
+        sectionTitle: t('automation')
+      },
 
-    !userData.role && {
-      sectionTitle: 'Automation'
-    },
-    !userData.role && {
-      title: 'Create Post Automation',
-      icon: AlarmAddIcon,
-      path: '/automation/add'
-    },
-    !userData.role && {
-      title: 'View Automation',
-      icon: VisibilityIcon,
-      path: '/automation/view'
-    },
+    userData?.automationEnabled &&
+      !userData.role && {
+        title: t('post_automation'),
+        icon: AutoModeIcon,
+        path: '',
+        children: [
+          // The submenu items
+          {
+            title: 'Create Post Automation',
+            icon: AlarmAddIcon,
+            path: '/automation/add'
+          },
+          {
+            title: 'View Automation',
+            icon: VisibilityIcon,
+            path: '/automation/view'
+          }
+        ]
+      },
 
-    !userData.role && {
-      sectionTitle: 'Management'
-    },
+    !userData.role &&
+      !userData.isLinkedToTeamGroup && {
+        sectionTitle: t('management')
+      },
 
-    !userData.role && {
-      title: 'User Management',
-      icon: PersonAddAltIcon,
-      path: '/user-management'
-    },
-
-    !userData.role && {
-      title: 'Invite Team Members',
-      icon: GroupsIcon,
-      path: '/invite-team'
-    },
-
-    !userData.role && {
-      title: t('account_settings'),
-      icon: AccountCogOutline,
-      path: '/account-settings'
-    },
-
-    userData.customTabEnabled &&
-    !userData.role && {
-      title: 'Custom Form',
-      icon: DashboardCustomizeIcon,
-      path: '/custom-form'
-    },
+    !userData.role &&
+      !userData.isLinkedToTeamGroup && {
+        title: t('management'),
+        icon: WorkspacesIcon,
+        openByDefault: true,
+        path: '',
+        children: [...basicMenuItems, ...(userData.customTabEnabled ? [customFormMenuItem] : [])]
+      },
 
     ...generateCustomTabs(),
 
@@ -243,6 +312,29 @@ const Navigation = (): VerticalNavItemsType=> {
       title: 'Logs',
       icon: LogoDevIcon,
       path: '/global-administrator/logs'
+    },
+
+    userData.role && {
+      sectionTitle: ' UI Design'
+    },
+
+    userData.role && {
+      title: 'Customize UI',
+      icon: PeopleIcon,
+      path: '',
+      children: [
+        // The submenu items
+        {
+          title: 'Tiktok Filter UI',
+          icon: AlarmAddIcon,
+          path: '/global-administrator/tiktok/filter'
+        },
+        {
+          title: 'View Automation',
+          icon: VisibilityIcon,
+          path: '/automation/view'
+        }
+      ]
     },
 
     userData.role && {

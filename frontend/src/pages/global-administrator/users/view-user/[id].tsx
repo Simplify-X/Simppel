@@ -23,8 +23,18 @@ import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { Snackbar } from '@mui/material'
+import { makeStyles } from '@mui/styles';
+
+
+const useStyles = makeStyles({
+  accountSettings: {
+    display: 'grid'
+  },
+});
+
 
 const ViewUsers = () => {
+  const classes = useStyles();
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -79,7 +89,7 @@ const ViewUsers = () => {
             <Grid container spacing={7}>
               <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography>User Details</Typography>
+                  <Typography variant='h6'>User Details</Typography>
                 </Box>
               </Grid>
 
@@ -195,7 +205,7 @@ const ViewUsers = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} className={classes.accountSettings}>
                 <Typography variant='subtitle1'>Account Features:</Typography>
                 <FormControlLabel
                   control={
@@ -233,7 +243,44 @@ const ViewUsers = () => {
                   }
                   label='Custom Tab'
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.copyWritingEnabled}
+                      onChange={event => setData({ ...data, copyWritingEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Copywriting enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.automationEnabled}
+                      onChange={event => setData({ ...data, automationEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Automation enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.spyToolsEnabled}
+                      onChange={event => setData({ ...data, spyToolsEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Spy tools enabled'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.productSearchEnabled}
+                      onChange={event => setData({ ...data, productSearchEnabled: event.target.checked })}
+                    />
+                  }
+                  label='Product Search enabled'
+                />
               </Grid>
+              
 
               <Grid item xs={12}>
                 <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={handleSave}>

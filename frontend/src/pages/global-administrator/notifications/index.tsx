@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import authRoute from 'src/@core/utils/auth-route'
 import MUIDataTable from 'mui-datatables'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
-import CircularProgress from '@mui/material/CircularProgress'
+import Loader from 'src/@core/components/ui/Loader'
 import { Fab } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useRouter } from 'next/router'
@@ -114,7 +114,7 @@ async function handleDelete(rowId) {
 
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: rowData => {
       handleClick(rowData[0])
     }
@@ -136,7 +136,7 @@ async function handleDelete(rowId) {
   }, [])
 
   if (!loading) {
-    return <CircularProgress />
+    return <Loader />
   }
 
   return (

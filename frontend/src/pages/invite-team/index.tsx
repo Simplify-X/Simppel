@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { toast } from 'react-toastify'
 import { useUserData } from 'src/@core/hooks/useUserData'
+import Loader from 'src/@core/components/ui/Loader'
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -31,12 +32,14 @@ const InviteTeam = () => {
   const [description, setDescription] = useState('')
   const [advertisement, setAdvertisement] = useState('')
   const [copyWriting, setCopyWriting] = useState('')
+  const [spyTools, setSpyTools] = useState('')
   const [role, setRole] = useState([])
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(true)
   const [recordId, setRecordId] = useState('')
   const { response, error, del, get, post, put } = useCustomApiHook()
   const { accountId } = useUserData()
+  const [loading, setLoading] = useState(true)
 
 
   const handleOpen = () => {
@@ -55,6 +58,7 @@ const InviteTeam = () => {
     setDescription('')
     setAdvertisement('')
     setCopyWriting('')
+    setSpyTools('')
   }
 
   const handleClick = rowData => {
@@ -142,12 +146,13 @@ const InviteTeam = () => {
     setDescription(selectedData.description)
     setAdvertisement(selectedData.advertisementAccess)
     setCopyWriting(selectedData.copyWritingAccess)
+    setSpyTools(selectedData.spyToolAccess)
     setIsCreating(true)
     setRecordId(rowData[0])
   }
 
   const options = {
-    filterType: 'checkbox',
+    filterType: 'dropdown',
     onRowClick: (rowData: any) => {
       handleClick(rowData[0])
     }
@@ -160,6 +165,7 @@ const InviteTeam = () => {
   const fecthGroupData = async () => {
     const res = await get(`/groups/${accountId}`)
     setRole(res?.data)
+    setLoading(false)
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -169,7 +175,8 @@ const InviteTeam = () => {
       groupName: title,
       description: description,
       advertisementAccess: advertisement,
-      copyWritingAccess: copyWriting
+      copyWritingAccess: copyWriting,
+      spyToolAccess: spyTools,
     }
 
     await post(`/groups/create/${accountId}`, data)
@@ -195,11 +202,13 @@ const InviteTeam = () => {
       groupName: title,
       description: description,
       advertisementAccess: advertisement,
-      copyWritingAccess: copyWriting
+      copyWritingAccess: copyWriting,
+      spyToolAccess: spyTools,
     }
 
     await put(`/groups/update/${recordId}/${accountId}`, data)
   }
+
 
   useEffect(() => {
     if (response?.data?.status !== 'FAILED') {
@@ -214,6 +223,10 @@ const InviteTeam = () => {
       setRole(updatedRole)
     }
   }, [response])
+
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <>
@@ -265,6 +278,20 @@ const InviteTeam = () => {
             >
               <MenuItem value='VIEW'>Can Only View</MenuItem>
               <MenuItem value='ADD'>Can Only Read</MenuItem>
+              <MenuItem value='BOTH'>Full Access</MenuItem>
+            </TextField>
+          </Box>
+          <Box marginTop={2}>
+            <InputLabel>Spy Tools</InputLabel>
+            <TextField
+              select
+              label='Select'
+              value={spyTools}
+              onChange={e => setSpyTools(e.target.value)}
+              fullWidth
+              margin='normal'
+            >
+              <MenuItem value='VIEW'>Can Only View</MenuItem>
               <MenuItem value='BOTH'>Full Access</MenuItem>
             </TextField>
           </Box>
