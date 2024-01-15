@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
-import { CircularProgress, Button, Typography, Box, Card, CardMedia, Grid } from '@mui/material';
+import { CircularProgress, Button, Typography, Box, Card, CardMedia } from '@mui/material';
 import Confetti from 'react-confetti';
 import { keyframes } from '@emotion/react';
 import { API_BASE_URL } from 'src/config';
@@ -21,15 +21,17 @@ const FetchDataComponent = () => {
   const [countdown, setCountdown] = useState(15); // 30 seconds for countdown
   const router = useRouter();
   const { id } = router.query;
-  const { get, put } = useCustomApiHook();
+  const { put } = useCustomApiHook();
 
   const startCountdown = () => {
     const interval = setInterval(() => {
       setCountdown((prevCountdown) => {
         if (prevCountdown <= 1) {
           clearInterval(interval);
+
           return 0;
         }
+        
         return prevCountdown - 1;
       });
     }, 1000);
@@ -82,6 +84,7 @@ const FetchDataComponent = () => {
   };
 
   // Replace 'cloudinaryImageUrl' with your actual Cloudinary image URL
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const cloudinaryImageUrl = 'https://res.cloudinary.com/your-cloud-name/image/upload/your-image.jpg';
 
   return (
