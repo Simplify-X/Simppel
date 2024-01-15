@@ -122,10 +122,6 @@ const CopyWriting = () => {
     { value: 'other', label: t('other') }
   ]
 
-  const handleScrapedData = data => {
-    setScrapedData(data)
-  }
-
   const handleDiscard = () => {
     router.push('/writing/view/')
   }
@@ -137,13 +133,6 @@ const CopyWriting = () => {
   const theme = useTheme()
   const [personName, setPersonName] = useState<string[]>([])
 
-  const handleLocationChange = event => {
-    setSelectedLocation(event.target.value)
-  }
-
-  const handleTypeAd = event => {
-    setSelectedTypeAd(event.target.value)
-  }
 
   const handleMood = event => {
     setSelectedMood(event.target.value)
