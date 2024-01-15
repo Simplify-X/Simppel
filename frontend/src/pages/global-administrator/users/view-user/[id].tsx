@@ -23,18 +23,16 @@ import * as Sentry from '@sentry/nextjs'
 import CircularProgress from '@mui/material/CircularProgress'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { Snackbar } from '@mui/material'
-import { makeStyles } from '@mui/styles';
-
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles({
   accountSettings: {
     display: 'grid'
-  },
-});
-
+  }
+})
 
 const ViewUsers = () => {
-  const classes = useStyles();
+  const classes = useStyles()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -74,7 +72,6 @@ const ViewUsers = () => {
       Sentry.captureException(err)
     }
   }
-
 
   return (
     <Card>
@@ -279,9 +276,16 @@ const ViewUsers = () => {
                   }
                   label='Product Search enabled'
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.qrCodeGeneratorEnabled}
+                      onChange={event => setData({ ...data, qrCodeGeneratorEnabled: event.target.checked })}
+                    />
+                  }
+                  label='QR Code Generator'
+                />
               </Grid>
-              
-
               <Grid item xs={12}>
                 <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={handleSave}>
                   Save Changes

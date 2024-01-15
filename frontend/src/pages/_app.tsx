@@ -56,7 +56,7 @@ const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>);
 
   // @ts-ignore
   getLayout(<Component {...pageProps} />)

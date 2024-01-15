@@ -1,11 +1,11 @@
 // @ts-nocheck
 // ** React Imports
-import { MouseEvent, ReactNode, useEffect, useRef } from 'react'
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // ** MUI Components
@@ -18,6 +18,8 @@ import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
+import { Snackbar } from '@mui/material'
+import { Alert } from '@mui/material'
 
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
@@ -25,7 +27,6 @@ import Github from 'mdi-material-ui/Github'
 import Twitter from 'mdi-material-ui/Twitter'
 import Facebook from 'mdi-material-ui/Facebook'
 import Cookies from 'js-cookie'
-import * as Sentry from '@sentry/nextjs'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -50,7 +51,7 @@ const LinkStyled = styled('a')(({ theme }) => ({
 }))
 
 const PasswordResetPage = () => {
-  const { response, loading, error, post } = useCustomApiHook()
+  const { loading, post } = useCustomApiHook()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -68,6 +69,19 @@ const PasswordResetPage = () => {
   const theme = useTheme()
   const router = useRouter()
   const emailRef = useRef<HTMLInputElement>(null)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success')
+
+  const setSnackbarMessageBar = (message, severity) => {
+    setSnackbarMessage(message)
+    setSnackbarSeverity(severity)
+    setOpenSnackbar(true)
+  }
+
+  function handleSnackbarClose() {
+    setOpenSnackbar(false)
+  }
 
   const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
@@ -75,23 +89,23 @@ const PasswordResetPage = () => {
     const email = emailRef.current?.value
 
     if (email === '') {
-      toast.error('Field cannot be empty', { autoClose: 2000 })
+      setSnackbarMessageBar('Email field cannot be empty', 'error')
 
       return
     }
 
-    await post(`/users/reset/password?email=${email}`)
-  }
+    const resetPassword = await post(`/users/reset/password?email=${email}`)
 
-  useEffect(() => {
-    if (response?.status === 200) {
-      toast.success(response.data, { autoClose: 3000 })
+    console.log(resetPassword);
+
+    if (resetPassword?.data?.status === 'not_found') {
+      setSnackbarMessageBar('Invalid or wrong email address', 'error')
+    } else if (resetPassword?.data?.status === 'success') {
+      setSnackbarMessageBar(resetPassword.data.message, 'success')
     } else {
-      toast.error(response?.data, { autoClose: 3000 })
+      setSnackbarMessageBar('Error please try again later', 'error')
     }
-
-    error && Sentry.captureException(error)
-  }, [response, error])
+  }
 
   return (
     <Box className='content-center'>
@@ -192,6 +206,16 @@ const PasswordResetPage = () => {
                 </IconButton>
               </Link>
             </Box>
+            <Snackbar
+              open={openSnackbar}
+              autoHideDuration={2000}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              onClose={handleSnackbarClose}
+            >
+              <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
           </form>
         </CardContent>
       </Card>

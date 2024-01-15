@@ -10,6 +10,9 @@ const GlobalStyles = (theme: Theme) => {
       '&:hover, &:focus, &.ps--clicking': {
         backgroundColor: theme.palette.mode === 'light' ? '#E4E5EB !important' : '#423D5D !important'
       },
+      '& .MuiPaper-root': {
+        backgroundColor: 'transparent', // or any other styles you want to apply
+      },
       '& .ps__thumb-y': {
         right: '3px !important',
         left: 'auto !important',

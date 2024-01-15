@@ -165,6 +165,7 @@ public record UserService(UserRepository userRepo,
         user.setAutomationEnabled(userDetails.isAutomationEnabled());
         user.setSpyToolsEnabled(userDetails.isSpyToolsEnabled());
         user.setProductSearchEnabled(userDetails.isProductSearchEnabled());
+        user.setQrCodeGeneratorEnabled(userDetails.isQrCodeGeneratorEnabled());
 
         return userRepo.save(user);
     }
@@ -208,6 +209,7 @@ public record UserService(UserRepository userRepo,
         user.setAutomationEnabled(userDetails.isAutomationEnabled());
         user.setSpyToolsEnabled(userDetails.isSpyToolsEnabled());
         user.setProductSearchEnabled(userDetails.isProductSearchEnabled());
+        user.setQrCodeGeneratorEnabled(userDetails.isQrCodeGeneratorEnabled());
 
         return userRepo.save(user);
     }

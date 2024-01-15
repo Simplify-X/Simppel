@@ -5,6 +5,7 @@ import com.X.X.config.ResourceNotFoundException;
 import com.X.X.domains.PasswordReset;
 import com.X.X.domains.User;
 import com.X.X.dto.*;
+import com.X.X.help.ApiResponse;
 import com.X.X.help.Status;
 import com.X.X.repositories.LoginLogRepository;
 import com.X.X.repositories.PasswordResetRepository;
@@ -25,9 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.X.X.token.TokenServices;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -191,21 +190,24 @@ public class UserController {
 
     @CrossOrigin
     @PostMapping("/reset/password")
-    public ResponseEntity<String> resetPassword(@RequestParam("email") String email) {
-        User user = userService.getUserByEmail(email);
+    public ResponseEntity<ApiResponse> resetPassword(@RequestParam("email") String email) {
+        val user = userService.getUserByEmail(email);
+        ApiResponse response = new ApiResponse();
+
 
         if (user == null) {
-            return ResponseEntity.badRequest().body("User with email " + email + " not found");
+            response.setStatus("not_found");
+            response.setMessage("User with email " + email + " not found");
+            return ResponseEntity.ok(response);
         }
 
-        String token = Jwts.builder()
+        val token = Jwts.builder()
                 .setSubject(user.getUserId().toString())
                 .setExpiration(new Date(System.currentTimeMillis() + (2 * 60 * 60 * 1000))) // 2 hours
                 .signWith(SignatureAlgorithm.HS256, "your-secret-key")
                 .compact();
 
-        // Create new PasswordReset entity
-        PasswordReset passwordReset = PasswordReset.builder()
+        val passwordReset = PasswordReset.builder()
                 .user(user)
                 .token(token)
                 .expiryDate(LocalDateTime.now().plusHours(2))
@@ -213,13 +215,13 @@ public class UserController {
                 .build();
         passwordResetService.savePasswordReset(passwordReset);
 
-        // Generate token link
-        String resetLink = "https://app.simppel.com/password-reset/change-password/" + passwordReset.getToken();
+        val resetLink = "https://app.simppel.com/password-reset/change-password/" + passwordReset.getToken();
 
-        // Send password reset email with token link
         this.emailService.sendPasswordResetEmail(user.getEmail(), resetLink, user.getUsername());
 
-        return ResponseEntity.ok("Password reset link sent to " + email);
+        response.setStatus("success");
+        response.setMessage("Password reset link sent to " + email);
+        return ResponseEntity.ok(response);
     }
 
     @CrossOrigin

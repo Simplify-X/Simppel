@@ -31,9 +31,7 @@ import Chip from '@mui/material/Chip'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { Theme, useTheme } from '@mui/material/styles'
 import LanguageSelector from 'src/@core/components/LanguageSelector'
-import AdvertisementCategorySelector from './AdvertisementCategorySelector'
 import { useTranslation } from 'react-i18next'
-import WebScraper from './WebScraper'
 import Tooltip from '@mui/material/Tooltip'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 import { useUserData } from 'src/@core/hooks/useUserData'
@@ -48,6 +46,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
+import FormField from 'src/@core/components/FormField'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -68,7 +67,7 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   }
 }
 
-const Content = () => {
+const CopyWriting = () => {
   // ** States
   const router = useRouter()
   const [selectedTypeAd, setSelectedTypeAd] = useState('')
@@ -93,17 +92,35 @@ const Content = () => {
   const [uppy, setUppy] = useState(null)
 
   const validationSchema = Yup.object().shape({
-    title: Yup.string().required(t('product_name_required')),
-    description: Yup.string().required(t('description_required')),
-    targetAudience: Yup.string().required(t('target_audience_required'))
+    contentName: Yup.string().required(t('this_field_is_required')),
+    description: Yup.string().required(t('this_field_is_required')),
+    targetAudience: Yup.string().required(t('this_field_is_required')),
+    otherContentType: Yup.string().required(t('this_field_is_required')),
   })
 
-  const { register, handleSubmit, errors, setValue } = useForm({
+  const { watch, handleSubmit, errors, setValue, control } = useForm({
     mode: 'onBlur',
     criteriaMode: 'all',
     shouldUnregister: true,
     resolver: yupResolver(validationSchema)
   })
+
+  const selectedTypeOfContent = watch('typeOfContent')
+
+  const radioOptions = [
+    { value: 'facebook', label: t('Facebook') },
+    { value: 'instagram', label: t('Instagram') },
+    { value: 'tiktok', label: t('Tiktok') },
+    { value: 'other', label: t('other') }
+  ]
+
+  const typeOfContent = [
+    { value: 'blog', label: t('blog') },
+    { value: 'productDescription', label: t('product_description') },
+    { value: 'advertisement', label: t('advertisement') },
+    { value: 'socialMedia', label: t('social_media') },
+    { value: 'other', label: t('other') }
+  ]
 
   const handleScrapedData = data => {
     setScrapedData(data)
@@ -330,7 +347,7 @@ const Content = () => {
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <Helmet>
-        <title>Simppel - Create Advertisement</title>
+        <title>Simppel - Create Copy writing content</title>
       </Helmet>
       {teamData.advertisementAccess === 'VIEW' ? (
         <Card style={{ padding: 15, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -357,7 +374,7 @@ const Content = () => {
               }
             }}
           >
-            {t('create_advertisement')}
+            {t('create_copy_writing')}
           </Typography>
 
           <Typography
@@ -387,44 +404,92 @@ const Content = () => {
               }
             }}
           >
+            <CardHeader title={t('copy_data')} titleTypographyProps={{ variant: 'h6' }} />
             <CardContent>
               <ToastContainer position={'top-center'} draggable={false} />
               <Grid container spacing={5}>
-                {data.advertisementImportEnabled && <WebScraper onScrapedData={handleScrapedData} />}
-                <Grid item xs={6}>
-                  <TextField
+                <Grid item xs={4}>
+                  <FormField
+                    as={TextField}
+                    name='contentName'
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
+                    label={t('content_name')}
+                    margin='normal'
+                    required
                     fullWidth
-                    label={t('product_name')}
-                    name='title'
-                    inputRef={register}
-                    error={!!errors.title}
-                    helperText={errors.title?.message}
                   />
                 </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    fullWidth
+                <Grid item xs={4}>
+                  <FormField
+                    as={TextField}
                     name='targetAudience'
-                    inputRef={register}
-                    error={!!errors.targetAudience}
-                    helperText={errors.targetAudience?.message}
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
                     label={t('target_audience')}
-                    placeholder='Gym Rats, Soccer Moms, etc.'
+                    margin='normal'
+                    required
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <FormField
+                    as={TextField}
+                    name='keywords'
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
+                    label={t('keyword')}
+                    margin='normal'
+                    required
+                    fullWidth
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  <FormField
+                    as={TextField}
+                    name='description'
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
+                    label={t('description')}
+                    margin='normal'
+                    required
                     fullWidth
                     multiline
                     rows={4}
-                    name='description'
-                    label={t('description')}
-                    inputRef={register}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                    placeholder='A flying bottle'
                   />
                 </Grid>
+                <Grid item xs={12}>
+                  <FormLabel component='legend'>{t('type_of_content')}</FormLabel>
+                  <FormField as={RadioGroup} name='typeOfContent' control={control} errors={errors} row>
+                    {typeOfContent.map(option => (
+                      <FormControlLabel
+                        key={option.value}
+                        value={option.value}
+                        control={<Radio color='primary' />}
+                        label={option.label}
+                        labelPlacement='end'
+                      />
+                    ))}
+                  </FormField>
+                </Grid>
+                <Grid item xs={4}>
+                {selectedTypeOfContent === 'other' && (
+                    <FormField
+                      as={TextField}
+                      name='otherContentType'
+                      control={control}
+                      errors={errors}
+                      variant='outlined'
+                      label={t('other')}
+                      margin='normal'
+                      fullWidth
+                    />
+                  )}
+                  </Grid>
                 <Grid item xs={12}>
                   <Box
                     sx={{
@@ -450,29 +515,29 @@ const Content = () => {
             <CardContent>
               <Grid container spacing={5}>
                 <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label={t('branding_name')}
+                  <FormField
+                    as={TextField}
                     name='brandName'
-                    inputRef={register}
-                    value={data?.defaultBrandName}
-                    error={!!errors.brandName}
-                    helperText={errors.brandName?.message}
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
+                    label={t('branding_name')}
+                    margin='normal'
+                    fullWidth
                   />
                 </Grid>
                 <Grid item xs={12} style={{ marginTop: '10px' }}>
-                  <TextField
+                  <FormField
+                    as={TextField}
+                    name='brandDescription'
+                    control={control}
+                    errors={errors}
+                    variant='outlined'
+                    label={t('branding_description')}
+                    margin='normal'
                     fullWidth
                     multiline
                     rows={4}
-                    type='text'
-                    label={t('branding_description')}
-                    name='brandDescription'
-                    placeholder='A flying bottle'
-                    inputRef={register}
-                    value={data?.defaultBrandDescription}
-                    error={!!errors.brandDescription}
-                    helperText={errors.brandDescription?.message}
                   />
                 </Grid>
               </Grid>
@@ -482,24 +547,21 @@ const Content = () => {
             <CardContent>
               <Grid container spacing={5}>
                 <Grid item xs={12}>
-                  <FormControl>
-                    <FormLabel id='demo-row-radio-buttons-group-label'>{t('advertisement_location')}</FormLabel>
-                    <RadioGroup
-                      row
-                      aria-labelledby='demo-row-radio-buttons-group-label'
-                      name='row-radio-buttons-group'
-                      value={selectedLocation}
-                      onChange={handleLocationChange}
-                    >
-                      <FormControlLabel value='facebook' control={<Radio />} label='Facebook' />
-                      <FormControlLabel value='instagram' control={<Radio />} label='Instagram' />
-                      <FormControlLabel value='tiktok' control={<Radio />} label='Tiktok' />
-                      <FormControlLabel value='other' control={<Radio />} label='other' />
-                    </RadioGroup>
+                  <FormControl component='fieldset'>
+                    <FormLabel component='legend'>{t('advertisement_location')}</FormLabel>
+                    <FormField as={RadioGroup} name='advertisementLocation' control={control} errors={errors} row>
+                      {radioOptions.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio color='primary' />}
+                          label={option.label}
+                          labelPlacement='end'
+                        />
+                      ))}
+                    </FormField>
                   </FormControl>
                 </Grid>
-
-                <AdvertisementCategorySelector selectedTypeAd={selectedTypeAd} handleTypeAd={handleTypeAd} />
 
                 <LanguageSelector selectedLanguage={selectedLanguage} onChange={handleLanguageChange} />
               </Grid>
@@ -626,4 +688,4 @@ const Content = () => {
   )
 }
 
-export default authRoute(Content)
+export default authRoute(CopyWriting)

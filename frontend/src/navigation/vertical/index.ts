@@ -26,6 +26,9 @@ import PagesIcon from '@mui/icons-material/Pages'
 import AutoModeIcon from '@mui/icons-material/AutoMode'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import SearchIcon from '@mui/icons-material/Search'
+import BuildIcon from '@mui/icons-material/Build'
+import ScienceIcon from '@mui/icons-material/Science'
+import BiotechIcon from '@mui/icons-material/Biotech'
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -41,6 +44,7 @@ interface UserData {
   automationEnabled?: boolean
   spyToolsEnabled?: boolean
   productSearchEnabled?: boolean
+  qrCodeGeneratorEnabled? : boolean
 }
 
 const Navigation = (): VerticalNavItemsType => {
@@ -54,7 +58,8 @@ const Navigation = (): VerticalNavItemsType => {
     copyWritingEnabled: false,
     automationEnabled: false,
     spyToolsEnabled: false,
-    productSearchEnabled: false
+    productSearchEnabled: false,
+    qrCodeGeneratorEnabled: false,
   })
 
   const [customForms, setCustomForms] = useState<any[]>([])
@@ -210,6 +215,52 @@ const Navigation = (): VerticalNavItemsType => {
             title: 'Product Information',
             icon: CategoryIcon,
             path: '/content/product-details'
+          }
+        ]
+      },
+
+      userData?.qrCodeGeneratorEnabled &&
+      userData?.spyToolsEnabled &&
+      !userData.role && {
+        sectionTitle: "QR Code Dynamic Generator"
+      },
+
+    userData?.qrCodeGeneratorEnabled &&
+      !userData.role && {
+        title: "QR Code Gen",
+        icon: ArticleIcon,
+        openByDefault: true,
+        path: '',
+        children: [
+          {
+            title: "Generator",
+            icon: SearchIcon,
+            path: '/qr-code/view'
+          },
+        ]
+      },
+
+      userData.advertisementEnabled &&
+      !userData.role && {
+        sectionTitle: t('content')
+      },
+      
+
+    userData.copyWritingEnabled &&
+      !userData.role && {
+        title: t('seo_tools'),
+        icon: BuildIcon,
+        path: '',
+        children: [
+          {
+            title: t('keyword_research'),
+            icon: ScienceIcon,
+            path: '/seo-tools/keyword-research/find'
+          },
+          {
+            title: t('seo_analysis'),
+            icon: BiotechIcon,
+            path: '/seo-tools/keyword-research/seo-analysis'
           }
         ]
       },
