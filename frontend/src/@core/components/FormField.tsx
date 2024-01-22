@@ -46,6 +46,7 @@ function getFieldValue(args) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function FormFieldError({ name, errorMessage, errors, errorClassName, ...props }) {
     const classes = useStyles();
 
