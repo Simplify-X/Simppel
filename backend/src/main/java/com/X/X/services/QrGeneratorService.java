@@ -39,6 +39,10 @@ public class QrGeneratorService {
         findQrCodeRecord.setIndustry(qrCodeGeneratorDto.getIndustry());
         findQrCodeRecord.setLocation(qrCodeGeneratorDto.getLocation());
         findQrCodeRecord.setStatus(qrCodeGeneratorDto.getStatus());
+        findQrCodeRecord.setFirstRule(qrCodeGeneratorDto.getFirstRule());
+        findQrCodeRecord.setSecondRule(qrCodeGeneratorDto.getSecondRule());
+        findQrCodeRecord.setThirdRule(qrCodeGeneratorDto.getThirdRule());
+        findQrCodeRecord.setFourthRule(qrCodeGeneratorDto.getFourthRule());
 
         return this.qrGeneratorRepository.save(findQrCodeRecord);
 

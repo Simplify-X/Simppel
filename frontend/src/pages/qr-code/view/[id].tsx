@@ -46,6 +46,7 @@ import ImageGallery from 'src/@core/components/ImageGallery'
 import QRCode from 'qrcode.react'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import DynamicQRGenertation from '../create'
+import DownloadIcon from '@mui/icons-material/Download'
 
 const StyledDialogContentText = styled(DialogContentText)`
   font-size: 24px;
@@ -62,7 +63,8 @@ const ImageContainer = styled.div`
   overflow: hidden;
 `
 
-const SingleContent = () => {
+function SingleContent({ loadedData }: { loadedData: any }) {
+
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
@@ -86,6 +88,26 @@ const SingleContent = () => {
   const [groupMember, setGroupMemberData] = useState()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [handleEditView, setHandleEditView] = useState(false)
+  const [isQRCodeBlurred, setIsQRCodeBlurred] = useState(false)
+
+  if (loadedData) {
+    setHandleEditView(true);
+  }
+
+
+  const downloadQRCode = () => {
+    const canvas = document.querySelector('canvas')
+    if (canvas) {
+      const image = canvas.toDataURL('image/png')
+      const link = document.createElement('a')
+      link.href = image
+      link.download = 'qr-code.png'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setIsQRCodeBlurred(true)
+    }
+  }
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -255,7 +277,7 @@ const SingleContent = () => {
         <title>View Advertisement</title>
       </Helmet>
       {handleEditView ? (
-        <DynamicQRGenertation loadedData={data}/>
+        <DynamicQRGenertation loadedData={data} />
       ) : (
         <Grid container spacing={10}>
           <Grid item xs={12} sm={6}>
@@ -309,6 +331,38 @@ const SingleContent = () => {
                       <Typography variant='caption'>{t('discount')}</Typography>
                       <Typography variant='body1'>{data.price ? data.price : '-'}</Typography>
                     </Grid>
+
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
+                    <Grid item xs={6}>
+                    <Grid item xs={12}>
+                      <Typography variant='h6'>Club Rules</Typography>
+                    </Grid>
+                      <ul style={{ paddingLeft: 10 }}>
+                        {data.firstRule && (
+                          <li>
+                            <Typography variant='body1'>{data.firstRule}</Typography>
+                          </li>
+                        )}
+                        {data.secondRule && (
+                          <li>
+                            <Typography variant='body1'>{data.secondRule}</Typography>
+                          </li>
+                        )}
+                        {data.thirdRule && (
+                          <li>
+                            <Typography variant='body1'>{data.thirdRule}</Typography>
+                          </li>
+                        )}
+                        {data.fourthRule && (
+                          <li>
+                            <Typography variant='body1'>{data.fourthRule}</Typography>
+                          </li>
+                        )}
+                      </ul>
+                    </Grid>
+
                     <Grid item xs={12}>
                       <Divider />
                     </Grid>
@@ -352,11 +406,22 @@ const SingleContent = () => {
                       <Divider />
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant='h6'>QR Code</Typography>
+                      <Typography variant='h6'>
+                        QR Code
+                        <Tooltip title='Once you have downloaded this image, the QR code will be blurred for safety reasons'>
+                          <IconButton onClick={downloadQRCode}>
+                            <DownloadIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Typography>
                     </Grid>
                     <Grid item xs={12}>
                       {loading && data.id && (
-                        <QRCode value={`${window.location.origin}/qr-code/view/qr2/${data.id}`} size={200} />
+                        <QRCode
+                          value={`${window.location.origin}/qr-code/view/qr2/${data.id}`}
+                          size={200}
+                          style={{ filter: isQRCodeBlurred ? 'blur(8px)' : 'none' }}
+                        />
                       )}
                     </Grid>
                     <Grid item xs={12}>

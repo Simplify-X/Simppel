@@ -76,13 +76,13 @@ const TabAccount = () => {
       setDefaultAdvertisementLength(value)
     } else if (section === 'defaultAdvertisementMood') {
       setDefaultAdvertisementMood(value)
-    } else if (section === 'defaultCopyTone'){
+    } else if (section === 'defaultCopyTone') {
       setDefaultCopyTone(value)
-    } else if (section === 'defaultCopyLength'){
+    } else if (section === 'defaultCopyLength') {
       setDefaultCopyLength(value)
-    } else if (section === 'defaultCopyLanguage'){
+    } else if (section === 'defaultCopyLanguage') {
       setDefaultCopyLanguage(value)
-    } else if (section === 'defaultCopyType'){
+    } else if (section === 'defaultCopyType') {
       setDefaultCopyType(value)
     }
   }
@@ -112,7 +112,6 @@ const TabAccount = () => {
       ...userData,
       defaultAdvertisementLocation
     }
-
 
     try {
       await put(`/users/users/management/${userId}`, data)
@@ -199,191 +198,210 @@ const TabAccount = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default Option</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='productFormType'
-                value={productFormType}
-                onChange={e => setUserData({ ...userData, productFormType: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='amazon' control={<Radio />} label='Amazon' />
-                <FormControlLabel disabled={!editable} value='dropshipping' control={<Radio />} label='Dropshipping' />
-              </RadioGroup>
-            </Grid>
+            {userData.advertisementEnabled ? (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default Option</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='productFormType'
+                    value={productFormType}
+                    onChange={e => setUserData({ ...userData, productFormType: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='amazon' control={<Radio />} label='Amazon' />
+                    <FormControlLabel
+                      disabled={!editable}
+                      value='dropshipping'
+                      control={<Radio />}
+                      label='Dropshipping'
+                    />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Tab Settings</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultTabOpen'
-                value={defaultTabOpen}
-                onChange={handleRadioChange}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='true' control={<Radio />} label='Tabs Open By Default' />
-                <FormControlLabel
-                  disabled={!editable}
-                  value='false'
-                  control={<Radio />}
-                  label='Tab Closed By Default'
-                />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Tab Settings</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultTabOpen'
+                    value={defaultTabOpen}
+                    onChange={handleRadioChange}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel
+                      disabled={!editable}
+                      value='true'
+                      control={<Radio />}
+                      label='Tabs Open By Default'
+                    />
+                    <FormControlLabel
+                      disabled={!editable}
+                      value='false'
+                      control={<Radio />}
+                      label='Tab Closed By Default'
+                    />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default advertisement location when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultAdvertisementLocation'
-                value={defaultAdvertisementLocation}
-                onChange={e => setUserData({ ...userData, defaultAdvertisementLocation: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='facebook' control={<Radio />} label='Facebook' />
-                <FormControlLabel disabled={!editable} value='instagram' control={<Radio />} label='Instagram' />
-                <FormControlLabel disabled={!editable} value='tiktok' control={<Radio />} label='Tiktok' />
-                <FormControlLabel disabled={!editable} value='other' control={<Radio />} label='Other' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default advertisement location when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultAdvertisementLocation'
+                    value={defaultAdvertisementLocation}
+                    onChange={e => setUserData({ ...userData, defaultAdvertisementLocation: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='facebook' control={<Radio />} label='Facebook' />
+                    <FormControlLabel disabled={!editable} value='instagram' control={<Radio />} label='Instagram' />
+                    <FormControlLabel disabled={!editable} value='tiktok' control={<Radio />} label='Tiktok' />
+                    <FormControlLabel disabled={!editable} value='other' control={<Radio />} label='Other' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default copy tone when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultCopyTone'
-                value={defaultCopyTone}
-                onChange={e => setUserData({ ...userData, defaultCopyTone: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='formal' control={<Radio />} label='Formal' />
-                <FormControlLabel disabled={!editable} value='informal' control={<Radio />} label='Informal' />
-                <FormControlLabel disabled={!editable} value='humorous' control={<Radio />} label='Humorous' />
-                <FormControlLabel disabled={!editable} value='serious' control={<Radio />} label='Serious' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default copy tone when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultCopyTone'
+                    value={defaultCopyTone}
+                    onChange={e => setUserData({ ...userData, defaultCopyTone: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='formal' control={<Radio />} label='Formal' />
+                    <FormControlLabel disabled={!editable} value='informal' control={<Radio />} label='Informal' />
+                    <FormControlLabel disabled={!editable} value='humorous' control={<Radio />} label='Humorous' />
+                    <FormControlLabel disabled={!editable} value='serious' control={<Radio />} label='Serious' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel style={{ marginTop: 2 }}>Default advertisement language when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultAdvertisementLanguage'
-                value={defaultAdvertisementLanguage}
-                onChange={e => setUserData({ ...userData, defaultAdvertisementLanguage: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
-                <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
-                <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
-                <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
-                <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
-                <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel style={{ marginTop: 2 }}>Default advertisement language when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultAdvertisementLanguage'
+                    value={defaultAdvertisementLanguage}
+                    onChange={e => setUserData({ ...userData, defaultAdvertisementLanguage: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
+                    <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
+                    <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
+                    <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
+                    <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
+                    <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default copy length when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultCopyLength'
-                value={defaultCopyLength}
-                onChange={e => setUserData({ ...userData, defaultCopyLength: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
-                <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
-                <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
-                <FormControlLabel disabled={!editable} value='random' control={<Radio />} label='Random' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default copy length when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultCopyLength'
+                    value={defaultCopyLength}
+                    onChange={e => setUserData({ ...userData, defaultCopyLength: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
+                    <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
+                    <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
+                    <FormControlLabel disabled={!editable} value='random' control={<Radio />} label='Random' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel style={{ marginTop: 2 }}>Default advertisement length when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultAdvertisementLength'
-                value={defaultAdvertisementLength}
-                onChange={e => setUserData({ ...userData, defaultAdvertisementLength: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
-                <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
-                <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel style={{ marginTop: 2 }}>Default advertisement length when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultAdvertisementLength'
+                    value={defaultAdvertisementLength}
+                    onChange={e => setUserData({ ...userData, defaultAdvertisementLength: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='short' control={<Radio />} label='Short' />
+                    <FormControlLabel disabled={!editable} value='medium' control={<Radio />} label='Medium' />
+                    <FormControlLabel disabled={!editable} value='long' control={<Radio />} label='Long' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default copy language when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultCopyLanguage'
-                value={defaultCopyLanguage}
-                onChange={e => setUserData({ ...userData, defaultCopyLanguage: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
-                <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
-                <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
-                <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
-                <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
-                <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default copy language when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultCopyLanguage'
+                    value={defaultCopyLanguage}
+                    onChange={e => setUserData({ ...userData, defaultCopyLanguage: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='en' control={<Radio />} label='English' />
+                    <FormControlLabel disabled={!editable} value='fr' control={<Radio />} label='French' />
+                    <FormControlLabel disabled={!editable} value='bg' control={<Radio />} label='Bulgarian' />
+                    <FormControlLabel disabled={!editable} value='it' control={<Radio />} label='Italian' />
+                    <FormControlLabel disabled={!editable} value='es' control={<Radio />} label='Spanish' />
+                    <FormControlLabel disabled={!editable} value='de' control={<Radio />} label='German' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel style={{ marginTop: 2 }}>Default advertisement mood when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultAdvertisementMood'
-                value={defaultAdvertisementMood}
-                onChange={e => setUserData({ ...userData, defaultAdvertisementMood: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='sell' control={<Radio />} label='Sell' />
-                <FormControlLabel disabled={!editable} value='promote' control={<Radio />} label='Promote' />
-                <FormControlLabel disabled={!editable} value='engage' control={<Radio />} label='Engage' />
-                <FormControlLabel disabled={!editable} value='traffic' control={<Radio />} label='Traffic' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel style={{ marginTop: 2 }}>Default advertisement mood when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultAdvertisementMood'
+                    value={defaultAdvertisementMood}
+                    onChange={e => setUserData({ ...userData, defaultAdvertisementMood: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='sell' control={<Radio />} label='Sell' />
+                    <FormControlLabel disabled={!editable} value='promote' control={<Radio />} label='Promote' />
+                    <FormControlLabel disabled={!editable} value='engage' control={<Radio />} label='Engage' />
+                    <FormControlLabel disabled={!editable} value='traffic' control={<Radio />} label='Traffic' />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Default copy type when generating</InputLabel>
-              <RadioGroup
-                disabled={!editable}
-                name='defaultCopyType'
-                value={defaultCopyType}
-                onChange={e => setUserData({ ...userData, defaultCopyType: e.target.value })}
-                style={{ display: 'block' }}
-              >
-                <FormControlLabel disabled={!editable} value='WEBSITE_COPY' control={<Radio />} label='Website' />
-                <FormControlLabel disabled={!editable} value='SEO_COPY' control={<Radio />} label='SEO' />
-                <FormControlLabel disabled={!editable} value='B2B_COPY' control={<Radio />} label='B2B' />
-                <FormControlLabel disabled={!editable} value='B2C_COPY' control={<Radio />} label='B2C' />
-                <FormControlLabel disabled={!editable} value='DIRECT_COPY' control={<Radio />} label='Direct' />
-                <FormControlLabel disabled={!editable} value='AD_COPY' control={<Radio />} label='Ad' />
-                <FormControlLabel disabled={!editable} value='SOCIAL_MEDIA_COPY' control={<Radio />} label='Social Media' />
-              </RadioGroup>
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel>Default copy type when generating</InputLabel>
+                  <RadioGroup
+                    disabled={!editable}
+                    name='defaultCopyType'
+                    value={defaultCopyType}
+                    onChange={e => setUserData({ ...userData, defaultCopyType: e.target.value })}
+                    style={{ display: 'block' }}
+                  >
+                    <FormControlLabel disabled={!editable} value='WEBSITE_COPY' control={<Radio />} label='Website' />
+                    <FormControlLabel disabled={!editable} value='SEO_COPY' control={<Radio />} label='SEO' />
+                    <FormControlLabel disabled={!editable} value='B2B_COPY' control={<Radio />} label='B2B' />
+                    <FormControlLabel disabled={!editable} value='B2C_COPY' control={<Radio />} label='B2C' />
+                    <FormControlLabel disabled={!editable} value='DIRECT_COPY' control={<Radio />} label='Direct' />
+                    <FormControlLabel disabled={!editable} value='AD_COPY' control={<Radio />} label='Ad' />
+                    <FormControlLabel
+                      disabled={!editable}
+                      value='SOCIAL_MEDIA_COPY'
+                      control={<Radio />}
+                      label='Social Media'
+                    />
+                  </RadioGroup>
+                </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Default Brand Name'
-                defaultValue={userData.defaultBrandName}
-                disabled={!editable}
-                onChange={e => setUserData({ ...userData, defaultBrandName: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Default Brand Description'
-                disabled={!editable}
-                defaultValue={userData.defaultBrandDescription}
-                onChange={e => setUserData({ ...userData, defaultBrandDescription: e.target.value })}
-              />
-            </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Default Brand Name'
+                    defaultValue={userData.defaultBrandName}
+                    disabled={!editable}
+                    onChange={e => setUserData({ ...userData, defaultBrandName: e.target.value })}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Default Brand Description'
+                    disabled={!editable}
+                    defaultValue={userData.defaultBrandDescription}
+                    onChange={e => setUserData({ ...userData, defaultBrandDescription: e.target.value })}
+                  />
+                </Grid>
+              </>
+            ) : null}
 
             {openAlert ? (
               <Grid item xs={12} sx={{ mb: 3 }}>

@@ -150,12 +150,6 @@ const Navigation = (): VerticalNavItemsType => {
   }
 
   return [
-    !userData.role && {
-      title: t('dashboard'),
-      icon: HomeOutline,
-      path: '/'
-    },
-
     userData?.productSearchEnabled &&
       !userData.role && {
         title: t('product_search'),
@@ -220,7 +214,6 @@ const Navigation = (): VerticalNavItemsType => {
       },
 
       userData?.qrCodeGeneratorEnabled &&
-      userData?.spyToolsEnabled &&
       !userData.role && {
         sectionTitle: "QR Code Dynamic Generator"
       },

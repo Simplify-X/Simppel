@@ -37,5 +37,13 @@ public class QrCodeGeneratorDto {
     private String status;
 
     private Boolean claimed;
+
+    private String firstRule;
+
+    private String secondRule;
+
+    private String thirdRule;
+
+    private String fourthRule;
 }
 
