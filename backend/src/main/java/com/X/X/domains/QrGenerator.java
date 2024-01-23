@@ -50,6 +50,14 @@ public class QrGenerator extends Auditable  {
 
     private String status;
 
+    private String firstRule;
+
+    private String secondRule;
+
+    private String thirdRule;
+
+    private String fourthRule;
+
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "account_id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")

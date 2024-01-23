@@ -28,7 +28,7 @@ const ModeToggler = (props: Props) => {
 
   const getThemeMode = async () => {
     const singleUserResult = await get(`/users/getSingleUser/${userId}`)
-    setThemeMode(singleUserResult?.data?.themeMode)
+    setThemeMode(singleUserResult?.data?.themeMode ? singleUserResult?.data?.themeMode : "dark")
     saveSettings({ ...settings, mode})
   }
 

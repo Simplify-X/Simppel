@@ -13,7 +13,9 @@ import { API_BASE_URL } from 'src/config'
 import Loader from 'src/@core/components/ui/Loader'
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-
+import { IconButton } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const ViewContent = () => {
   const [content, setContent] = useState([])
@@ -35,6 +37,10 @@ const ViewContent = () => {
   
     return value;
   };
+
+  const handleView = (qrRecordId) => {
+    router.push(`view/${qrRecordId}`);
+  }
 
   const columns = [
     {
@@ -70,6 +76,36 @@ const ViewContent = () => {
       options: {
         filter: true,
         sort: false
+      }
+    },
+    {
+      name: 'actions',
+      label: 'Actions',
+      options: {
+        customBodyRender: (value, tableMeta) => {
+          const rowId = tableMeta.rowData[0]
+
+          return (
+            <>
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation()
+                  handleView(tableMeta.rowData)
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation()
+                  handleDelete(rowId)
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )
+        }
       }
     }
   ]
@@ -147,6 +183,7 @@ const ViewContent = () => {
   }
 
   return (
+    <>
     <Box sx={{ width: '100%' }}>
       <MUIDataTable title={'Content List'} data={sortedArray} columns={columns} options={options} />
 
@@ -154,6 +191,7 @@ const ViewContent = () => {
         <AddIcon />
       </Fab>
     </Box>
+    </>
   )
 }
 

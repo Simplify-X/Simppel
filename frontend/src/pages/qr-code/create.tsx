@@ -34,12 +34,13 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Yup from 'yup'
 
 // import FormDatePicker from 'src/@core/components/DatePicker'
 
-
 export default function DynamicQRGenertation({ loadedData }: { loadedData: any }) {
-  const theme = useTheme()
+    const theme = useTheme()
   const router = useRouter()
   const [data, setData] = useState([])
   const { t } = useTranslation()
@@ -49,20 +50,32 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
   const [teamGroupMember, setTeamGroupMember] = useState([])
   const [teamData, setTeamData] = useState([])
   const [uppy, setUppy] = useState(null)
-  const defaultStatus = loadedData ? loadedData.status : '';
+  const defaultStatus = loadedData ? loadedData.status : ''
 
   const status = [
     { value: 'offline', label: t('offline') },
     { value: 'online', label: t('online') }
   ]
 
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required(t('this_field_is_required')),
+    price: Yup.string().required(t('this_field_is_required')),
+    clientEmail: Yup.string().required(t('this_field_is_required')),
+    clientPhone: Yup.string().required(t('this_field_is_required')),
+    clientWebsite: Yup.string().required(t('this_field_is_required')),
+    industry: Yup.string().required(t('this_field_is_required')),
+    location: Yup.string().required(t('this_field_is_required')),
+  })
+
   const { control, handleSubmit, errors } = useForm({
     mode: 'onBlur',
     criteriaMode: 'all',
     shouldUnregister: true,
+    resolver: yupResolver(validationSchema),
     defaultValues: {
-      status: defaultStatus,
-    },
+      status: defaultStatus
+    }
   })
 
   const handleDiscard = () => {
@@ -136,7 +149,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
   async function submitForm(formData) {
     console.log(formData)
 
-    const { 
+    const {
       name,
       price,
       description,
@@ -147,7 +160,11 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
       location,
       meeting_date,
       starting_date,
-      status
+      status,
+      firstRule,
+      secondRule,
+      thirdRule,
+      fourthRule,
     } = formData
 
     const data = {
@@ -161,10 +178,14 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
       location,
       meeting_date,
       starting_date,
-      status
+      status,
+      firstRule,
+      secondRule,
+      thirdRule,
+      fourthRule,
     }
 
-    if (loadedData) { 
+    if (loadedData) {
       await put(`/qr-code/${loadedData?.id}`, data)
       toast.success('QR Code Edited', { autoClose: 2000 })
       router.push('/qr-code/view')
@@ -176,9 +197,9 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
           const adId = adResponse.data.id
           await uploadImagesToCloudinary(uppy.getFiles(), adId)
         }
-  
+
         toast.success('QR Code Added', { autoClose: 2000 })
-  
+
         router.push('/qr-code/view')
       } else {
         toast.error('Error', { autoClose: 3000 })
@@ -281,6 +302,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     control={control}
                     defaultValue={loadedData ? loadedData?.name : ''}
                     label={t('company_name')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     required
@@ -294,6 +316,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     control={control}
                     label={t('industry')}
                     errors={errors}
+                    margin='normal'
                     fullWidth
                     required
                   />
@@ -305,6 +328,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     defaultValue={loadedData ? loadedData?.location : ''}
                     control={control}
                     label={t('location')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     required
@@ -317,6 +341,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     defaultValue={loadedData ? loadedData?.description : ''}
                     control={control}
                     label={t('description')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     multiline
@@ -356,6 +381,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     control={control}
                     label={t('discount')}
                     errors={errors}
+                    margin='normal'
                     fullWidth
                     required
                   />
@@ -367,6 +393,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     defaultValue={loadedData ? loadedData?.clientEmail : ''}
                     control={control}
                     label={t('client_email')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     required
@@ -379,6 +406,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     defaultValue={loadedData ? loadedData?.clientPhone : ''}
                     control={control}
                     label={t('client_phone')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     required
@@ -391,6 +419,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                     defaultValue={loadedData ? loadedData?.clientWebsite : ''}
                     control={control}
                     label={t('client_website')}
+                    margin='normal'
                     errors={errors}
                     fullWidth
                     required
@@ -419,7 +448,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
 
                 <Grid item xs={12}>
                   <FormLabel component='legend'>{t('qr_status')}</FormLabel>
-                  <FormField as={RadioGroup} name='status' control={control} errors={errors} row>
+                  <FormField as={RadioGroup} margin='normal' name='status' control={control} errors={errors} row>
                     {status.map(option => (
                       <FormControlLabel
                         key={option.value}
@@ -430,6 +459,58 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
                       />
                     ))}
                   </FormField>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <FormLabel component='legend'>{t('club_rules')}</FormLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <FormField
+                    as={<TextField />}
+                    name='firstRule'
+                    defaultValue={loadedData ? loadedData?.firstRule : ''}
+                    control={control}
+                    label={t('first_rule')}
+                    margin='normal'
+                    errors={errors}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <FormField
+                    as={<TextField />}
+                    name='secondRule'
+                    defaultValue={loadedData ? loadedData?.secondRule : ''}
+                    control={control}
+                    label={t('second_rule')}
+                    margin='normal'
+                    errors={errors}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <FormField
+                    as={<TextField />}
+                    name='thirdRule'
+                    defaultValue={loadedData ? loadedData?.thirdRule : ''}
+                    control={control}
+                    label={t('third_rule')}
+                    margin='normal'
+                    errors={errors}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <FormField
+                    as={<TextField />}
+                    name='fourthRule'
+                    defaultValue={loadedData ? loadedData?.fourthRule : ''}
+                    control={control}
+                    label={t('fourth_rule')}
+                    margin='normal'
+                    errors={errors}
+                    fullWidth
+                  />
                 </Grid>
               </Grid>
             </CardContent>
@@ -445,11 +526,11 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
               <>
                 <CardHeader title={t('upload_logo')} titleTypographyProps={{ variant: 'h6' }} />
                 <CardContent>
-                  <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <UploadViewer uppy={uppy} />
-                    </Box>
-                  </Grid>
+                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <UploadViewer uppy={uppy} />
+                </Box>
+                          </Grid>
                 </CardContent>
               </>
             )}
@@ -484,4 +565,3 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
     </form>
   )
 }
-
