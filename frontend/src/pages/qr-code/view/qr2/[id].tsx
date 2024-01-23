@@ -21,6 +21,8 @@ import { API_BASE_URL } from 'src/config'
 import { useRouter } from 'next/router'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
 
+
+
 const pulse = keyframes`
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
@@ -39,8 +41,355 @@ function Copyright(props) {
     </Typography>
   )
 }
+// linear-gradient(90deg, #081012 1.64%, #1F2427 99.75%)',
+const defaultTheme = createTheme({
+  palette: {
+    background: {
+      default: '#081012',
+    },
+    typography: {
+      fontFamily: 'Sora, sans-serif',
+      
+    },
+    text: {
+      primary: '#ffffff', // Add your color here
+    },
+  },
+});
 
-const defaultTheme = createTheme()
+
+
+function ClaimYourGift({claimed,setClaimed}){
+  return  <Box  sx={{ mt:3  }}  >
+            
+  <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+<Typography variant='h4' fontFamily="Sora" color="#A9A9A9" gutterBottom align='center' sx={{ fontSize: '14px',opacity:'0.8' }} >
+Welcome 
+</Typography>
+</Box>
+
+<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+<Typography variant='h4' fontFamily="Sora" gutterBottom align='left' sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }} >
+Lux.Club  <Typography fontFamily="Sora"  component="span" color="#9C6932 " sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }}  >
+Elite benefits
+</Typography> for selected personal 
+</Typography>
+</Box>
+
+<Box sx={{ display: 'flex',flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+
+
+<Typography variant='h4' fontFamily="Sora" color="#A9A9A9" gutterBottom align='start' sx={{ fontSize: '14px',opacity:'0.6',textAlign:'justify' }} >
+At Golden Lease Rent a Car, we understand the importance of reliable transportation. Our fleet includes economy cars, sedans, and SUVs, so you can choose the vehicle that best fits your budget and travel plans." 
+</Typography>
+</Box>
+
+<Box sx={{ mt:16, display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center', position: 'relative' }}>
+
+<CardMedia
+component='img'
+image="/images/car1.png"
+alt='Company Logo'
+style={{
+width: "188px",
+height: "117px",
+position: 'absolute',
+left: '0',
+}}
+/>
+
+<CardMedia
+component='img'
+image="/images/car2.png"
+alt='Company Logo'
+style={{
+width: "272px",
+height: "172px",
+position: 'absolute',
+left: '50px', // adjust this value to achieve the desired overlap
+}}
+/>
+
+<CardMedia
+component='img'
+image="/images/car3.png"
+alt='Company Logo'
+style={{
+width: "200px",
+height: "117px",
+position: 'absolute',
+
+left: '210px', // adjust this value to achieve the desired overlap
+}}
+/>
+
+</Box>
+
+<Box  sx={{ mt:16, display: 'flex', flexDirection: 'row',alignItems: 'center',justifyContent:'space-between' }}>
+<Typography color="#9C6932 " fontFamily="Sora"   sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }} >
+Conditions  
+</Typography>
+
+
+<CardMedia
+component='img'
+image="/images/text-img.png"
+alt='Company Logo'
+style={{
+width: "130px",
+height: "30px",
+
+}}
+
+
+/>
+
+</Box>
+
+
+<Box sx={{ mt:6,  display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+
+
+<Typography variant='h4' fontFamily="Sora" color="#A9A9A9" gutterBottom align='start' sx={{ fontSize: '14px',opacity:'0.6',textAlign:'justify' }} >
+A. Give physical voucher to representative 
+
+</Typography>
+</Box>
+<Box sx={{   display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+
+
+<Typography variant='h4' fontFamily="Sora" color="#A9A9A9" gutterBottom align='start' sx={{ fontSize: '14px',opacity:'0.6',textAlign:'justify' }} >
+
+B. Before requesting the bill claim your gift 
+
+</Typography>
+</Box>
+<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+
+
+<Typography variant='h4'  fontFamily="Sora" color="#A9A9A9" gutterBottom align='start' sx={{ fontSize: '14px',opacity:'0.6',textAlign:'justify' }} >
+C.bla banfljlae lnihe oijnije a
+</Typography>
+</Box>
+
+<Box sx={{px:1}} >
+<Button
+onClick={()=>setClaimed(true)}
+variant="contained"
+
+
+sx={{
+mt: 3,
+background: 'linear-gradient(292deg, #4A3228 1.28%, #9C6932 7.15%, #A97C3B 11.06%, #EFDD87 21.81%, #E0C776 25.72%, #C8A25A 32.56%, #B98B48 39.4%, #B48342 43.31%, #EBBF68 53.09%, #B48342 66.77%, #B0803D 75.57%, #E5B863 87.3%, #B1813E 92.19%, #8F5C25 95.12%, #4A3228 99.03%)',
+color: '#000',
+width: '100%',
+height: '70px',
+borderRadius: '10px',
+fontWeight:'bold',
+fontSize:'1rem'
+
+}}
+>
+<Typography fontFamily="Sora" sx={{fontWeight:"600"}} >
+Claim Your Gift
+</Typography>
+</Button>
+</Box>
+
+   
+  </Box>
+}
+
+function Gift({prizeOpened,setPrizeOpened}){
+
+  const [scratched,setScratched]=useState(false)
+
+  return <Box  sx={{ mt:3 ,fontFamily:'Sora' }}>
+            
+ 
+
+<Box  sx={{  display: 'flex', flexDirection: 'row',alignItems: 'center',justifyContent:'center' }}>
+
+
+
+
+<CardMedia
+component='img'
+image="/images/text-img.png"
+alt='Company Logo'
+style={{
+width: "149px",
+height: "42px",
+
+}}
+
+
+/>
+
+</Box>
+
+<Box sx={{mt:3,px:3, display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+<Typography variant='h4' fontFamily="Sora" gutterBottom align='left' sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }} >Scratch & Reveal Your  <Typography  component="span" color="#9C6932 " sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }}  >
+Exclusive Gift
+</Typography>
+</Typography>
+</Box>
+
+
+
+<Box sx={{px:3 ,display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center'}} >
+{
+  !scratched ?(
+    <Button
+onClick={()=>setScratched(true)}
+variant="contained"
+sx={{
+mt: 3,
+background: 'linear-gradient(292deg, #4A3228 1.28%, #9C6932 7.15%, #A97C3B 11.06%, #EFDD87 21.81%, #E0C776 25.72%, #C8A25A 32.56%, #B98B48 39.4%, #B48342 43.31%, #EBBF68 53.09%, #B48342 66.77%, #B0803D 75.57%, #E5B863 87.3%, #B1813E 92.19%, #8F5C25 95.12%, #4A3228 99.03%)',
+color: '#000',
+width: '100%',
+height: '315px',
+borderRadius: '10px',
+fontWeight:'600',
+fontSize:'1rem'
+
+}}
+>
+
+</Button>
+  ):<Box sx={{ position: 'relative', mt: 3 }}>
+
+  <CardMedia
+    onClick={()=>setPrizeOpened(true)}
+    component='img'
+    image="/images/scratched.png"
+    alt='Company Logo'
+    style={{
+      position: 'relative',
+      height: "315px",
+      width: "100%",
+      zIndex: 1
+    }}
+  />
+
+  <Typography  sx={{position:'absolute' ,top:'40%',px:"5%"}}  fontFamily="Sora" variant='h6' align='center'>
+  Voucher Value:10$ 
++ free delivery in Dubai
+  </Typography>
+
+</Box>
+
+}
+
+
+
+
+
+</Box>
+
+
+
+
+
+<Box sx={{mt:10, display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
+
+
+<Typography variant='h4' fontFamily="Sora" color="#A9A9A9" gutterBottom align='start' sx={{ fontSize: '14px',opacity:'0.6',textAlign:'justify' }} >
+Terms & Conditions Apply. Made possible by Lux Club - the luxurious way to save.
+</Typography>
+</Box>
+
+   
+  </Box>
+
+}
+
+function Congratulations(){
+  
+    return <Box  sx={{ mt:3 ,fontFamily:'Sora' }}>
+            
+ 
+
+    <Box  sx={{  display: 'flex', flexDirection: 'row',alignItems: 'center',justifyContent:'center' }}>
+    
+    
+    
+    
+    <CardMedia
+    component='img'
+    image="/images/text-img.png"
+    alt='Company Logo'
+    style={{
+    width: "149px",
+    height: "42px",
+    
+    }}
+    
+    
+    />
+    
+    </Box>
+    
+    
+    <Box sx={{p:3}}>
+    <Box sx={{mt:3, p:3, border: '2px solid',borderColor:'#9C6932',borderRadius:'20px' ,  width:'100%', display:'flex',flexDirection:'column',justifyContent:'start',alignItems:'start' }}>
+    <Typography  component="span" color="#9C6932 " sx={{ fontSize: '27px', fontWeight:'600',letterSpacing:'0.27px' }}  >
+    Congratulations!
+      </Typography>
+
+      <Typography  sx={{mt:3, px:1,textAlign:'justify'}}  fontFamily="Sora" variant='body' >
+      You've won: Golden Lease.
+      </Typography>
+
+      <Typography  sx={{mt:3, px:1, textAlign:'justify' }} color="#F8F8F8" fontFamily="Sora" variant='body' align='center'>
+      At Golden Lease Rent a Car, we understand the importance of reliable transportation. Our fleet includes economy cars, sedans, and SUVs, so you can choose the vehicle that best fits your budget and travel plans.
+      </Typography>
+      <Box sx={{mt:3, px:1  }} >
+      <Typography  sx={{mt:3, px:1,fontWeight:'600' }} color="#F8F8F8" fontFamily="Sora" variant='h5' align='center'>
+      Voucher Value:10$ + Free Delivery in Dubai
+      </Typography>
+       </Box>
+
+
+</Box>
+    </Box>
+    
+   
+    
+    
+    
+    
+    
+    <Box sx={{px:1}} >
+<Button
+variant="contained"
+
+
+sx={{
+mt: 3,
+background: 'linear-gradient(292deg, #4A3228 1.28%, #9C6932 7.15%, #A97C3B 11.06%, #EFDD87 21.81%, #E0C776 25.72%, #C8A25A 32.56%, #B98B48 39.4%, #B48342 43.31%, #EBBF68 53.09%, #B48342 66.77%, #B0803D 75.57%, #E5B863 87.3%, #B1813E 92.19%, #8F5C25 95.12%, #4A3228 99.03%)',
+color: '#000',
+width: '100%',
+height: '70px',
+borderRadius: '10px',
+fontWeight:'bold',
+fontSize:'1rem'
+
+}}
+>
+<Typography fontFamily="Sora" color="#1A2023" sx={{fontWeight:"600"}} >
+Claim Your Gift
+</Typography>
+</Button>
+</Box>
+
+   
+  
+    
+       
+      </Box>
+}
+
 
 function InstructionsComponent() {
   const [loading, setLoading] = useState(false)
@@ -51,6 +400,9 @@ function InstructionsComponent() {
   const router = useRouter()
   const { id } = router.query
   const { put } = useCustomApiHook()
+  const [claimed,setClaimed]=useState(false)
+  const [prizeOpened,setPrizeOpened]=useState(false)
+  
 
   const startCountdown = () => {
     const interval = setInterval(() => {
@@ -120,87 +472,51 @@ function InstructionsComponent() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component='main' maxWidth='xs'>
+      <Container component='main' maxWidth='xs' sx={{overflowX:'hidden'}} >
         <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            
           }}
         >
-          <Box sx={{ m: 1, width: 200, height: 200, overflow: 'hidden' }}>
+          <Box sx={{ m: 1,  display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             {' '}
             {/* Adjust width and height as needed */}
-            {imageUrls.length > 0 && (
+            
               <CardMedia
                 component='img'
-                image={imageUrls[0].url}
+                image="/images/lux-club.png"
                 alt='Company Logo'
                 style={{
-                  maxWidth: '100%', // Adjust size as needed
-                  maxHeight: '100%'
+                  width: "62.15px",
+                   height: "70px"
                 }}
               />
-            )}
+            
           </Box>
-          <Typography component='h1' variant='h5'>
-            Club Member Instructions
-          </Typography>
+
+
+          
           {showConfetti && <Confetti />}
+
+
+                {/* first componetn */}
           {!loading && !data && (
-            <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-              <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <InfoIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary='Club rule 1' secondary='Jan 9, 2014' />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <InfoIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary='Club rule 2' secondary='Jan 7, 2014' />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <InfoIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary='Club rule 3' secondary='July 20, 2014' />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <InfoIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary='Club rule 4' secondary='July 20, 2014' />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <InfoIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary='Club rule 5' secondary='July 20, 2014' />
-                </ListItem>
-              </List>
-              <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }} onClick={fetchData}>
-                Open Voucher
-              </Button>
-            </Box>
+           
+           !claimed && !prizeOpened ? <ClaimYourGift claimed={claimed} setClaimed={setClaimed} />: claimed && !prizeOpened ? <Gift setPrizeOpened={setPrizeOpened} />: <Congratulations/>
+          
+          // <Congratulations/>
+          
           )}
 
+
+
+
           {loading && <CircularProgress />}
-          {!loading && data && (
+          {!loading  && data && (
             <Card
               sx={{
                 maxWidth: 345,
@@ -270,7 +586,7 @@ function InstructionsComponent() {
             </Card>
           )}
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>
     </ThemeProvider>
   )
