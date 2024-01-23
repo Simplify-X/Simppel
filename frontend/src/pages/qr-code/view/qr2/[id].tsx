@@ -191,7 +191,7 @@ function ClaimYourGift({ claimed, setClaimed }) {
 
       <Box
         sx={{
-          mt: 16,
+          mt: '16vh', 
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -276,7 +276,7 @@ function ClaimYourGift({ claimed, setClaimed }) {
         </Typography>
       </Box>
 
-      <Box sx={{ px: 1 }}>
+      <Box sx={{ px: 1, pb: 3, }}>
         <Button
           onClick={() => setClaimed(true)}
           variant="contained"
@@ -636,7 +636,7 @@ function InstructionsComponent() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 3,
             display: "flex",
             flexDirection: "column",
           }}
