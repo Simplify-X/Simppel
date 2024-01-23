@@ -11,6 +11,7 @@ module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
   i18n,
+  optimizeFonts: false,
   experimental: {
     esmExternals: false,
     jsconfigPaths: true // enables it for both jsconfig.json and tsconfig.json
