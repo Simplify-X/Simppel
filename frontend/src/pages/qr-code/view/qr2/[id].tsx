@@ -61,216 +61,153 @@ const defaultTheme = createTheme({
   },
 });
 
-function ClaimYourGift({ claimed, setClaimed }) {
-  console.log(claimed);
-
+function ClaimYourGift({setClaimed }) {
   return (
     <Box sx={{ mt: 3 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
-          color="#A9A9A9"
+          variant='h4'
+          fontFamily='Sora'
+          color='#A9A9A9'
           gutterBottom
-          align="center"
-          sx={{ fontSize: "14px", opacity: "0.8" }}
+          align='center'
+          sx={{ fontSize: '14px', opacity: '0.8' }}
         >
           Welcome
         </Typography>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
+          variant='h4'
+          fontFamily='Sora'
           gutterBottom
-          align="left"
-          sx={{ fontSize: "27px", fontWeight: "600", letterSpacing: "0.27px" }}
+          align='left'
+          sx={{ fontSize: '27px', fontWeight: '600', letterSpacing: '0.27px' }}
         >
-          Lux.Club{" "}
+          Lux.Club{' '}
           <Typography
-            fontFamily="Sora"
-            component="span"
-            color="#9C6932 "
-            sx={{
-              fontSize: "27px",
-              fontWeight: "600",
-              letterSpacing: "0.27px",
-            }}
+            fontFamily='Sora'
+            component='span'
+            color='#9C6932 '
+            sx={{ fontSize: '27px', fontWeight: '600', letterSpacing: '0.27px' }}
           >
             Elite benefits
-          </Typography>{" "}
+          </Typography>{' '}
           for selected personal
         </Typography>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
-          color="#A9A9A9"
+          variant='h4'
+          fontFamily='Sora'
+          color='#A9A9A9'
           gutterBottom
-          align="start"
-          sx={{ fontSize: "14px", opacity: "0.6", textAlign: "justify" }}
+          align='start'
+          sx={{ fontSize: '14px', opacity: '0.6', textAlign: 'justify' }}
         >
-          At Golden Lease Rent a Car, we understand the importance of reliable
-          transportation. Our fleet includes economy cars, sedans, and SUVs, so
-          you can choose the vehicle that best fits your budget and travel
-          plans."
+          At Golden Lease Rent a Car, we understand the importance of reliable transportation. Our fleet includes
+          economy cars, sedans, and SUVs, so you can choose the vehicle that best fits your budget and travel plans."
         </Typography>
       </Box>
 
       <Box
         sx={{
-          mt: 16,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-          position: "relative",
+          ml: -3,
+          mt: 6,
+          px: 3,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'start',
+          alignItems: 'center'
         }}
       >
         <CardMedia
-          component="img"
-          image="/images/car1.png"
-          alt="Company Logo"
+          component='img'
+          image='/images/car1.png'
+          alt='Company Logo'
           style={{
-            width: "188px",
-            height: "117px",
-            position: "absolute",
-            left: "0",
+            width: '188px',
+            height: '117px'
           }}
         />
 
         <CardMedia
-          component="img"
-          image="/images/car2.png"
-          alt="Company Logo"
-          style={{
-            width: "272px",
-            height: "172px",
-            position: "absolute",
-            left: "50px", // adjust this value to achieve the desired overlap
+          component='img'
+          image='/images/car2.png'
+          alt='Company Logo'
+          sx={{
+            ml: -15,
+            width: '272px',
+            height: '172px'
           }}
         />
 
         <CardMedia
-          component="img"
-          image="/images/car3.png"
-          alt="Company Logo"
-          style={{
-            width: "200px",
-            height: "117px",
-            position: "absolute",
-
-            left: "210px", // adjust this value to achieve the desired overlap
+          component='img'
+          image='/images/car3.png'
+          alt='Company Logo'
+          sx={{
+            ml: -15,
+            mt: 6,
+            width: '200px',
+            height: '117px'
           }}
         />
       </Box>
 
-      <Box
-        sx={{
-          mt: 16,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Box sx={{ mt: 6, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography
-          color="#9C6932 "
-          fontFamily="Sora"
-          sx={{ fontSize: "27px", fontWeight: "600", letterSpacing: "0.27px" }}
+          color='#9C6932 '
+          fontFamily='Sora'
+          sx={{ fontSize: '27px', fontWeight: '600', letterSpacing: '0.27px' }}
         >
           Conditions
         </Typography>
 
         <CardMedia
-          component="img"
-          image="/images/text-img.png"
-          alt="Company Logo"
+          component='img'
+          image='/images/text-img.png'
+          alt='Company Logo'
           style={{
-            width: "130px",
-            height: "30px",
+            width: '130px',
+            height: '30px'
           }}
         />
       </Box>
-
-      <Box
-        sx={{
-          mt: 6,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ mt: 6, display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
-          color="#A9A9A9"
+          variant='h4'
+          fontFamily='Sora'
+          color='#A9A9A9'
           gutterBottom
-          align="start"
-          sx={{ fontSize: "14px", opacity: "0.6", textAlign: "justify" }}
+          align='start'
+          sx={{ fontSize: '14px', opacity: '0.6', textAlign: 'justify' }}
         >
           A. Give physical voucher to representative
         </Typography>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
-          color="#A9A9A9"
+          variant='h4'
+          fontFamily='Sora'
+          color='#A9A9A9'
           gutterBottom
-          align="start"
-          sx={{ fontSize: "14px", opacity: "0.6", textAlign: "justify" }}
+          align='start'
+          sx={{ fontSize: '14px', opacity: '0.6', textAlign: 'justify' }}
         >
           B. Before requesting the bill claim your gift
         </Typography>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: 'center' }}>
         <Typography
-          variant="h4"
-          fontFamily="Sora"
-          color="#A9A9A9"
+          variant='h4'
+          fontFamily='Sora'
+          color='#A9A9A9'
           gutterBottom
-          align="start"
-          sx={{ fontSize: "14px", opacity: "0.6", textAlign: "justify" }}
+          align='start'
+          sx={{ fontSize: '14px', opacity: '0.6', textAlign: 'justify' }}
         >
           C.bla banfljlae lnihe oijnije a
         </Typography>
@@ -279,26 +216,26 @@ function ClaimYourGift({ claimed, setClaimed }) {
       <Box sx={{ px: 1 }}>
         <Button
           onClick={() => setClaimed(true)}
-          variant="contained"
+          variant='contained'
           sx={{
             mt: 3,
             background:
-              "linear-gradient(292deg, #4A3228 1.28%, #9C6932 7.15%, #A97C3B 11.06%, #EFDD87 21.81%, #E0C776 25.72%, #C8A25A 32.56%, #B98B48 39.4%, #B48342 43.31%, #EBBF68 53.09%, #B48342 66.77%, #B0803D 75.57%, #E5B863 87.3%, #B1813E 92.19%, #8F5C25 95.12%, #4A3228 99.03%)",
-            color: "#000",
-            width: "100%",
-            height: "70px",
-            borderRadius: "10px",
-            fontWeight: "bold",
-            fontSize: "1rem",
+              'linear-gradient(292deg, #4A3228 1.28%, #9C6932 7.15%, #A97C3B 11.06%, #EFDD87 21.81%, #E0C776 25.72%, #C8A25A 32.56%, #B98B48 39.4%, #B48342 43.31%, #EBBF68 53.09%, #B48342 66.77%, #B0803D 75.57%, #E5B863 87.3%, #B1813E 92.19%, #8F5C25 95.12%, #4A3228 99.03%)',
+            color: '#000',
+            width: '100%',
+            height: '70px',
+            borderRadius: '10px',
+            fontWeight: 'bold',
+            fontSize: '1rem'
           }}
         >
-          <Typography fontFamily="Sora" sx={{ fontWeight: "600" }}>
+          <Typography fontFamily='Sora' sx={{ fontWeight: '600' }}>
             Claim Your Gift
           </Typography>
         </Button>
       </Box>
     </Box>
-  );
+  )
 }
 
 function Gift({ prizeOpened, setPrizeOpened }) {
@@ -437,7 +374,7 @@ function Gift({ prizeOpened, setPrizeOpened }) {
 }
 
 function Congratulations() {
-  
+
   return (
     <Box sx={{ mt: 3, fontFamily: "Sora" }}>
       <Box
