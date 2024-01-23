@@ -63,6 +63,7 @@ const defaultTheme = createTheme({
 
 function ClaimYourGift({ claimed, setClaimed }) {
   console.log(claimed);
+
   return (
     <Box sx={{ mt: 3 }}>
       <Box
@@ -436,6 +437,7 @@ function Gift({ prizeOpened, setPrizeOpened }) {
 }
 
 function Congratulations() {
+  
   return (
     <Box sx={{ mt: 3, fontFamily: "Sora" }}>
       <Box
