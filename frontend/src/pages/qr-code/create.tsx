@@ -40,7 +40,7 @@ import * as Yup from 'yup'
 // import FormDatePicker from 'src/@core/components/DatePicker'
 
 export default function DynamicQRGenertation({ loadedData }: { loadedData: any }) {
-    const theme = useTheme()
+  const theme = useTheme()
   const router = useRouter()
   const [data, setData] = useState([])
   const { t } = useTranslation()
@@ -57,7 +57,6 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
     { value: 'online', label: t('online') }
   ]
 
-
   const validationSchema = Yup.object().shape({
     name: Yup.string().required(t('this_field_is_required')),
     price: Yup.string().required(t('this_field_is_required')),
@@ -65,7 +64,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
     clientPhone: Yup.string().required(t('this_field_is_required')),
     clientWebsite: Yup.string().required(t('this_field_is_required')),
     industry: Yup.string().required(t('this_field_is_required')),
-    location: Yup.string().required(t('this_field_is_required')),
+    location: Yup.string().required(t('this_field_is_required'))
   })
 
   const { control, handleSubmit, errors } = useForm({
@@ -112,10 +111,8 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
   useEffect(() => {
     const uppyInstance = new Uppy({
       autoProceed: false,
-      restrictions: {
-        maxNumberOfFiles: 10,
-        allowedFileTypes: ['image/*', '.jpg', '.jpeg', '.png', '.gif']
-      }
+      maxNumberOfFiles: 2,
+      allowedFileTypes: ['image/*']
     })
 
     uppyInstance.on('file-added', () => {
@@ -141,6 +138,34 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
     }
   }
 
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await get(`getImages/fetch/${loadedData.id}`)
+        const imageData = response?.data
+
+        imageData.resources.forEach(image => {
+          uppy.addFile({
+            name: image.public_id,
+            type: `image/${image.format}`,
+            remote: {
+              url: image.url,
+              companionUrl: ''
+            },
+            data: {},
+            isRemote: true
+          })
+        })
+      } catch (error) {
+        console.error('Error fetching images:', error)
+      }
+    }
+
+    if (loadedData?.id) {
+      fetchImages()
+    }
+  }, [loadedData, uppy])
+
   const fetchAdvertisements = async () => {
     const response = await get(`/advertisements/${userId}`)
     response?.advertisements && setAdCount(response.advertisements?.length)
@@ -164,7 +189,7 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
       firstRule,
       secondRule,
       thirdRule,
-      fourthRule,
+      fourthRule
     } = formData
 
     const data = {
@@ -182,28 +207,35 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
       firstRule,
       secondRule,
       thirdRule,
-      fourthRule,
+      fourthRule
     }
 
     if (loadedData) {
       await put(`/qr-code/${loadedData?.id}`, data)
       toast.success('QR Code Edited', { autoClose: 2000 })
+
+      if (loadedData.id) {
+        await uploadImages(loadedData.id)
+      } else {
+        toast.error('Error', { autoClose: 3000 })
+      }
+
       router.push('/qr-code/view')
     } else {
       const adResponse = await post(`/qr-code/${userId}`, data)
 
       if (adResponse.data.id) {
-        if (uppy.getFiles().length > 0) {
-          const adId = adResponse.data.id
-          await uploadImagesToCloudinary(uppy.getFiles(), adId)
-        }
-
-        toast.success('QR Code Added', { autoClose: 2000 })
-
+        await uploadImages(adResponse.data.id)
         router.push('/qr-code/view')
       } else {
         toast.error('Error', { autoClose: 3000 })
       }
+    }
+  }
+
+  const uploadImages = async id => {
+    if (id) {
+      await uploadImagesToCloudinary(uppy.getFiles(), id)
     }
   }
 
@@ -526,11 +558,11 @@ export default function DynamicQRGenertation({ loadedData }: { loadedData: any }
               <>
                 <CardHeader title={t('upload_logo')} titleTypographyProps={{ variant: 'h6' }} />
                 <CardContent>
-                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <UploadViewer uppy={uppy} />
-                </Box>
-                          </Grid>
+                  <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <UploadViewer uppy={uppy} />
+                    </Box>
+                  </Grid>
                 </CardContent>
               </>
             )}

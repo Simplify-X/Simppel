@@ -18,7 +18,8 @@ import {
   LinearProgress,
   CircularProgress,
   Menu,
-  MenuItem
+  MenuItem,
+  Switch,
 } from '@mui/material'
 import { API_BASE_URL } from 'src/config'
 import TextField from '@mui/material/TextField'
@@ -89,6 +90,11 @@ function SingleContent({ loadedData }: { loadedData: any }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [handleEditView, setHandleEditView] = useState(false)
   const [isQRCodeBlurred, setIsQRCodeBlurred] = useState(false)
+  const [checked, setChecked] = React.useState(true);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
 
   if (loadedData) {
     setHandleEditView(true);
@@ -432,6 +438,24 @@ function SingleContent({ loadedData }: { loadedData: any }) {
                 )}
               </CardContent>
             </Card>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+          <Card>
+            <CardHeader
+                title='QR Code Status'
+                titleTypographyProps={{ variant: 'h6' }}
+            />
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                }
+                label="Your Label Text"
+            />
+        </Card>
           </Grid>
           {showAd && (
             <Grid item xs={12} sm={6}>

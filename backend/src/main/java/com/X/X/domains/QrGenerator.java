@@ -13,6 +13,8 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -67,4 +69,6 @@ public class QrGenerator extends Auditable  {
 
     private Boolean claimed;
 
+    @OneToMany(mappedBy = "qrGenerator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<QrCodeUsers> qrCodeUsers;
 }
