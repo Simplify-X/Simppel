@@ -6,23 +6,22 @@ import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   dashboard: {
     '& .uppy-Dashboard-inner, & .uppy-Dashboard-innerWrap': {
-      backgroundColor: '#333',
+      backgroundColor: theme.palette.background.default,
       color: '#fff',
     },
     '& .uppy-DashboardItem': {
-      backgroundColor: '#444',
+      backgroundColor: theme.palette.background.paper,
     },
     '& .uppy-DashboardItem-name': {
-      color: '#fff',
+      color: theme.palette.text.primary,
     },
   },
-});
+}));
 
-
-const UploadViewer = ({uppy}) => {
+const UploadViewer = ({ uppy }) => {
   const classes = useStyles();
 
   if (!uppy) {
@@ -43,4 +42,5 @@ const UploadViewer = ({uppy}) => {
 };
 
 export default UploadViewer;
+
 

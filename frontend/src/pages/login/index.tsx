@@ -1,6 +1,6 @@
 // @ts-nocheck
 // ** React Imports
-import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
+import { MouseEvent, ReactNode, useEffect, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -14,12 +14,9 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
-import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -36,23 +33,17 @@ import Cookies from 'js-cookie'
 import { Snackbar } from '@mui/material'
 import { Alert } from '@mui/material'
 
-// import * as Sentry from '@sentry/nextjs'
-
-// ** Configs
 import themeConfig from 'src/configs/themeConfig'
 
-// ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
+import FormField from 'src/@core/components/FormField'
+import { useForm } from 'react-hook-form'
 
-// ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import jwt_decode from 'jwt-decode'
 import useCustomApiHook from 'src/@core/hooks/useCustomApiHook'
+import { useTranslation } from 'react-i18next'
 
-interface State {
-  password: string
-  showPassword: boolean
-}
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -77,6 +68,16 @@ const LoginPage = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
+  const { t } = useTranslation()
+  const [showPassword, setShowPassword] = useState(false)
+
+  // ... [existing code]
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const { handleSubmit, errors, control } = useForm()
 
   useEffect(() => {
     const token = Cookies.get('token')
@@ -95,35 +96,24 @@ const LoginPage = () => {
     setOpenSnackbar(false)
   }
 
-  // ** State
-  const [values, setValues] = useState<State>({
-    password: '',
-    showPassword: false
-  })
-
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
 
-  const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [prop]: event.target.value })
-  }
-
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
-  }
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
 
-  const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
-    // Preventing the page from reloading
-    event.preventDefault()
+  const submitForm = async formData => {
+    const { email, password, remember } = formData
+
+    console.log(formData)
+
     const data = JSON.stringify({
-      email: event.target.email.value,
-      password: event.target[2].value,
-      rememberMe: event.target[5].checked
+      email,
+      password,
+      rememberMe: remember
     })
     await post('/users/login/', data)
   }
@@ -184,36 +174,67 @@ const LoginPage = () => {
             </Typography>
             <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
           </Box>
-          <form autoComplete='on' onSubmit={submitForm}>
+          <form onSubmit={handleSubmit(submitForm)}>
             <ToastContainer position={'top-center'} draggable={false} />
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} required />
-            <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
-              <OutlinedInput
-                label='Password'
-                value={values.password}
-                id='auth-login-password'
-                onChange={handleChange('password')}
-                type={values.showPassword ? 'text' : 'password'}
-                required
-                endAdornment={
-                  <InputAdornment position='end'>
-                    <IconButton
-                      edge='end'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
-                    >
-                      {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
+            <FormField
+              as={TextField}
+              name='email'
+              control={control}
+              errors={errors}
+              variant='outlined'
+              label={t('email')}
+              margin='normal'
+              required
+              fullWidth
+            />
+
+            <FormField
+              as={
+                <TextField
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          edge='end'
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          aria-label='toggle password visibility'
+                        >
+                          {showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              }
+              name='password'
+              control={control}
+              errors={errors}
+              variant='outlined'
+              label={t('password')}
+              margin='normal'
+              type={showPassword ? 'text' : 'password'}
+              required
+              fullWidth
+            />
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <FormControlLabel id={'remember'} control={<Checkbox />} label='Remember Me' />
+              <FormControlLabel
+                key='remember'
+                control={
+                  <FormField
+                    as={Checkbox}
+                    name='remember'
+                    control={control}
+                    errors={errors}
+                    margin='normal'
+                    variant='outlined'
+                  />
+                }
+                label={t('remember_me')}
+              />
+
               <Link passHref href='/password-reset'>
                 <LinkStyled>Forgot Password?</LinkStyled>
               </Link>

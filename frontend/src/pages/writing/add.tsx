@@ -267,9 +267,9 @@ const Writing = () => {
     return <Loader />
   }
 
-  if (!data?.copyWritingEnabled) {
-    router.push('/')
-  }
+  // if (!data?.copyWritingEnabled) {
+  //   router.push('/')
+  // }
 
   return (
     <form onSubmit={handleSubmit(submitForm)}>

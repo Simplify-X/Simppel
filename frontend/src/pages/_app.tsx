@@ -29,6 +29,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // ** Global css styles
 import '../../styles/globals.css'
+import '../../styles/font.css'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -56,7 +57,7 @@ const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>);
 
   // @ts-ignore
   getLayout(<Component {...pageProps} />)
