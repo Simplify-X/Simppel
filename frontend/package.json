@@ -44,6 +44,17 @@
     "lint": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@capsureit/uppy-cloudinary": "^0.1.4",
     "@craco/craco": "^7.1.0",
@@ -147,6 +158,7 @@
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
     "husky": "^8.0.3",
+    "lint-staged": "^15.2.2",
     "next-transpile-modules": "^9.0.0",
     "prettier": "2.5.1",
     "typescript": "4.5.2"
