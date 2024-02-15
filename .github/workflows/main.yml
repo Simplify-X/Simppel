@@ -25,25 +25,26 @@ jobs:
         working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
         run: npx prettier --write .
 
+      - name: Check if there are any commits
+        id: check_commits
+        run: echo "::set-output name=HAS_COMMITS::$(git log --pretty=oneline | wc -l)"
+
       - name: Check Translation Files
+        if: steps.check_commits.outputs.HAS_COMMITS != '0'
         working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
         run: |
-          if [[ $(git log --pretty=oneline | wc -l) -gt 0 ]]; then
-            CHANGED_FILES=$(git diff --name-only HEAD^ frontend/src/locales/en/common.json)
-            echo "Changed Files: $CHANGED_FILES"  # Debugging output
-            if [ "$CHANGED_FILES" ]; then
-              for lang in ar bg de es fr ru; do
-                if [ -f "$${{ github.workspace }}/frontend/src/locales/$lang/common.json" ]; then
-                  missing_keys=$(jq -s 'reduce .[] as $item (.[1] | keys_unsorted as $keys | .[0]; .[1]) | reduce $keys[] as $key ([]; if .[0][$key] == null then . + [$key] else . end) | .[]' "$${{ github.workspace }}/frontend/src/locales/en/common.json" "$${{ github.workspace }}/frontend/src/locales/$lang/common.json")
-                  if [ "$missing_keys" ]; then
-                    echo "Missing keys in $lang translation file: $missing_keys"
-                    exit 1
-                  fi
-                else
-                  echo "Translation file for $lang does not exist."
+          CHANGED_FILES=$(git diff --name-only HEAD^ frontend/src/locales/en/common.json)
+          echo "Changed Files: $CHANGED_FILES"  # Debugging output
+          if [ "$CHANGED_FILES" ]; then
+            for lang in ar bg de es fr ru; do
+              if [ -f "$${{ github.workspace }}/frontend/src/locales/$lang/common.json" ]; then
+                missing_keys=$(jq -s 'reduce .[] as $item (.[1] | keys_unsorted as $keys | .[0]; .[1]) | reduce $keys[] as $key ([]; if .[0][$key] == null then . + [$key] else . end) | .[]' "$${{ github.workspace }}/frontend/src/locales/en/common.json" "$${{ github.workspace }}/frontend/src/locales/$lang/common.json")
+                if [ "$missing_keys" ]; then
+                  echo "Missing keys in $lang translation file: $missing_keys"
+                  exit 1
                 fi
-              done
-            fi
-          else
-            echo "Initial commit, skipping translation files check."
+              else
+                echo "Translation file for $lang does not exist."
+              fi
+            done
           fi
