@@ -18,14 +18,9 @@ jobs:
         with:
           path: 'frontend' # Path to your frontend folder
 
-      - name: Print Working Directory
+      - name: Print Frontend Directory Contents
         run: |
-          pwd
-          ls -la
-
-      - name: Install dependencies
-        working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
-        run: npm install
+          ls -la frontend
 
       - name: Run Prettier
         working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
