@@ -28,7 +28,7 @@ jobs:
       - name: Check Translation Files
         working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
         run: |
-          if [[ $(git rev-parse --verify HEAD^ 2>/dev/null) ]]; then
+          if [[ $(git log --pretty=oneline | wc -l) -gt 0 ]]; then
             CHANGED_FILES=$(git diff --name-only HEAD^ frontend/src/locales/en/common.json)
             echo "Changed Files: $CHANGED_FILES"  # Debugging output
             if [ "$CHANGED_FILES" ]; then
