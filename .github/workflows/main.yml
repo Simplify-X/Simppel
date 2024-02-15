@@ -28,20 +28,21 @@ jobs:
       - name: Check Translation Files
         working-directory: ${{ github.workspace }}/frontend # Use absolute path to frontend directory
         run: |
-          # Check if there are any changes in the en translation file
-          if [[ $(git diff --name-only HEAD^ src/locales/en/common.json) ]]; then
-            # Loop through other language translation folders
-            for lang in ar bg de es fr ru; do
-              # Check if the corresponding translation file exists
-              if [ -f "$${{ github.workspace }}/frontend/src/locales/$lang/common.json" ]; then
-                # Compare keys between en and current language
-                missing_keys=$(jq -s 'reduce .[] as $item (.[1] | keys_unsorted as $keys | .[0]; .[1]) | reduce $keys[] as $key ([]; if .[0][$key] == null then . + [$key] else . end) | .[]' "$${{ github.workspace }}/frontend/src/locales/en/common.json" "$${{ github.workspace }}/frontend/src/locales/$lang/common.json")
-                if [ "$missing_keys" ]; then
-                  echo "Missing keys in $lang translation file: $missing_keys"
-                  exit 1
+          if [[ $(git rev-parse --verify HEAD^ 2>/dev/null) ]]; then
+            CHANGED_FILES=$(git diff --name-only HEAD^ src/locales/en/common.json)
+            if [ "$CHANGED_FILES" ]; then
+              for lang in ar bg de es fr ru; do
+                if [ -f "$${{ github.workspace }}/frontend/src/locales/$lang/common.json" ]; then
+                  missing_keys=$(jq -s 'reduce .[] as $item (.[1] | keys_unsorted as $keys | .[0]; .[1]) | reduce $keys[] as $key ([]; if .[0][$key] == null then . + [$key] else . end) | .[]' "$${{ github.workspace }}/frontend/src/locales/en/common.json" "$${{ github.workspace }}/frontend/src/locales/$lang/common.json")
+                  if [ "$missing_keys" ]; then
+                    echo "Missing keys in $lang translation file: $missing_keys"
+                    exit 1
+                  fi
+                else
+                  echo "Translation file for $lang does not exist."
                 fi
-              else
-                echo "Translation file for $lang does not exist."
-              fi
-            done
+              done
+            fi
+          else
+            echo "Initial commit, skipping translation files check."
           fi
