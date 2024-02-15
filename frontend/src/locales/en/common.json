@@ -139,6 +139,7 @@
   "tone" : "Tone of copy", 
   "user_management": "User Management",
   "view_advertisement": "View Advertisement",
+  "tempalte_type": "Template Type",
   "view_copy": "View Copy",
   "web_scraper_alert": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct after uploading before generating a response",
   "web_scraper_tooltip": "Using this feature to fetch data might be inconsistent, please ensure that the data is correct before creating an advertisement",

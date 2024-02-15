@@ -115,4 +115,6 @@ public class User extends Auditable {
     private boolean isProductSearchEnabled;
 
     private boolean isQrCodeGeneratorEnabled;
+
+    private boolean isAiTemplateGenerationEnabled;
 }

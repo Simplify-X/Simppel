@@ -285,6 +285,15 @@ const ViewUsers = () => {
                   }
                   label='QR Code Generator'
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.aiTemplateGenerationEnabled}
+                      onChange={event => setData({ ...data, aiTemplateGenerationEnabled: event.target.checked })}
+                    />
+                  }
+                  label='AI template generation'
+                />
               </Grid>
               <Grid item xs={12}>
                 <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={handleSave}>
