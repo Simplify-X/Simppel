@@ -29,6 +29,8 @@ import SearchIcon from '@mui/icons-material/Search'
 import BuildIcon from '@mui/icons-material/Build'
 import ScienceIcon from '@mui/icons-material/Science'
 import BiotechIcon from '@mui/icons-material/Biotech'
+import DescriptionIcon from '@mui/icons-material/Description';
+import SourceIcon from '@mui/icons-material/Source';
 
 // ** Type import
 import { NavLink, NavSectionTitle, VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -45,6 +47,7 @@ interface UserData {
   spyToolsEnabled?: boolean
   productSearchEnabled?: boolean
   qrCodeGeneratorEnabled? : boolean
+  aiTemplateGenerationEnabled? :boolean
 }
 
 const Navigation = (): VerticalNavItemsType => {
@@ -60,6 +63,7 @@ const Navigation = (): VerticalNavItemsType => {
     spyToolsEnabled: false,
     productSearchEnabled: false,
     qrCodeGeneratorEnabled: false,
+    aiTemplateGenerationEnabled: false,
   })
 
   const [customForms, setCustomForms] = useState<any[]>([])
@@ -155,6 +159,13 @@ const Navigation = (): VerticalNavItemsType => {
         title: t('product_search'),
         icon: LocationSearchingIcon,
         path: '/product-search'
+      },
+
+      userData?.aiTemplateGenerationEnabled &&
+      !userData.role && {
+        title: t('AI Template'),
+        icon: SourceIcon,
+        path: '/ai-template'
       },
 
     userData?.productSearchEnabled &&
@@ -359,6 +370,29 @@ const Navigation = (): VerticalNavItemsType => {
     },
 
     userData.role && {
+      sectionTitle: ' AI generation'
+    },
+
+    userData.role && {
+      title: 'Template generation',
+      icon: DescriptionIcon,
+      path: '',
+      children: [
+        // The submenu items
+        {
+          title: 'Add Template',
+          icon: AddIcon,
+          path: '/global-administrator/ai-template/add'
+        },
+        {
+          title: 'View Template',
+          icon: VisibilityIcon,
+          path: '/global-administrator/ai-template/view'
+        }
+      ]
+    },
+
+    userData.role && {
       sectionTitle: ' UI Design'
     },
 
@@ -372,11 +406,6 @@ const Navigation = (): VerticalNavItemsType => {
           title: 'Tiktok Filter UI',
           icon: AlarmAddIcon,
           path: '/global-administrator/tiktok/filter'
-        },
-        {
-          title: 'View Automation',
-          icon: VisibilityIcon,
-          path: '/automation/view'
         }
       ]
     },

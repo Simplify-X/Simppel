@@ -40,7 +40,7 @@ import * as Yup from 'yup'
 // import FormDatePicker from 'src/@core/components/DatePicker'
 
 export default function DynamicQRGenertation({ loadedData }: { loadedData: any }) {
-    const theme = useTheme()
+  const theme = useTheme()
   const router = useRouter()
   const [data, setData] = useState([])
   const { t } = useTranslation()
