@@ -31,6 +31,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
 import '../../styles/font.css'
 
+import LiveChat from './LiveChat';
+
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -64,6 +66,7 @@ const App = (props: ExtendedAppProps) => {
 
   return (
     <CacheProvider value={emotionCache}>
+      <LiveChat />
       <Head>
         <title>{`${themeConfig.templateName} - Revolutionize Your Business with AI-Driven Advertising and Copywriting`}</title>
         <meta
